@@ -429,5 +429,80 @@ def change_status(date_str, filename, new_status):
     
     return redirect(url_for('view_day', date_str=date_str))
 
+@app.route('/manage_users')
+@login_required
+def manage_users():
+    """Panel de gestión de usuarios - solo para admin"""
+    if current_user.username != 'admin':
+        flash('Solo el administrador puede gestionar usuarios', 'error')
+        return redirect(url_for('index'))
+    
+    users = load_users()
+    users_list = []
+    for user_id, user_data in users.items():
+        users_list.append({
+            'id': user_id,
+            'username': user_data['username']
+        })
+    
+    return render_template('manage_users.html', users=users_list)
+
+@app.route('/change_password/<user_id>', methods=['GET', 'POST'])
+@login_required
+def change_password(user_id):
+    """Cambiar contraseña de un usuario - solo para admin"""
+    if current_user.username != 'admin':
+        flash('Solo el administrador puede cambiar contraseñas', 'error')
+        return redirect(url_for('index'))
+    
+    users = load_users()
+    if user_id not in users:
+        flash('Usuario no encontrado', 'error')
+        return redirect(url_for('manage_users'))
+    
+    if request.method == 'POST':
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+        
+        if new_password != confirm_password:
+            flash('Las contraseñas no coinciden', 'error')
+        elif len(new_password) < 4:
+            flash('La contraseña debe tener al menos 4 caracteres', 'error')
+        else:
+            # Actualizar contraseña
+            users[user_id]['password_hash'] = generate_password_hash(new_password)
+            save_users(users)
+            flash(f'Contraseña actualizada para {users[user_id]["username"]}', 'success')
+            return redirect(url_for('manage_users'))
+    
+    user_data = users[user_id]
+    return render_template('change_password.html', user=user_data, user_id=user_id)
+
+@app.route('/delete_user/<user_id>')
+@login_required
+def delete_user(user_id):
+    """Eliminar usuario - solo para admin"""
+    if current_user.username != 'admin':
+        flash('Solo el administrador puede eliminar usuarios', 'error')
+        return redirect(url_for('index'))
+    
+    users = load_users()
+    if user_id not in users:
+        flash('Usuario no encontrado', 'error')
+        return redirect(url_for('manage_users'))
+    
+    # No permitir eliminar al admin
+    if users[user_id]['username'] == 'admin':
+        flash('No se puede eliminar al usuario administrador', 'error')
+        return redirect(url_for('manage_users'))
+    
+    # Guardar información del usuario eliminado para mantener historial
+    deleted_username = users[user_id]['username']
+    del users[user_id]
+    save_users(users)
+    
+    flash(f'Usuario {deleted_username} eliminado. Las fotos subidas por este usuario se conservan.', 'success')
+    return redirect(url_for('manage_users'))
+
 if __name__ == '__main__':
     app.run(debug=Config.DEBUG, host=Config.HOST, port=Config.PORT)

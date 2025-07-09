@@ -1,7 +1,7 @@
 {
   "1": {
     "username": "admin",
-    "password_hash": "scrypt:32768:8:1$6kNORQkNwGCfTWEX$af5073b67dfe4846ee034adc87b4f3923f036c019c34e8396cda49a6ac79198f5c6ad6c4d1b03253706cc8adab745080c6a31f9d6a68739ff562bf75f0d8da13"
+    "password_hash": "scrypt:32768:8:1$1Z4a7r1tSm4TQeU9$88d7afc0b6cfa8a2ef299c951f3623c762b7da73352e8f7a84b6acb3f376082d9716ed45072fb76cca2a6fbf8c37bb4aeba0b953394ed1636da3601fe3bcdace"
   },
   "2": {
     "username": "raquel",

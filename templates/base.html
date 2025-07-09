@@ -22,11 +22,14 @@
                 <a href="{{ url_for('index') }}" class="sidebar-link">
                     <i class="fas fa-calendar-alt"></i>
                 </a>
-                
                 {% if current_user.is_authenticated %}
                     {% if current_user.username == 'admin' %}
                     <a href="{{ url_for('register') }}" class="sidebar-link">
                         <i class="fas fa-user-plus"></i>
+                    </a>
+                
+                    <a href="{{ url_for('manage_users') }}" class="sidebar-link" title="Gestión de Usuarios">
+                        <i class="fas fa-users-cog"></i>
                     </a>
                     {% endif %}
                     
