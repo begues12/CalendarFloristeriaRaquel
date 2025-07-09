@@ -76,26 +76,26 @@ class TimeEntry(db.Model):
 class UserDocument(db.Model):
     __tablename__ = 'user_documents'
     
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    filename = db.Column(db.String(255), nullable=False)
-    original_filename = db.Column(db.String(255), nullable=False)
-    file_path = db.Column(db.String(500), nullable=False)
-    file_type = db.Column(db.String(10), nullable=False)  # pdf, jpg, png, etc.
-    document_type = db.Column(db.String(50), nullable=False)  # justificante, contrato, nomina, etc.
-    description = db.Column(db.Text, nullable=True)
-    date_related = db.Column(db.Date, nullable=True)  # Fecha relacionada con el documento
-    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
-    uploaded_by = db.Column(db.String(80), nullable=False)  # Usuario que subió el documento
+    id                  = db.Column(db.Integer, primary_key=True)
+    user_id             = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    filename            = db.Column(db.String(255), nullable=False)
+    original_filename   = db.Column(db.String(255), nullable=False)
+    file_path           = db.Column(db.String(500), nullable=False)
+    file_type           = db.Column(db.String(10), nullable=False)  # pdf, jpg, png, etc.
+    document_type       = db.Column(db.String(50), nullable=False)  # justificante, contrato, nomina, etc.
+    description         = db.Column(db.Text, nullable=True)
+    date_related        = db.Column(db.Date, nullable=True)  # Fecha relacionada con el documento
+    uploaded_at         = db.Column(db.DateTime, default=datetime.utcnow)
+    uploaded_by         = db.Column(db.String(80), nullable=False)  # Usuario que subió el documento
     
     def get_document_type_display(self):
         type_map = {
             'justificante': 'Justificante',
-            'contrato': 'Contrato',
-            'nomina': 'Nómina',
-            'vacaciones': 'Solicitud de Vacaciones',
-            'medico': 'Justificante Médico',
-            'otros': 'Otros'
+            'contrato':     'Contrato',
+            'nomina':       'Nómina',
+            'vacaciones':   'Solicitud de Vacaciones',
+            'medico':       'Justificante Médico',
+            'otros':        'Otros'
         }
         return type_map.get(self.document_type, self.document_type)
     
@@ -105,22 +105,22 @@ class UserDocument(db.Model):
 class Photo(db.Model):
     __tablename__ = 'photos'
     
-    id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(255), nullable=False)
-    original_filename = db.Column(db.String(255), nullable=False)
-    file_path = db.Column(db.String(500), nullable=False)
-    date_taken = db.Column(db.Date, nullable=False)
-    uploaded_by = db.Column(db.String(80), nullable=False)
-    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(20), default='pendiente')  # pendiente, hecho, entregado
-    status_updated_by = db.Column(db.String(80), nullable=True)
-    status_updated_at = db.Column(db.DateTime, nullable=True)
+    id                  = db.Column(db.Integer, primary_key=True)
+    filename            = db.Column(db.String(255), nullable=False)
+    original_filename   = db.Column(db.String(255), nullable=False)
+    file_path           = db.Column(db.String(500), nullable=False)
+    date_taken          = db.Column(db.Date, nullable=False)
+    uploaded_by         = db.Column(db.String(80), nullable=False)
+    uploaded_at         = db.Column(db.DateTime, default=datetime.utcnow)
+    status              = db.Column(db.String(20), default='pendiente')  # pendiente, hecho, entregado
+    status_updated_by   = db.Column(db.String(80), nullable=True)
+    status_updated_at   = db.Column(db.DateTime, nullable=True)
     
     def get_status_display(self):
         status_map = {
-            'pendiente': 'Pendiente',
-            'hecho': 'Hecho', 
-            'entregado': 'Entregado'
+            'pendiente':    'Pendiente',
+            'hecho':        'Hecho', 
+            'entregado':    'Entregado'
         }
         return status_map.get(self.status, self.status)
     
