@@ -15,6 +15,7 @@ class User(UserMixin, db.Model):
     full_name = db.Column(db.String(100), nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
+    must_change_password = db.Column(db.Boolean, default=True)  # Obligar cambio en primer acceso
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relaciones

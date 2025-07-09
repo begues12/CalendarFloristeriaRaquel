@@ -30,46 +30,51 @@
                         {% for week in calendar %}
                         <tr>
                             {% for day in week %}
-                            <td class="calendar-day p-2">
+                            <td class="calendar-day p-0">
                                 {% if day > 0 %}
-                                    <div class="day-container">
-                                        <div class="day-number mb-2">
-                                            <span class="badge {% if day == today.day and month == today.month and year == today.year %}bg-primary{% else %}bg-secondary{% endif %}">
-                                                {{ day }}
-                                            </span>
-                                        </div>
-                                        
-                                        {% set date_str = "%04d-%02d-%02d"|format(year, month, day) %}
-                                        {% if photos_by_date[day] %}
-
-                                            <div class="status-counts mb-2">
-                                                {% set counts = status_counts_by_date[day] %}
-                                                {% if counts.pendiente > 0 %}
-                                                    <span class="status-count pendiente" title="{{ counts.pendiente }} pendiente(s)">
-                                                        {{ counts.pendiente }}
-                                                    </span>
-                                                {% endif %}
-                                                {% if counts.hecho > 0 %}
-                                                    <span class="status-count hecho" title="{{ counts.hecho }} hecho(s)">
-                                                        {{ counts.hecho }}
-                                                    </span>
-                                                {% endif %}
-                                                {% if counts.entregado > 0 %}
-                                                    <span class="status-count entregado" title="{{ counts.entregado }} entregado(s)">
-                                                        {{ counts.entregado }}
-                                                    </span>
-                                                {% endif %}
+                                    {% set date_str = "%04d-%02d-%02d"|format(year, month, day) %}
+                                    <a href="{{ url_for('view_day', date_str=date_str) }}" 
+                                       class="day-container-link d-block p-2 text-decoration-none"
+                                       title="Ver fotos del {{ day }} de {{ month_name }}">
+                                        <div class="day-container">
+                                            <div class="day-number mb-2">
+                                                <span class="badge {% if day == today.day and month == today.month and year == today.year %}bg-primary{% else %}bg-secondary{% endif %}">
+                                                    {{ day }}
+                                                </span>
                                             </div>
-                                        {% endif %}
-                                        
-                                        <div class="day-actions mt-auto">
-                                            <a href="{{ url_for('view_day', date_str=date_str) }}" 
-                                               class="btn btn-sm btn-outline-primary" 
-                                               title="Ver fotos del día">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
+                                            
+                                            {% if photos_by_date[day] %}
+                                                <div class="status-counts mb-2">
+                                                    {% set counts = status_counts_by_date[day] %}
+                                                    {% if counts.pendiente > 0 %}
+                                                        <span class="status-count pendiente" title="{{ counts.pendiente }} pendiente(s)">
+                                                            {{ counts.pendiente }}
+                                                        </span>
+                                                    {% endif %}
+                                                    {% if counts.hecho > 0 %}
+                                                        <span class="status-count hecho" title="{{ counts.hecho }} hecho(s)">
+                                                            {{ counts.hecho }}
+                                                        </span>
+                                                    {% endif %}
+                                                    {% if counts.entregado > 0 %}
+                                                        <span class="status-count entregado" title="{{ counts.entregado }} entregado(s)">
+                                                            {{ counts.entregado }}
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                            
+                                            <div class="day-info text-center">
+                                                <small class="text-muted">
+                                                    {% if photos_by_date[day] %}
+                                                        <i class="fas fa-images me-1"></i>{{ photos_by_date[day]|length }}
+                                                    {% else %}
+                                                        <i class="fas fa-plus-circle opacity-50"></i>
+                                                    {% endif %}
+                                                </small>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 {% endif %}
                             </td>
                             {% endfor %}
@@ -81,4 +86,139 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Estilos para el calendario */
+.calendar-table {
+    table-layout: fixed;
+}
+
+.calendar-day {
+    height: 120px;
+    vertical-align: top;
+    position: relative;
+}
+
+.day-container-link {
+    height: 100%;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    color: inherit !important;
+}
+
+.day-container-link:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    color: inherit !important;
+}
+
+.day-container-link:hover .badge {
+    transform: scale(1.1);
+}
+
+.day-container-link:hover .day-info i {
+    transform: scale(1.2);
+    color: #007bff !important;
+}
+
+.day-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.day-number {
+    text-align: center;
+}
+
+.day-number .badge {
+    transition: transform 0.2s ease;
+}
+
+.status-counts {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.status-count {
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    min-width: 18px;
+    text-align: center;
+}
+
+.status-count.pendiente {
+    background-color: #ffc107;
+    color: #856404;
+}
+
+.status-count.hecho {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-count.entregado {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.day-info {
+    margin-top: auto;
+}
+
+.day-info i {
+    transition: all 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .calendar-day {
+        height: 80px;
+    }
+    
+    .day-container-link {
+        min-height: 70px;
+        padding: 8px !important;
+    }
+    
+    .status-count {
+        font-size: 0.6rem;
+        padding: 1px 4px;
+        min-width: 16px;
+    }
+    
+    .day-number .badge {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .calendar-day {
+        height: 60px;
+    }
+    
+    .day-container-link {
+        min-height: 50px;
+        padding: 4px !important;
+    }
+    
+    .day-number {
+        margin-bottom: 4px !important;
+    }
+    
+    .status-counts {
+        margin-bottom: 4px !important;
+    }
+}
+</style>
 {% endblock %}

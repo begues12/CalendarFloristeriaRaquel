@@ -69,6 +69,26 @@ login_manager.login_message_category = 'info'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+@app.before_request
+def check_password_change_required():
+    """Middleware para verificar si el usuario debe cambiar su contraseña"""
+    # Rutas que no requieren verificación de cambio de contraseña
+    exempt_routes = [
+        'login', 
+        'logout', 
+        'force_change_password', 
+        'static'
+    ]
+    
+    # Si es una solicitud de archivo estático, permitir
+    if request.endpoint and request.endpoint in exempt_routes:
+        return
+    
+    # Si el usuario está autenticado y debe cambiar contraseña
+    if current_user.is_authenticated and hasattr(current_user, 'must_change_password'):
+        if current_user.must_change_password and request.endpoint != 'force_change_password':
+            return redirect(url_for('force_change_password'))
+
 # Crear carpetas necesarias
 os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(Config.DOCUMENTS_FOLDER, exist_ok=True)
@@ -105,7 +125,8 @@ def init_default_users():
         admin = User(
             username=Config.DEFAULT_ADMIN_USER,
             full_name='Administrador',
-            is_admin=True
+            is_admin=True,
+            must_change_password=False  # Admin por defecto no necesita cambiar contraseña
         )
         admin.set_password(Config.DEFAULT_ADMIN_PASS)
         
@@ -113,7 +134,8 @@ def init_default_users():
         user = User(
             username=Config.DEFAULT_USER_USER,
             full_name='Raquel',
-            is_admin=False
+            is_admin=False,
+            must_change_password=True  # Usuario debe cambiar contraseña en primer acceso
         )
         user.set_password(Config.DEFAULT_USER_PASS)
         
@@ -179,6 +201,12 @@ def login():
         user = User.query.filter_by(username=username, is_active=True).first()
         if user and user.check_password(password):
             login_user(user)
+            
+            # Verificar si debe cambiar contraseña
+            if user.must_change_password:
+                flash('Debes cambiar tu contraseña antes de continuar', 'warning')
+                return redirect(url_for('force_change_password'))
+            
             next_page = request.args.get('next')
             flash(f'¡Bienvenido {username}!', 'success')
             return redirect(next_page) if next_page else redirect(url_for('index'))
@@ -193,6 +221,49 @@ def logout():
     logout_user()
     flash('Has cerrado sesión correctamente', 'info')
     return redirect(url_for('login'))
+
+@app.route('/force_change_password', methods=['GET', 'POST'])
+@login_required
+def force_change_password():
+    """Cambio obligatorio de contraseña en primer acceso"""
+    # Si el usuario ya no necesita cambiar contraseña, redirigir
+    if not current_user.must_change_password:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Validaciones
+        if not current_user.check_password(current_password):
+            flash('La contraseña actual es incorrecta', 'error')
+            return render_template('force_change_password.html')
+        
+        if new_password != confirm_password:
+            flash('Las nuevas contraseñas no coinciden', 'error')
+            return render_template('force_change_password.html')
+        
+        if len(new_password) < 4:
+            flash('La nueva contraseña debe tener al menos 4 caracteres', 'error')
+            return render_template('force_change_password.html')
+        
+        if current_password == new_password:
+            flash('La nueva contraseña debe ser diferente a la actual', 'error')
+            return render_template('force_change_password.html')
+        
+        try:
+            current_user.set_password(new_password)
+            current_user.must_change_password = False  # Ya no necesita cambiar contraseña
+            db.session.commit()
+            flash('Contraseña cambiada correctamente. ¡Bienvenido!', 'success')
+            return redirect(url_for('index'))
+            
+        except Exception as e:
+            flash(f'Error al cambiar la contraseña: {str(e)}', 'error')
+            db.session.rollback()
+    
+    return render_template('force_change_password.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 @login_required
@@ -230,7 +301,8 @@ def register():
             new_user = User(
                 username=username,
                 full_name=username.title(),  # Usar username como nombre completo por defecto
-                is_admin=False
+                is_admin=False,
+                must_change_password=True  # Obligar cambio de contraseña en primer acceso
             )
             new_user.set_password(password)
             
@@ -309,6 +381,7 @@ def change_password():
         
         try:
             current_user.set_password(new_password)
+            current_user.must_change_password = False  # Ya no necesita cambiar contraseña
             db.session.commit()
             flash('Contraseña cambiada correctamente', 'success')
             return redirect(url_for('index'))
