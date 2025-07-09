@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}{{ date.strftime('%d de %B %Y') }} - Calendario Floristería Raquel{% endblock %}
+
+{% block content %}
+<div class="day-view">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h2 class="mb-2 mb-md-0">
+            <i class="fas fa-calendar-day me-2"></i>
+            {{ date.strftime('%d de %B %Y') }}
+        </h2>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{{ url_for('upload_photo', date_str=date_str) }}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>Subir Fotos
+            </a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver
+            </a>
+        </div>
+    </div>
+
+    {% if photos %}
+        <div class="row">
+            {% for photo in photos %}
+            <div class="col-lg-4 col-md-6 col-12 mb-4">
+                <div class="card photo-card status-{{ photo.status }}">
+                    <div class="position-relative">
+                        <img src="{{ url_for('static', filename=photo.path) }}" 
+                             class="card-img-top photo-image" 
+                             alt="{{ photo.filename }}"
+                             data-bs-toggle="modal" 
+                             data-bs-target="#photoModal"
+                             data-photo-src="{{ url_for('static', filename=photo.path) }}"
+                             data-photo-name="{{ photo.filename }}">
+                        <span class="status-badge status-{{ photo.status }}">
+                            {% if photo.status == 'pendiente' %}⏳ Pendiente
+                            {% elif photo.status == 'hecho' %}✓ Hecho
+                            {% elif photo.status == 'entregado' %}📦 Entregado
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <small class="text-info">
+                                    <i class="fas fa-user me-1"></i>{{ photo.uploaded_by }}
+                                </small>
+                                {% if photo.upload_time %}
+                                <small class="text-muted d-block">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{ photo.upload_time }}
+                                </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="status-buttons d-flex justify-content-between mt-3">
+                            <a href="{{ url_for('change_status', date_str=date_str, filename=photo.filename, new_status='pendiente') }}" 
+                               class="status-btn pendiente flex-fill {% if photo.status == 'pendiente' %}opacity-50{% endif %}"
+                               title="Marcar como pendiente">
+                                ⏳ Pendiente
+                            </a>
+                            <a href="{{ url_for('change_status', date_str=date_str, filename=photo.filename, new_status='hecho') }}" 
+                               class="status-btn hecho flex-fill {% if photo.status == 'hecho' %}opacity-50{% endif %}"
+                               title="Marcar como hecho">
+                                ✓ Hecho
+                            </a>
+                            <a href="{{ url_for('change_status', date_str=date_str, filename=photo.filename, new_status='entregado') }}" 
+                               class="status-btn entregado flex-fill {% if photo.status == 'entregado' %}opacity-50{% endif %}"
+                               title="Marcar como entregado">
+                                📦 Entregado
+                            </a>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end mt-2">
+                            <a href="{{ url_for('delete_photo', date_str=date_str, filename=photo.filename) }}" 
+                               class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('¿Estás seguro de que quieres eliminar esta foto?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-images fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No hay fotos para este día</h4>
+            <p class="text-muted">¡Sube algunas fotos para comenzar!</p>
+            <a href="{{ url_for('upload_photo', date_str=date_str) }}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>Subir Primera Foto
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Modal para ver fotos en grande -->
+<div class="modal fade" id="photoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="photoModalLabel">Foto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid" alt="">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const photoModal = document.getElementById('photoModal');
+    const modalImage = document.getElementById('modalImage');
+
+    photoModal.addEventListener('show.bs.modal', function(event) {
+        const trigger = event.relatedTarget;
+        const photoSrc = trigger.getAttribute('data-photo-src');
+        const photoName = trigger.getAttribute('data-photo-name');
+        
+        modalImage.src = photoSrc;
+    });
+});
+</script>
+{% endblock %}

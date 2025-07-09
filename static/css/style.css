@@ -1,0 +1,760 @@
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 70px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.sidebar-brand i {
+    font-size: 1.5rem;
+    margin-right: 10px;
+    min-width: 30px;
+}
+
+.sidebar-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.sidebar-toggle:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.sidebar-content {
+    padding: 20px 0;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+    text-decoration: none;
+    border-left-color: rgba(255,255,255,0.5);
+}
+
+.sidebar-link.active {
+    background-color: rgba(255,255,255,0.2);
+    color: white;
+    border-left-color: white;
+}
+
+.sidebar-link i {
+    font-size: 1.1rem;
+    margin-right: 15px;
+    min-width: 30px;
+    text-align: center;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin: 20px 0;
+}
+
+.sidebar-user {
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.user-info {
+    padding: 15px 20px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 500;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+}
+
+.user-info i {
+    margin-right: 15px;
+    min-width: 30px;
+    text-align: center;
+}
+
+.sidebar-link.logout {
+    color: rgba(255,255,255,0.7);
+}
+
+.sidebar-link.logout:hover {
+    background-color: rgba(220,53,69,0.2);
+    border-left-color: #dc3545;
+}
+
+/* Hide text when collapsed */
+.sidebar.collapsed .sidebar-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.1s ease, width 0.1s ease;
+    white-space: nowrap;
+}
+
+.sidebar.collapsed .sidebar-brand .sidebar-text {
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-link .sidebar-text {
+    display: none;
+}
+
+.sidebar.collapsed .user-info .sidebar-text {
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-brand {
+    justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-link {
+    justify-content: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-align: center;
+}
+
+.sidebar.collapsed .user-info {
+    justify-content: center;
+    text-align: center;
+}
+
+.sidebar.collapsed .sidebar-toggle {
+    margin: 0 auto;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 250px;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+    background-color: #f8f9fa;
+}
+
+.main-content.expanded {
+    margin-left: 70px;
+}
+
+.content-wrapper {
+    padding: 30px;
+}
+
+/* Mobile Header */
+.mobile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.mobile-menu-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    margin-right: 15px;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.mobile-menu-btn:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.mobile-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Mobile Responsive */
+@media (max-width: 767.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .main-content.expanded {
+        margin-left: 0;
+    }
+    
+    .content-wrapper {
+        padding: 20px 15px;
+    }
+    
+    body.sidebar-mobile-open {
+        overflow: hidden;
+    }
+}
+
+@media (min-width: 768px) {
+    .mobile-header {
+        display: none;
+    }
+    
+    .sidebar-overlay {
+        display: none;
+    }
+}
+
+/* Mejoras responsive adicionales */
+.calendar-container {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.login-container {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+}
+
+.day-view {
+    max-width: 100%;
+}
+
+/* Ajustes para tablets */
+@media (max-width: 991.98px) {
+    .content-wrapper {
+        padding: 20px;
+    }
+    
+    .calendar-day {
+        height: 130px;
+        padding: 6px !important;
+    }
+    
+    .day-number .badge {
+        font-size: 0.85rem;
+        padding: 3px 7px;
+    }
+    
+    .day-actions .btn {
+        padding: 3px 7px;
+        font-size: 11px;
+    }
+    
+    .status-count {
+        font-size: 9px;
+        padding: 2px 5px;
+    }
+}
+
+/* Mejoras para el calendario en pantallas pequeñas */
+@media (max-width: 576px) {
+    .calendar-table {
+        font-size: 0.8rem;
+    }
+    
+    .calendar-day {
+        height: 120px;
+        padding: 4px !important;
+    }
+    
+    .day-number .badge {
+        font-size: 0.75rem;
+        padding: 2px 6px;
+        min-width: 20px;
+    }
+    
+    .day-actions .btn {
+        padding: 3px 6px;
+        font-size: 10px;
+    }
+    
+    .status-count {
+        font-size: 9px;
+        padding: 1px 4px;
+        min-width: 14px;
+    }
+    
+    .day-actions {
+        gap: 2px;
+    }
+    
+    .card-header .btn {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+    
+    .card-header h2 {
+        font-size: 1.2rem;
+    }
+}
+
+/* Estilos para el calendario */
+.calendar-table {
+    table-layout: fixed;
+}
+
+.calendar-day {
+    height: 140px;
+    width: 14.28%;
+    vertical-align: top;
+    position: relative;
+    padding: 8px !important;
+}
+
+.day-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.day-number {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.day-number .badge {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    min-width: 24px;
+}
+
+/* Contadores de estado en el calendario */
+.status-counts {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+}
+
+.status-count {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    min-width: 16px;
+    text-align: center;
+    line-height: 1.4;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.status-count.pendiente {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-count.hecho {
+    background-color: #17a2b8;
+}
+
+.status-count.entregado {
+    background-color: #28a745;
+}
+
+.day-actions {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-top: auto;
+}
+
+.day-actions .btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.day-actions .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Estilos para las fotos */
+.photo-card {
+    transition: transform 0.2s;
+    position: relative;
+}
+
+.photo-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.photo-image {
+    height: 200px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+/* Estados de las tarjetas de fotos */
+.photo-card.status-pendiente {
+    border-left: 4px solid #ffc107;
+}
+
+.photo-card.status-hecho {
+    border-left: 4px solid #17a2b8;
+}
+
+.photo-card.status-entregado {
+    border-left: 4px solid #28a745;
+}
+
+/* Badges de estado */
+.status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.status-pendiente {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-badge.status-hecho {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.status-badge.status-entregado {
+    background-color: #28a745;
+    color: white;
+}
+
+/* Botones de cambio de estado */
+.status-buttons {
+    display: flex;
+    gap: 4px;
+    margin-top: 10px;
+    flex-wrap: nowrap !important;
+    justify-content: space-between;
+}
+
+.status-btn {
+    flex: 1;
+    padding: 6px 4px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.2s;
+    white-space: nowrap;
+    min-width: 0;
+    overflow: hidden;
+    max-width: 33.33%;
+}
+
+.status-btn:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.status-btn.pendiente {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-btn.pendiente:hover {
+    background-color: #e0a800;
+    color: #000;
+}
+
+.status-btn.hecho {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.status-btn.hecho:hover {
+    background-color: #138496;
+    color: white;
+}
+
+.status-btn.entregado {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-btn.entregado:hover {
+    background-color: #218838;
+    color: white;
+}
+
+.existing-photo-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.preview-image {
+    border: 2px solid #e9ecef;
+    transition: border-color 0.2s;
+}
+
+.preview-image:hover {
+    border-color: #007bff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calendar-day {
+        height: 120px;
+    }
+    
+    .photo-thumbnail {
+        width: 25px;
+        height: 25px;
+    }
+    
+    .day-actions .btn {
+        padding: 1px 4px;
+        font-size: 11px;
+    }
+    
+    .photo-image {
+        height: 150px;
+    }
+    
+    .status-buttons {
+        gap: 2px;
+        flex-wrap: nowrap !important;
+        flex-direction: row !important;
+    }
+    
+    .status-btn {
+        padding: 6px 2px;
+        font-size: 0.65rem;
+        max-width: 33.33%;
+        min-width: 0;
+        flex: 1;
+    }
+    
+    /* Mejor layout para móvil */
+    .col-lg-4.col-md-6 {
+        margin-bottom: 15px;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    .photo-card .d-flex {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .calendar-day {
+        height: 100px;
+    }
+    
+    .photo-thumbnail {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .more-photos {
+        font-size: 9px;
+    }
+    
+    .status-count {
+        font-size: 7px;
+        padding: 1px 2px;
+        min-width: 10px;
+    }
+    
+    .day-actions {
+        flex-direction: column;
+        gap: 1px;
+    }
+    
+    .day-actions .btn {
+        padding: 1px 3px;
+        font-size: 10px;
+    }
+    
+    /* Stack de botones en móvil pequeño - SOLO para el header del día */
+    .day-view .d-flex.justify-content-between.align-items-center.mb-4 {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    /* Mantener status-buttons en línea siempre */
+    .status-buttons {
+        flex-direction: row !important;
+        gap: 2px !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    .status-btn {
+        padding: 4px 2px;
+        font-size: 0.6rem;
+        min-width: 0;
+        flex: 1;
+    }
+    
+    .photo-image {
+        height: 180px;
+    }
+    
+    /* Ajustes del header para móvil */
+    .day-view .d-flex.justify-content-between.align-items-center.mb-4 {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .day-view .d-flex.justify-content-between.align-items-center.mb-4 h2 {
+        text-align: center;
+        font-size: 1.5rem;
+    }
+    
+    .day-view .d-flex.justify-content-between.align-items-center.mb-4 div {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+}
+
+/* Estilos adicionales */
+.navbar-brand {
+    font-weight: 600;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn {
+    border-radius: 6px;
+}
+
+.alert {
+    border-radius: 6px;
+    border: none;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.photo-card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Loading state */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Modal styles */
+.modal-dialog {
+    max-width: 90vw;
+}
+
+.modal-body img {
+    max-height: 70vh;
+    object-fit: contain;
+}
+
+/* Mejoras para dispositivos táctiles */
+@media (hover: none) {
+    .photo-card:hover {
+        transform: none;
+    }
+    
+    .status-btn:hover {
+        transform: none;
+    }
+    
+    .photo-card:active {
+        transform: scale(0.98);
+    }
+}
