@@ -1,0 +1,20 @@
+[
+  {
+    "username": "admin",
+    "password_hash": "scrypt:32768:8:1$kZbRjZM1HAeOeHih$324f2a976b947ae62874736658caf8f22038ecc30a3b7e70cf407b113f90bd65d6276ebf96c361b8ae4ae30861697035c2a83cd2d0e56520822903833275861a",
+    "email": "admin@floristeria.com",
+    "full_name": "",
+    "is_admin": true,
+    "is_active": true,
+    "created_at": "2025-07-09T15:15:08.101973"
+  },
+  {
+    "username": "usuario",
+    "password_hash": "scrypt:32768:8:1$EvXqSelsvcSOpF1k$039958f6302b482b2c9f1f3669a465a5063983c9e8b4863ff6b850c3d11543f9b9b03f038bbe2972b7521bdd3d6f567895b8ef73065ac7a176874d43da5bfa13",
+    "email": "usuario@floristeria.com",
+    "full_name": "",
+    "is_admin": false,
+    "is_active": true,
+    "created_at": "2025-07-09T15:15:08.202844"
+  }
+]

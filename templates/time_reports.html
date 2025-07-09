@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes de Horarios - Floristería{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Reportes de Horarios</h2>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="user_id" class="form-label">Usuario</label>
+                            <select class="form-select" id="user_id" name="user_id">
+                                <option value="">Todos los usuarios</option>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}" {{ 'selected' if request.args.get('user_id') == user.id|string }}>
+                                        {{ user.username }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="start_date" class="form-label">Fecha inicio</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" 
+                                   value="{{ request.args.get('start_date', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="end_date" class="form-label">Fecha fin</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" 
+                                   value="{{ request.args.get('end_date', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Filtrar
+                                </button>
+                                <a href="{{ url_for('time_reports') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i> Limpiar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Resumen por usuario -->
+            {% if summary %}
+                <div class="row mb-4">
+                    {% for user_summary in summary %}
+                        <div class="col-12 col-md-6 col-lg-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-user text-primary"></i>
+                                        {{ user_summary.username }}
+                                    </h5>
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <div class="border-end">
+                                                <h3 class="text-success mb-0">{{ user_summary.total_hours }}</h3>
+                                                <small class="text-muted">Horas totales</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <h3 class="text-info mb-0">{{ user_summary.total_days }}</h3>
+                                            <small class="text-muted">Días trabajados</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Tabla de registros detallados -->
+            {% if entries %}
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Registros Detallados</h5>
+                        <a href="{{ url_for('export_time_report') }}?{{ request.query_string.decode() }}" 
+                           class="btn btn-success btn-sm">
+                            <i class="fas fa-download"></i> Exportar CSV
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Fecha</th>
+                                        <th>Entrada</th>
+                                        <th>Salida</th>
+                                        <th>Tipo</th>
+                                        <th>Duración</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in entries %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ entry.user.username }}</strong>
+                                            </td>
+                                            <td>{{ entry.date.strftime('%d/%m/%Y') }}</td>
+                                            <td>
+                                                {% if entry.entry_time %}
+                                                    <span class="badge bg-success">
+                                                        {{ entry.entry_time.strftime('%H:%M') }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if entry.exit_time %}
+                                                    <span class="badge bg-danger">
+                                                        {{ entry.exit_time.strftime('%H:%M') }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="text-muted">En curso</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">
+                                                    Trabajo
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if entry.exit_time and entry.entry_time %}
+                                                    {% set duration = entry.exit_time - entry.entry_time %}
+                                                    {% set hours = (duration.total_seconds() // 3600)|int %}
+                                                    {% set minutes = ((duration.total_seconds() % 3600) // 60)|int %}
+                                                    <strong>{{ hours }}h {{ minutes }}m</strong>
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay registros</h4>
+                    <p class="text-muted">No se encontraron registros de tiempo para los filtros seleccionados.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.table th {
+    border-top: none;
+}
+
+.card-body .row .border-end {
+    border-right: 1px solid #dee2e6 !important;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.9em;
+    }
+    
+    .card-body .row .border-end {
+        border-right: none !important;
+        border-bottom: 1px solid #dee2e6 !important;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}

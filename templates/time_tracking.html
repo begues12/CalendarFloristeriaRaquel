@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Fichaje - Calendario Floristería Raquel{% endblock %}
+
+{% block content %}
+<div class="time-tracking">
+    <div class="row">
+        <!-- Panel de fichaje -->
+        <div class="col-lg-6 col-12 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>
+                        Fichaje de Hoy
+                    </h5>
+                    <small class="text-muted">{{ today.strftime('%d/%m/%Y') }}</small>
+                </div>
+                <div class="card-body">
+                    {% if today_entry %}
+                        <div class="time-status mb-3">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="time-info">
+                                        <i class="fas fa-sign-in-alt fa-2x {% if today_entry.entry_time %}text-success{% else %}text-muted{% endif %}"></i>
+                                        <h6 class="mt-2">Entrada</h6>
+                                        <span class="fw-bold">
+                                            {% if today_entry.entry_time %}
+                                                {{ today_entry.entry_time.strftime('%H:%M') }}
+                                            {% else %}
+                                                --:--
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="time-info">
+                                        <i class="fas fa-sign-out-alt fa-2x {% if today_entry.exit_time %}text-danger{% else %}text-muted{% endif %}"></i>
+                                        <h6 class="mt-2">Salida</h6>
+                                        <span class="fw-bold">
+                                            {% if today_entry.exit_time %}
+                                                {{ today_entry.exit_time.strftime('%H:%M') }}
+                                            {% else %}
+                                                --:--
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if today_entry.break_start or today_entry.break_end %}
+                        <div class="break-info mb-3 text-center">
+                            <small class="text-muted">
+                                <i class="fas fa-coffee me-1"></i>
+                                Descanso: 
+                                {% if today_entry.break_start %}
+                                    {{ today_entry.break_start.strftime('%H:%M') }}
+                                {% endif %}
+                                {% if today_entry.break_end %}
+                                    - {{ today_entry.break_end.strftime('%H:%M') }}
+                                {% else %}
+                                    {% if today_entry.break_start %}
+                                        - En curso
+                                    {% endif %}
+                                {% endif %}
+                            </small>
+                        </div>
+                        {% endif %}
+                        
+                        {% if today_entry.total_hours > 0 %}
+                        <div class="total-hours text-center mb-3">
+                            <div class="badge bg-primary fs-6">
+                                <i class="fas fa-hourglass-half me-1"></i>
+                                Total: {{ "%.2f"|format(today_entry.total_hours) }} horas
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No has fichado hoy</p>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Botones de fichaje -->
+                    <div class="row g-2">
+                        <div class="col-6">
+                            {% if not today_entry or not today_entry.entry_time %}
+                            <a href="{{ url_for('clock_in') }}" class="btn btn-success w-100">
+                                <i class="fas fa-sign-in-alt me-1"></i>Entrada
+                            </a>
+                            {% else %}
+                            <button class="btn btn-success w-100" disabled>
+                                <i class="fas fa-check me-1"></i>Entrada
+                            </button>
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            {% if today_entry and today_entry.entry_time and not today_entry.exit_time %}
+                            <a href="{{ url_for('clock_out') }}" class="btn btn-danger w-100">
+                                <i class="fas fa-sign-out-alt me-1"></i>Salida
+                            </a>
+                            {% else %}
+                            <button class="btn btn-outline-danger w-100" disabled>
+                                <i class="fas fa-sign-out-alt me-1"></i>Salida
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de descanso -->
+                    <div class="row g-2 mt-2">
+                        <div class="col-6">
+                            {% if today_entry and today_entry.entry_time and not today_entry.break_start %}
+                            <a href="{{ url_for('break_start') }}" class="btn btn-outline-warning w-100 btn-sm">
+                                <i class="fas fa-coffee me-1"></i>Iniciar Descanso
+                            </a>
+                            {% elif today_entry and today_entry.break_start and not today_entry.break_end %}
+                            <button class="btn btn-warning w-100 btn-sm" disabled>
+                                <i class="fas fa-coffee me-1"></i>En Descanso
+                            </button>
+                            {% else %}
+                            <button class="btn btn-outline-warning w-100 btn-sm" disabled>
+                                <i class="fas fa-coffee me-1"></i>Iniciar Descanso
+                            </button>
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            {% if today_entry and today_entry.break_start and not today_entry.break_end %}
+                            <a href="{{ url_for('break_end') }}" class="btn btn-warning w-100 btn-sm">
+                                <i class="fas fa-play me-1"></i>Fin Descanso
+                            </a>
+                            {% else %}
+                            <button class="btn btn-outline-warning w-100 btn-sm" disabled>
+                                <i class="fas fa-play me-1"></i>Fin Descanso
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Historial reciente -->
+        <div class="col-lg-6 col-12 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Últimos 7 días
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_entries %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Entrada</th>
+                                        <th>Salida</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in recent_entries %}
+                                    <tr>
+                                        <td>
+                                            <small>{{ entry.date.strftime('%d/%m') }}</small>
+                                        </td>
+                                        <td>
+                                            <small class="text-success">
+                                                {% if entry.entry_time %}
+                                                    {{ entry.entry_time.strftime('%H:%M') }}
+                                                {% else %}
+                                                    --:--
+                                                {% endif %}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <small class="text-danger">
+                                                {% if entry.exit_time %}
+                                                    {{ entry.exit_time.strftime('%H:%M') }}
+                                                {% else %}
+                                                    --:--
+                                                {% endif %}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <small>
+                                                {% if entry.total_hours > 0 %}
+                                                    {{ "%.1f"|format(entry.total_hours) }}h
+                                                {% else %}
+                                                    --
+                                                {% endif %}
+                                            </small>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-calendar-times fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">No hay registros recientes</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Acciones adicionales -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{{ url_for('upload_document') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-file-upload me-2"></i>Subir Documento
+                        </a>
+                        <a href="{{ url_for('my_documents') }}" class="btn btn-outline-info">
+                            <i class="fas fa-folder me-2"></i>Mis Documentos
+                        </a>
+                        {% if current_user.is_admin %}
+                        <a href="{{ url_for('time_reports') }}" class="btn btn-outline-success">
+                            <i class="fas fa-chart-bar me-2"></i>Reportes
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.time-info {
+    padding: 15px;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.time-status {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.break-info {
+    background: #fff3cd;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ffeaa7;
+}
+
+.total-hours .badge {
+    padding: 10px 15px;
+}
+
+@media (max-width: 576px) {
+    .time-status .col-6 {
+        margin-bottom: 15px;
+    }
+    
+    .btn {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+    
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+}
+</style>
+
+<script>
+// Auto-refresh cada 60 segundos
+setTimeout(function() {
+    location.reload();
+}, 60000);
+</script>
+{% endblock %}

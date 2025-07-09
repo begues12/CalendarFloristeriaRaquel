@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file, make_response
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from werkzeug.utils import secure_filename
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_migrate import Migrate
@@ -334,72 +334,6 @@ def time_reports():
                          start_date=start_date,
                          end_date=end_date)
 
-@app.route('/export_time_report')
-@login_required
-def export_time_report():
-    """Exportar reporte de horarios a CSV - solo admin"""
-    if not current_user.is_admin:
-        flash('No tienes permisos para exportar reportes', 'error')
-        return redirect(url_for('time_tracking'))
-    
-    import csv
-    import io
-    from flask import make_response
-    
-    # Obtener los mismos filtros que en time_reports
-    user_id = request.args.get('user_id', type=int)
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
-    
-    # Configurar fechas por defecto (último mes)
-    if not start_date:
-        start_date = (date.today() - timedelta(days=30)).strftime('%Y-%m-%d')
-    if not end_date:
-        end_date = date.today().strftime('%Y-%m-%d')
-    
-    # Construir query
-    query = TimeEntry.query
-    
-    if user_id:
-        query = query.filter(TimeEntry.user_id == user_id)
-    
-    query = query.filter(
-        TimeEntry.date >= datetime.strptime(start_date, '%Y-%m-%d').date(),
-        TimeEntry.date <= datetime.strptime(end_date, '%Y-%m-%d').date()
-    )
-    
-    entries = query.order_by(TimeEntry.date.desc()).all()
-    
-    # Crear CSV en memoria
-    output = io.StringIO()
-    writer = csv.writer(output)
-    
-    # Escribir cabeceras
-    writer.writerow(['Usuario', 'Fecha', 'Entrada', 'Salida', 'Horas Totales', 'Estado'])
-    
-    # Escribir datos
-    for entry in entries:
-        entry_time = entry.entry_time.strftime('%H:%M') if entry.entry_time else '-'
-        exit_time = entry.exit_time.strftime('%H:%M') if entry.exit_time else '-'
-        total_hours = f"{entry.total_hours:.2f}h" if entry.total_hours else '-'
-        
-        writer.writerow([
-            entry.user.username,
-            entry.date.strftime('%d/%m/%Y'),
-            entry_time,
-            exit_time,
-            total_hours,
-            entry.get_status_display()
-        ])
-    
-    # Crear respuesta
-    output.seek(0)
-    response = make_response(output.getvalue())
-    response.headers['Content-Type'] = 'text/csv'
-    response.headers['Content-Disposition'] = f'attachment; filename=reporte_horarios_{start_date}_a_{end_date}.csv'
-    
-    return response
-
 @app.route('/upload_document', methods=['GET', 'POST'])
 @login_required
 def upload_document():
@@ -464,50 +398,6 @@ def my_documents():
     ).all()
     
     return render_template('my_documents.html', documents=documents)
-
-@app.route('/download_document/<int:doc_id>')
-@login_required
-def download_document(doc_id):
-    """Descargar documento personal"""
-    document = UserDocument.query.filter_by(id=doc_id, user_id=current_user.id).first()
-    if not document:
-        flash('Documento no encontrado', 'error')
-        return redirect(url_for('my_documents'))
-    
-    try:
-        return send_file(
-            document.file_path,
-            as_attachment=True,
-            download_name=document.filename
-        )
-    except FileNotFoundError:
-        flash('El archivo no existe en el servidor', 'error')
-        return redirect(url_for('my_documents'))
-
-@app.route('/delete_document/<int:doc_id>', methods=['POST'])
-@login_required
-def delete_document(doc_id):
-    """Eliminar documento personal"""
-    document = UserDocument.query.filter_by(id=doc_id, user_id=current_user.id).first()
-    if not document:
-        flash('Documento no encontrado', 'error')
-        return redirect(url_for('my_documents'))
-    
-    try:
-        # Eliminar archivo físico
-        if os.path.exists(document.file_path):
-            os.remove(document.file_path)
-        
-        # Eliminar registro de la base de datos
-        db.session.delete(document)
-        db.session.commit()
-        
-        flash('Documento eliminado correctamente', 'success')
-    except Exception as e:
-        flash('Error al eliminar el documento', 'error')
-        db.session.rollback()
-    
-    return redirect(url_for('my_documents'))
 
 @app.route('/manage_users')
 @login_required

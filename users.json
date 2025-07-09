@@ -5,6 +5,6 @@
   },
   "2": {
     "username": "raquel",
-    "password_hash": "scrypt:32768:8:1$5BFRzqMQ405gXWMl$b92c0748676cd8380f261f881dc2db0f3d1e61088cc66d29932c5bf047e345d9c7dd8739b7452f47c347589a87289ea9b2cc5bda93f4ce9701c93e9b2d2d682f"
+    "password_hash": "scrypt:32768:8:1$C8iZHlJNXnqARSmI$4c9815da59d31788f271b799bb25cf3009249b63510dbe97b6a97d5a7fd162eb7670e46912ac357267b4a78fff893e8ab5b98954cfa3fd117fda33cc7023aae3"
   }
 }

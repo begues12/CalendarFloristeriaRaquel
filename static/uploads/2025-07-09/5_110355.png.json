@@ -2,5 +2,7 @@
   "username": "admin",
   "upload_time": "2025-07-09 11:03:55",
   "original_filename": "5.png",
-  "status": "pendiente"
+  "status": "entregado",
+  "status_updated_by": "admin",
+  "status_updated_time": "2025-07-09 11:15:55"
 }

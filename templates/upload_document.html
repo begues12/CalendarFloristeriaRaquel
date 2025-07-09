@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Subir Documento - Calendario Floristería Raquel{% endblock %}
+
+{% block content %}
+<div class="upload-document">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-upload me-2"></i>
+                        Subir Documento
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="file" class="form-label">
+                                    <i class="fas fa-file me-1"></i>Archivo *
+                                </label>
+                                <input type="file" 
+                                       class="form-control" 
+                                       id="file" 
+                                       name="file" 
+                                       required
+                                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif">
+                                <div class="form-text">
+                                    Formatos permitidos: PDF, Word, Imágenes (JPG, PNG, GIF)
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="document_type" class="form-label">
+                                    <i class="fas fa-tag me-1"></i>Tipo de Documento *
+                                </label>
+                                <select class="form-select" id="document_type" name="document_type" required>
+                                    <option value="">Selecciona tipo...</option>
+                                    <option value="justificante">Justificante</option>
+                                    <option value="medico">Justificante Médico</option>
+                                    <option value="vacaciones">Solicitud de Vacaciones</option>
+                                    <option value="contrato">Contrato</option>
+                                    <option value="nomina">Nómina</option>
+                                    <option value="otros">Otros</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="date_related" class="form-label">
+                                    <i class="fas fa-calendar me-1"></i>Fecha Relacionada
+                                </label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       id="date_related" 
+                                       name="date_related">
+                                <div class="form-text">
+                                    Fecha a la que hace referencia el documento (opcional)
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="description" class="form-label">
+                                    <i class="fas fa-comment me-1"></i>Descripción
+                                </label>
+                                <textarea class="form-control" 
+                                          id="description" 
+                                          name="description" 
+                                          rows="3"
+                                          placeholder="Descripción adicional del documento (opcional)"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="{{ url_for('my_documents') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload me-2"></i>Subir Documento
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle me-2"></i>Información importante:</h6>
+                    <ul class="mb-0">
+                        <li>Los documentos se almacenan de forma segura y privada</li>
+                        <li>Solo tú y los administradores pueden ver tus documentos</li>
+                        <li>Tamaño máximo por archivo: 16MB</li>
+                        <li>Asegúrate de que el documento esté legible antes de subirlo</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-document .card {
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.upload-document .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-bottom: none;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .d-flex.gap-2.justify-content-end {
+        flex-direction: column;
+    }
+    
+    .d-flex.gap-2.justify-content-end .btn {
+        margin-bottom: 10px;
+    }
+}
+</style>
+
+<script>
+// Preview del archivo seleccionado
+document.getElementById('file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const fileName = file.name;
+        const fileSize = (file.size / 1024 / 1024).toFixed(2);
+        
+        // Mostrar información del archivo
+        let info = `Archivo: ${fileName} (${fileSize} MB)`;
+        
+        // Crear o actualizar elemento de información
+        let infoElement = document.getElementById('file-info');
+        if (!infoElement) {
+            infoElement = document.createElement('div');
+            infoElement.id = 'file-info';
+            infoElement.className = 'mt-2 text-muted small';
+            e.target.parentNode.appendChild(infoElement);
+        }
+        
+        infoElement.textContent = info;
+        
+        // Validar tamaño
+        if (file.size > 16 * 1024 * 1024) {
+            infoElement.className = 'mt-2 text-danger small';
+            infoElement.textContent += ' - ¡Archivo demasiado grande!';
+        } else {
+            infoElement.className = 'mt-2 text-success small';
+            infoElement.textContent += ' - ✓ Listo para subir';
+        }
+    }
+});
+
+// Auto-llenar fecha de hoy si es justificante médico
+document.getElementById('document_type').addEventListener('change', function(e) {
+    if (e.target.value === 'justificante' || e.target.value === 'medico') {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date_related').value = today;
+    }
+});
+</script>
+{% endblock %}
