@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Documentos - Floristería{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-folder-open me-2"></i>
+                Gestión de Documentos
+            </h2>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="user_id" class="form-label">Usuario</label>
+                            <select class="form-select" id="user_id" name="user_id">
+                                <option value="">Todos los usuarios</option>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}" {{ 'selected' if request.args.get('user_id') == user.id|string }}>
+                                        {{ user.username }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="document_type" class="form-label">Tipo de Documento</label>
+                            <select class="form-select" id="document_type" name="document_type">
+                                <option value="">Todos los tipos</option>
+                                {% for type_value, type_name in document_types %}
+                                    <option value="{{ type_value }}" {{ 'selected' if request.args.get('document_type') == type_value }}>
+                                        {{ type_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="start_date" class="form-label">Fecha inicio</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" 
+                                   value="{{ request.args.get('start_date', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="end_date" class="form-label">Fecha fin</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" 
+                                   value="{{ request.args.get('end_date', '') }}">
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Filtrar
+                                </button>
+                                <a href="{{ url_for('admin_documents') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i> Limpiar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Estadísticas rápidas -->
+            {% if documents %}
+            <div class="row mb-4">
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="text-primary mb-0">{{ documents|length }}</h4>
+                            <small class="text-muted">Total Documentos</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="text-info mb-0">{{ documents|selectattr('document_type', 'equalto', 'justificante')|list|length }}</h4>
+                            <small class="text-muted">Justificantes</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="text-success mb-0">{{ documents|selectattr('document_type', 'equalto', 'medico')|list|length }}</h4>
+                            <small class="text-muted">Médicos</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="text-warning mb-0">{{ documents|selectattr('document_type', 'equalto', 'vacaciones')|list|length }}</h4>
+                            <small class="text-muted">Vacaciones</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Tabla de documentos -->
+            {% if documents %}
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Documentos de Empleados</h5>
+                        <span class="badge bg-primary">{{ documents|length }} documento(s)</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Tipo</th>
+                                        <th>Archivo</th>
+                                        <th>Descripción</th>
+                                        <th>Fecha Subida</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for doc in documents %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-user text-primary me-2"></i>
+                                                    <strong>{{ doc.user.username }}</strong>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% set type_colors = {
+                                                    'justificante': 'info',
+                                                    'medico': 'danger',
+                                                    'vacaciones': 'warning',
+                                                    'contrato': 'success',
+                                                    'nomina': 'primary',
+                                                    'otros': 'secondary'
+                                                } %}
+                                                <span class="badge bg-{{ type_colors.get(doc.document_type, 'secondary') }}">
+                                                    {{ doc.get_document_type_display() }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if doc.file_type in ['pdf'] %}
+                                                        <i class="fas fa-file-pdf text-danger me-2"></i>
+                                                    {% elif doc.file_type in ['doc', 'docx'] %}
+                                                        <i class="fas fa-file-word text-primary me-2"></i>
+                                                    {% elif doc.file_type in ['jpg', 'jpeg', 'png', 'gif'] %}
+                                                        <i class="fas fa-file-image text-success me-2"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-file text-muted me-2"></i>
+                                                    {% endif %}
+                                                    <small>{{ doc.original_filename }}</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    {{ doc.description if doc.description else '-' }}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <small>{{ doc.uploaded_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                                {% if doc.date_related %}
+                                                    <br><small class="text-info">
+                                                        <i class="fas fa-calendar-day"></i>
+                                                        {{ doc.date_related.strftime('%d/%m/%Y') }}
+                                                    </small>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-1">
+                                                    <a href="{{ url_for('admin_download_document', doc_id=doc.id) }}" 
+                                                       class="btn btn-outline-primary btn-sm" 
+                                                       title="Descargar">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                    <button type="button" 
+                                                            class="btn btn-outline-danger btn-sm" 
+                                                            title="Eliminar"
+                                                            onclick="confirmarEliminacion({{ doc.id }}, '{{ doc.user.username }}', '{{ doc.original_filename }}')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay documentos</h4>
+                    <p class="text-muted">No se encontraron documentos para los filtros seleccionados.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Formulario oculto para eliminar documentos -->
+<form id="deleteForm" method="POST" style="display: none;">
+</form>
+
+<script>
+function confirmarEliminacion(docId, username, filename) {
+    const mensaje = `¿Estás seguro de que quieres eliminar el documento "${filename}" de ${username}?\n\nEsta acción no se puede deshacer.`;
+    
+    if (confirm(mensaje)) {
+        const form = document.getElementById('deleteForm');
+        form.action = `/admin_delete_document/${docId}`;
+        form.submit();
+    }
+}
+
+// Tooltip para botones pequeños en móvil
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.innerWidth <= 768) {
+        // En móvil, cambiar tooltips por texto visible
+        const downloadBtns = document.querySelectorAll('[title="Descargar"]');
+        const deleteBtns = document.querySelectorAll('[title="Eliminar"]');
+        
+        downloadBtns.forEach(btn => {
+            btn.innerHTML = '<i class="fas fa-download me-1"></i>Descargar';
+            btn.classList.remove('btn-sm');
+        });
+        
+        deleteBtns.forEach(btn => {
+            btn.innerHTML = '<i class="fas fa-trash me-1"></i>Eliminar';
+            btn.classList.remove('btn-sm');
+        });
+    }
+});
+</script>
+
+<style>
+.table th {
+    border-top: none;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.775rem;
+}
+
+.d-flex.gap-1 {
+    gap: 0.25rem !important;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.9em;
+    }
+    
+    .d-flex.gap-1 {
+        flex-direction: column;
+    }
+    
+    .table td {
+        padding: 0.5rem 0.25rem;
+    }
+}
+</style>
+{% endblock %}

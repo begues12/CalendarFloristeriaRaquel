@@ -71,7 +71,7 @@
                         <div class="total-hours text-center mb-3">
                             <div class="badge bg-primary fs-6">
                                 <i class="fas fa-hourglass-half me-1"></i>
-                                Total: {{ "%.2f"|format(today_entry.total_hours) }} horas
+                                Total: {{ today_entry.total_hours|hours_to_hhmm }}
                             </div>
                         </div>
                         {% endif %}
@@ -189,9 +189,9 @@
                                         <td>
                                             <small>
                                                 {% if entry.total_hours > 0 %}
-                                                    {{ "%.1f"|format(entry.total_hours) }}h
+                                                    {{ entry.total_hours|hours_to_hhmm }}
                                                 {% else %}
-                                                    --
+                                                    --:--
                                                 {% endif %}
                                             </small>
                                         </td>

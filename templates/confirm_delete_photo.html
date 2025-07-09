@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmar Eliminación - Floristería{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white text-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Confirmar Eliminación de Foto
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <img src="{{ url_for('static', filename=photo.file_path) }}" 
+                             class="img-thumbnail" 
+                             style="max-width: 200px; max-height: 200px;"
+                             alt="{{ photo.original_filename }}">
+                    </div>
+                    <h6>¿Estás seguro de que quieres eliminar esta foto?</h6>
+                    <div class="alert alert-warning mt-3">
+                        <strong>{{ photo.original_filename }}</strong><br>
+                        <small class="text-muted">
+                            Subida el {{ photo.uploaded_at.strftime('%d/%m/%Y a las %H:%M') }} 
+                            por {{ photo.uploaded_by }}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger">
+                    <h6><i class="fas fa-warning me-2"></i>Advertencia:</h6>
+                    <ul class="mb-0">
+                        <li>Esta acción <strong>NO se puede deshacer</strong></li>
+                        <li>El archivo se eliminará permanentemente del servidor</li>
+                        <li>Se perderá toda la información asociada</li>
+                    </ul>
+                </div>
+
+                <form method="POST" class="d-flex gap-2 justify-content-center">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>
+                        Sí, Eliminar Foto
+                    </button>
+                    <a href="{{ url_for('view_day', date_str=date_str) }}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>
+                        Cancelar
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card-header {
+    border-bottom: 2px solid rgba(255,255,255,0.2);
+}
+
+.alert ul {
+    padding-left: 1.2rem;
+}
+
+.alert li {
+    margin-bottom: 0.3rem;
+}
+
+.img-thumbnail {
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+}
+
+@media (max-width: 576px) {
+    .d-flex.gap-2 {
+        flex-direction: column;
+    }
+    
+    .d-flex.gap-2 .btn {
+        margin-bottom: 0.5rem;
+    }
+    
+    .img-thumbnail {
+        max-width: 150px !important;
+        max-height: 150px !important;
+    }
+}
+</style>
+{% endblock %}

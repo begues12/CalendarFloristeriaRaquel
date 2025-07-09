@@ -45,6 +45,19 @@ app.config.from_object(Config)
 db.init_app(app)
 migrate = Migrate(app, db)
 
+# Registrar filtros personalizados para Jinja2
+@app.template_filter('hours_to_hhmm')
+def hours_to_hhmm_filter(hours_decimal):
+    """Filtro Jinja2 para convertir horas decimales a HH:MM"""
+    return hours_to_hhmm(hours_decimal)
+
+@app.template_filter('strftime')
+def strftime_filter(date, format='%Y-%m-%d'):
+    """Filtro Jinja2 para formatear fechas"""
+    if date:
+        return date.strftime(format)
+    return ''
+
 # Configurar Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -74,6 +87,16 @@ def resize_image(image_path, max_size=(800, 600)):
             img.save(image_path, optimize=True, quality=85)
     except Exception as e:
         print(f"Error redimensionando imagen: {e}")
+
+def hours_to_hhmm(hours_decimal):
+    """Convierte horas decimales a formato HH:MM"""
+    if not hours_decimal:
+        return "00:00"
+    
+    total_minutes = int(hours_decimal * 60)
+    hours = total_minutes // 60
+    minutes = total_minutes % 60
+    return f"{hours:02d}:{minutes:02d}"
 
 def init_default_users():
     """Crear usuarios por defecto si no existen"""
@@ -170,6 +193,214 @@ def logout():
     logout_user()
     flash('Has cerrado sesión correctamente', 'info')
     return redirect(url_for('login'))
+
+@app.route('/register', methods=['GET', 'POST'])
+@login_required
+def register():
+    """Crear nuevo usuario - solo admin"""
+    if not current_user.is_admin:
+        flash('No tienes permisos para crear usuarios', 'error')
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Validaciones
+        if not username or not password:
+            flash('El nombre de usuario y contraseña son obligatorios', 'error')
+            return render_template('register.html')
+        
+        if password != confirm_password:
+            flash('Las contraseñas no coinciden', 'error')
+            return render_template('register.html')
+        
+        if len(password) < 4:
+            flash('La contraseña debe tener al menos 4 caracteres', 'error')
+            return render_template('register.html')
+        
+        # Verificar si el usuario ya existe
+        if User.query.filter_by(username=username).first():
+            flash('El nombre de usuario ya existe', 'error')
+            return render_template('register.html')
+        
+        try:
+            # Crear nuevo usuario
+            new_user = User(
+                username=username,
+                full_name=username.title(),  # Usar username como nombre completo por defecto
+                is_admin=False
+            )
+            new_user.set_password(password)
+            
+            db.session.add(new_user)
+            db.session.commit()
+            
+            flash(f'Usuario {username} creado correctamente', 'success')
+            return redirect(url_for('manage_users'))
+            
+        except Exception as e:
+            flash(f'Error al crear el usuario: {str(e)}', 'error')
+            db.session.rollback()
+    
+    return render_template('register.html')
+
+@app.route('/manage_users')
+@login_required
+def manage_users():
+    """Gestión de usuarios - solo admin"""
+    if not current_user.is_admin:
+        flash('No tienes permisos para gestionar usuarios', 'error')
+        return redirect(url_for('index'))
+    
+    users = User.query.all()
+    return render_template('manage_users.html', users=users)
+
+@app.route('/toggle_user_status/<int:user_id>', methods=['POST'])
+@login_required
+def toggle_user_status(user_id):
+    """Activar/desactivar usuario - solo admin"""
+    if not current_user.is_admin:
+        flash('No tienes permisos para modificar usuarios', 'error')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    # No permitir desactivar el propio usuario admin
+    if user.id == current_user.id:
+        flash('No puedes desactivar tu propio usuario', 'error')
+        return redirect(url_for('manage_users'))
+    
+    try:
+        user.is_active = not user.is_active
+        db.session.commit()
+        
+        status = 'activado' if user.is_active else 'desactivado'
+        flash(f'Usuario {user.username} {status} correctamente', 'success')
+        
+    except Exception as e:
+        flash(f'Error al modificar el usuario: {str(e)}', 'error')
+        db.session.rollback()
+    
+    return redirect(url_for('manage_users'))
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    """Cambiar contraseña del usuario actual"""
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Validaciones
+        if not current_user.check_password(current_password):
+            flash('La contraseña actual es incorrecta', 'error')
+            return render_template('change_password.html', user=current_user)
+        
+        if new_password != confirm_password:
+            flash('Las nuevas contraseñas no coinciden', 'error')
+            return render_template('change_password.html', user=current_user)
+        
+        if len(new_password) < 4:
+            flash('La nueva contraseña debe tener al menos 4 caracteres', 'error')
+            return render_template('change_password.html', user=current_user)
+        
+        try:
+            current_user.set_password(new_password)
+            db.session.commit()
+            flash('Contraseña cambiada correctamente', 'success')
+            return redirect(url_for('index'))
+            
+        except Exception as e:
+            flash(f'Error al cambiar la contraseña: {str(e)}', 'error')
+            db.session.rollback()
+    
+    return render_template('change_password.html', user=current_user)
+
+@app.route('/change_password/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def change_password_admin(user_id):
+    """Cambiar contraseña de cualquier usuario - solo admin"""
+    if not current_user.is_admin:
+        flash('No tienes permisos para cambiar contraseñas de otros usuarios', 'error')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Validaciones
+        if new_password != confirm_password:
+            flash('Las contraseñas no coinciden', 'error')
+            return render_template('change_password.html', user=user, admin_mode=True)
+        
+        if len(new_password) < 4:
+            flash('La contraseña debe tener al menos 4 caracteres', 'error')
+            return render_template('change_password.html', user=user, admin_mode=True)
+        
+        try:
+            user.set_password(new_password)
+            db.session.commit()
+            flash(f'Contraseña de {user.username} cambiada correctamente', 'success')
+            return redirect(url_for('manage_users'))
+            
+        except Exception as e:
+            flash(f'Error al cambiar la contraseña: {str(e)}', 'error')
+            db.session.rollback()
+    
+    return render_template('change_password.html', user=user, admin_mode=True)
+
+@app.route('/delete_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def delete_user(user_id):
+    """Eliminar usuario - solo admin"""
+    if not current_user.is_admin:
+        flash('No tienes permisos para eliminar usuarios', 'error')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    # No permitir eliminar el usuario admin principal o el propio usuario
+    if user.username == 'admin' or user.id == current_user.id:
+        flash('No puedes eliminar este usuario', 'error')
+        return redirect(url_for('manage_users'))
+    
+    if request.method == 'POST':
+        try:
+            # Antes de eliminar, actualizar registros relacionados para mantener integridad
+            # Cambiar el propietario de documentos a "usuario eliminado"
+            UserDocument.query.filter_by(user_id=user.id).update({
+                'uploaded_by': f'[Usuario eliminado: {user.username}]'
+            })
+            
+            # Cambiar el propietario de fotos a "usuario eliminado"
+            Photo.query.filter_by(uploaded_by=user.username).update({
+                'uploaded_by': f'[Usuario eliminado: {user.username}]'
+            })
+            
+            # Mantener los registros de tiempo pero marcar usuario como eliminado
+            TimeEntry.query.filter_by(user_id=user.id).update({
+                'notes': TimeEntry.notes + f' [Usuario {user.username} eliminado]'
+            })
+            
+            # Eliminar el usuario
+            db.session.delete(user)
+            db.session.commit()
+            
+            flash(f'Usuario {user.username} eliminado correctamente', 'success')
+            
+        except Exception as e:
+            flash(f'Error al eliminar el usuario: {str(e)}', 'error')
+            db.session.rollback()
+        
+        return redirect(url_for('manage_users'))
+    
+    # Mostrar confirmación
+    return render_template('confirm_delete_user.html', user=user)
 
 # Rutas de fichaje
 @app.route('/clock_in')
@@ -292,8 +523,6 @@ def time_tracking():
                          recent_entries=recent_entries,
                          today=today)
 
-# Continúa en el siguiente bloque...
-
 @app.route('/time_reports')
 @login_required
 def time_reports():
@@ -327,12 +556,124 @@ def time_reports():
     entries = query.order_by(TimeEntry.date.desc()).all()
     users = User.query.filter_by(is_active=True).all()
     
+    # Calcular resumen por usuario si hay datos
+    summary = []
+    if entries:
+        from collections import defaultdict
+        user_stats = defaultdict(lambda: {'total_hours': 0, 'total_days': 0, 'username': ''})
+        
+        for entry in entries:
+            user_stats[entry.user_id]['username'] = entry.user.username
+            if entry.total_hours:
+                user_stats[entry.user_id]['total_hours'] += entry.total_hours
+            if entry.entry_time:  # Solo contar días que fichó entrada
+                user_stats[entry.user_id]['total_days'] += 1
+        
+        # Convertir a lista para el template
+        summary_list = []
+        for user_id, stats in user_stats.items():
+            summary_list.append({
+                'username': stats['username'],
+                'total_hours': hours_to_hhmm(stats['total_hours']),
+                'total_hours_decimal': stats['total_hours'],  # Para ordenar
+                'total_days': stats['total_days']
+            })
+        
+        # Ordenar por horas trabajadas (descendente)
+        summary = sorted(summary_list, key=lambda x: x['total_hours_decimal'], reverse=True)
+    
     return render_template('time_reports.html',
                          entries=entries,
                          users=users,
+                         summary=summary,
                          selected_user_id=user_id,
                          start_date=start_date,
                          end_date=end_date)
+
+@app.route('/edit_time_entry/<int:entry_id>', methods=['GET', 'POST'])
+@login_required
+def edit_time_entry(entry_id):
+    """Editar registro de tiempo - solo admin"""
+    if not current_user.is_admin:
+        flash('No tienes permisos para editar registros', 'error')
+        return redirect(url_for('time_tracking'))
+    
+    entry = TimeEntry.query.get_or_404(entry_id)
+    
+    if request.method == 'POST':
+        try:
+            # Obtener datos del formulario
+            entry_time_str = request.form.get('entry_time')
+            exit_time_str = request.form.get('exit_time')
+            break_start_str = request.form.get('break_start')
+            break_end_str = request.form.get('break_end')
+            notes = request.form.get('notes', '').strip()
+            status = request.form.get('status', 'active')
+            
+            # Convertir horarios
+            if entry_time_str:
+                entry_time = datetime.strptime(f"{entry.date} {entry_time_str}", '%Y-%m-%d %H:%M')
+                entry.entry_time = entry_time
+            else:
+                entry.entry_time = None
+                
+            if exit_time_str:
+                exit_time = datetime.strptime(f"{entry.date} {exit_time_str}", '%Y-%m-%d %H:%M')
+                entry.exit_time = exit_time
+            else:
+                entry.exit_time = None
+                
+            if break_start_str:
+                break_start = datetime.strptime(f"{entry.date} {break_start_str}", '%Y-%m-%d %H:%M')
+                entry.break_start = break_start
+            else:
+                entry.break_start = None
+                
+            if break_end_str:
+                break_end = datetime.strptime(f"{entry.date} {break_end_str}", '%Y-%m-%d %H:%M')
+                entry.break_end = break_end
+            else:
+                entry.break_end = None
+                
+            # Actualizar otros campos
+            entry.notes = notes
+            entry.status = status
+            entry.updated_at = datetime.utcnow()
+            
+            # Recalcular horas totales
+            entry.calculate_total_hours()
+            
+            db.session.commit()
+            flash('Registro actualizado correctamente', 'success')
+            return redirect(url_for('time_reports'))
+            
+        except ValueError as e:
+            flash(f'Error en el formato de hora: {str(e)}', 'error')
+        except Exception as e:
+            flash(f'Error al actualizar el registro: {str(e)}', 'error')
+            db.session.rollback()
+    
+    return render_template('edit_time_entry.html', entry=entry)
+
+@app.route('/delete_time_entry/<int:entry_id>', methods=['POST'])
+@login_required
+def delete_time_entry(entry_id):
+    """Eliminar registro de tiempo - solo admin"""
+    if not current_user.is_admin:
+        flash('No tienes permisos para eliminar registros', 'error')
+        return redirect(url_for('time_tracking'))
+    
+    entry = TimeEntry.query.get_or_404(entry_id)
+    
+    try:
+        db.session.delete(entry)
+        db.session.commit()
+        flash('Registro eliminado correctamente', 'success')
+    except Exception as e:
+        flash(f'Error al eliminar el registro: {str(e)}', 'error')
+        db.session.rollback()
+    
+    return redirect(url_for('time_reports'))
 
 @app.route('/export_time_report')
 @login_required
@@ -381,7 +722,7 @@ def export_time_report():
     for entry in entries:
         entry_time = entry.entry_time.strftime('%H:%M') if entry.entry_time else '-'
         exit_time = entry.exit_time.strftime('%H:%M') if entry.exit_time else '-'
-        total_hours = f"{entry.total_hours:.2f}h" if entry.total_hours else '-'
+        total_hours = hours_to_hhmm(entry.total_hours) if entry.total_hours else '-'
         
         writer.writerow([
             entry.user.username,
@@ -468,17 +809,14 @@ def my_documents():
 @app.route('/download_document/<int:doc_id>')
 @login_required
 def download_document(doc_id):
-    """Descargar documento personal"""
-    document = UserDocument.query.filter_by(id=doc_id, user_id=current_user.id).first()
-    if not document:
-        flash('Documento no encontrado', 'error')
-        return redirect(url_for('my_documents'))
+    """Descargar documento propio"""
+    document = UserDocument.query.filter_by(id=doc_id, user_id=current_user.id).first_or_404()
     
     try:
         return send_file(
             document.file_path,
             as_attachment=True,
-            download_name=document.filename
+            download_name=document.original_filename
         )
     except FileNotFoundError:
         flash('El archivo no existe en el servidor', 'error')
@@ -487,11 +825,8 @@ def download_document(doc_id):
 @app.route('/delete_document/<int:doc_id>', methods=['POST'])
 @login_required
 def delete_document(doc_id):
-    """Eliminar documento personal"""
-    document = UserDocument.query.filter_by(id=doc_id, user_id=current_user.id).first()
-    if not document:
-        flash('Documento no encontrado', 'error')
-        return redirect(url_for('my_documents'))
+    """Eliminar documento propio"""
+    document = UserDocument.query.filter_by(id=doc_id, user_id=current_user.id).first_or_404()
     
     try:
         # Eliminar archivo físico
@@ -509,128 +844,195 @@ def delete_document(doc_id):
     
     return redirect(url_for('my_documents'))
 
-@app.route('/manage_users')
+@app.route('/admin_documents')
 @login_required
-def manage_users():
-    """Panel de gestión de usuarios - solo para admin"""
+def admin_documents():
+    """Ver todos los documentos - solo admin"""
     if not current_user.is_admin:
-        flash('Solo el administrador puede gestionar usuarios', 'error')
-        return redirect(url_for('index'))
+        flash('No tienes permisos para ver esta página', 'error')
+        return redirect(url_for('my_documents'))
     
-    users = User.query.all()
-    return render_template('manage_users.html', users=users)
+    # Obtener filtros
+    user_id = request.args.get('user_id', type=int)
+    document_type = request.args.get('document_type')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    # Construir query
+    query = UserDocument.query
+    
+    if user_id:
+        query = query.filter(UserDocument.user_id == user_id)
+    
+    if document_type:
+        query = query.filter(UserDocument.document_type == document_type)
+    
+    if start_date:
+        query = query.filter(UserDocument.uploaded_at >= datetime.strptime(start_date, '%Y-%m-%d'))
+    
+    if end_date:
+        end_datetime = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)
+        query = query.filter(UserDocument.uploaded_at < end_datetime)
+    
+    # Obtener documentos ordenados por fecha
+    documents = query.order_by(UserDocument.uploaded_at.desc()).all()
+    
+    # Obtener usuarios activos para el filtro
+    users = User.query.filter_by(is_active=True).all()
+    
+    # Tipos de documentos disponibles
+    document_types = [
+        ('justificante', 'Justificante'),
+        ('medico', 'Justificante Médico'),
+        ('vacaciones', 'Solicitud de Vacaciones'),
+        ('contrato', 'Contrato'),
+        ('nomina', 'Nómina'),
+        ('otros', 'Otros')
+    ]
+    
+    return render_template('admin_documents.html',
+                         documents=documents,
+                         users=users,
+                         document_types=document_types,
+                         selected_user_id=user_id,
+                         selected_document_type=document_type,
+                         start_date=start_date,
+                         end_date=end_date)
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/admin_download_document/<int:doc_id>')
 @login_required
-def register():
-    """Crear nuevo usuario - solo admin"""
+def admin_download_document(doc_id):
+    """Descargar cualquier documento - solo admin"""
     if not current_user.is_admin:
-        flash('Solo el administrador puede crear nuevos usuarios', 'error')
-        return redirect(url_for('index'))
+        flash('No tienes permisos para descargar este documento', 'error')
+        return redirect(url_for('my_documents'))
+    
+    document = UserDocument.query.get_or_404(doc_id)
+    
+    try:
+        return send_file(
+            document.file_path,
+            as_attachment=True,
+            download_name=f"{document.user.username}_{document.filename}"
+        )
+    except FileNotFoundError:
+        flash('El archivo no existe en el servidor', 'error')
+        return redirect(url_for('admin_documents'))
+
+@app.route('/admin_delete_document/<int:doc_id>', methods=['POST'])
+@login_required
+def admin_delete_document(doc_id):
+    """Eliminar cualquier documento - solo admin"""
+    if not current_user.is_admin:
+        flash('No tienes permisos para eliminar documentos', 'error')
+        return redirect(url_for('my_documents'))
+    
+    document = UserDocument.query.get_or_404(doc_id)
+    
+    try:
+        # Eliminar archivo físico
+        if os.path.exists(document.file_path):
+            os.remove(document.file_path)
+        
+        # Eliminar registro de la base de datos
+        db.session.delete(document)
+        db.session.commit()
+        
+        flash(f'Documento de {document.user.username} eliminado correctamente', 'success')
+    except Exception as e:
+        flash('Error al eliminar el documento', 'error')
+        db.session.rollback()
+    
+    return redirect(url_for('admin_documents'))
+
+@app.route('/create_time_entry', methods=['GET', 'POST'])
+@login_required
+def create_time_entry():
+    """Crear nuevo registro de tiempo - solo admin"""
+    if not current_user.is_admin:
+        flash('No tienes permisos para crear registros', 'error')
+        return redirect(url_for('time_tracking'))
     
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
-        full_name = request.form.get('full_name', '')
-        email = request.form.get('email', '')
-        is_admin = 'is_admin' in request.form
-        
-        if password != confirm_password:
-            flash('Las contraseñas no coinciden', 'error')
-        elif len(password) < 4:
-            flash('La contraseña debe tener al menos 4 caracteres', 'error')
-        elif User.query.filter_by(username=username).first():
-            flash('El usuario ya existe', 'error')
-        else:
-            user = User(
-                username=username,
-                full_name=full_name,
-                email=email,
-                is_admin=is_admin
+        try:
+            user_id = request.form.get('user_id', type=int)
+            date_str = request.form.get('date')
+            entry_time_str = request.form.get('entry_time')
+            exit_time_str = request.form.get('exit_time')
+            break_start_str = request.form.get('break_start')
+            break_end_str = request.form.get('break_end')
+            notes = request.form.get('notes', '').strip()
+            status = request.form.get('status', 'active')
+            
+            if not user_id or not date_str:
+                flash('Usuario y fecha son obligatorios', 'error')
+                return render_template('create_time_entry.html', users=User.query.filter_by(is_active=True).all())
+            
+            # Verificar que no existe ya un registro para esa fecha y usuario
+            entry_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+            existing = TimeEntry.query.filter_by(user_id=user_id, date=entry_date).first()
+            if existing:
+                flash(f'Ya existe un registro para ese usuario en la fecha {entry_date.strftime("%d/%m/%Y")}', 'error')
+                return render_template('create_time_entry.html', users=User.query.filter_by(is_active=True).all())
+            
+            # Crear nuevo registro
+            entry = TimeEntry(
+                user_id=user_id,
+                date=entry_date,
+                notes=notes,
+                status=status
             )
-            user.set_password(password)
             
-            db.session.add(user)
+            # Asignar horarios si se proporcionan
+            if entry_time_str:
+                entry.entry_time = datetime.strptime(f"{entry_date} {entry_time_str}", '%Y-%m-%d %H:%M')
+            if exit_time_str:
+                entry.exit_time = datetime.strptime(f"{entry_date} {exit_time_str}", '%Y-%m-%d %H:%M')
+            if break_start_str:
+                entry.break_start = datetime.strptime(f"{entry_date} {break_start_str}", '%Y-%m-%d %H:%M')
+            if break_end_str:
+                entry.break_end = datetime.strptime(f"{entry_date} {break_end_str}", '%Y-%m-%d %H:%M')
+            
+            # Calcular horas totales
+            entry.calculate_total_hours()
+            
+            db.session.add(entry)
             db.session.commit()
             
-            flash(f'Usuario {username} creado correctamente', 'success')
-            return redirect(url_for('manage_users'))
-    
-    return render_template('register.html')
-
-@app.route('/change_password/<int:user_id>', methods=['GET', 'POST'])
-@login_required
-def change_password(user_id):
-    """Cambiar contraseña - admin puede cambiar cualquiera, usuario solo la suya"""
-    user = User.query.get_or_404(user_id)
-    
-    if not current_user.is_admin and current_user.id != user_id:
-        flash('No tienes permisos para cambiar esta contraseña', 'error')
-        return redirect(url_for('index'))
-    
-    if request.method == 'POST':
-        new_password = request.form['new_password']
-        confirm_password = request.form['confirm_password']
-        
-        if new_password != confirm_password:
-            flash('Las contraseñas no coinciden', 'error')
-        elif len(new_password) < 4:
-            flash('La contraseña debe tener al menos 4 caracteres', 'error')
-        else:
-            user.set_password(new_password)
-            db.session.commit()
-            flash(f'Contraseña actualizada para {user.username}', 'success')
+            flash('Registro creado correctamente', 'success')
+            return redirect(url_for('time_reports'))
             
-            if current_user.is_admin:
-                return redirect(url_for('manage_users'))
-            else:
-                return redirect(url_for('index'))
+        except ValueError as e:
+            flash(f'Error en el formato de fecha/hora: {str(e)}', 'error')
+        except Exception as e:
+            flash(f'Error al crear el registro: {str(e)}', 'error')
+            db.session.rollback()
     
-    return render_template('change_password.html', user=user, user_id=user_id)
+    users = User.query.filter_by(is_active=True).all()
+    today = date.today()
+    return render_template('create_time_entry.html', users=users, today=today)
 
-@app.route('/delete_user/<int:user_id>')
-@login_required
-def delete_user(user_id):
-    """Eliminar usuario - solo admin"""
-    if not current_user.is_admin:
-        flash('Solo el administrador puede eliminar usuarios', 'error')
-        return redirect(url_for('index'))
-    
-    user = User.query.get_or_404(user_id)
-    
-    if user.is_admin:
-        flash('No se puede eliminar a un usuario administrador', 'error')
-        return redirect(url_for('manage_users'))
-    
-    username = user.username
-    user.is_active = False  # Marcar como inactivo en lugar de eliminar
-    db.session.commit()
-    
-    flash(f'Usuario {username} desactivado. Los datos se conservan.', 'success')
-    return redirect(url_for('manage_users'))
-
-# Rutas de fotos (adaptadas a la nueva estructura)
-@app.route('/day/<date_str>')
+@app.route('/day/<string:date_str>')
 @login_required
 def view_day(date_str):
     """Ver fotos de un día específico"""
     try:
         date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
-        photos = Photo.query.filter_by(date_taken=date_obj).all()
-        
-        return render_template('day.html',
-                             date=date_obj,
-                             date_str=date_str,
-                             photos=photos)
     except ValueError:
         flash('Fecha inválida', 'error')
         return redirect(url_for('index'))
+    
+    photos = Photo.query.filter_by(date_taken=date_obj).order_by(Photo.uploaded_at.desc()).all()
+    
+    return render_template('day.html', 
+                         date=date_obj,
+                         date_str=date_str,
+                         photos=photos)
 
-@app.route('/upload/<date_str>', methods=['GET', 'POST'])
+@app.route('/upload/<string:date_str>', methods=['GET', 'POST'])
 @login_required
 def upload_photo(date_str):
-    """Subir fotos para una fecha específica"""
+    """Subir fotos para un día específico"""
     try:
         date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError:
@@ -643,103 +1045,112 @@ def upload_photo(date_str):
             return redirect(request.url)
         
         files = request.files.getlist('file')
-        uploaded_count = 0
+        if not files or files[0].filename == '':
+            flash('No se seleccionaron archivos', 'error')
+            return redirect(request.url)
         
+        uploaded_count = 0
         for file in files:
-            if file.filename == '':
-                continue
-                
             if file and allowed_file(file.filename):
                 # Crear carpeta para la fecha
-                date_folder = os.path.join(Config.UPLOAD_FOLDER, date_str)
-                os.makedirs(date_folder, exist_ok=True)
+                date_folder = date_obj.strftime('%Y-%m-%d')
+                upload_path = os.path.join(Config.UPLOAD_FOLDER, date_folder)
+                os.makedirs(upload_path, exist_ok=True)
                 
                 # Generar nombre único
                 filename = secure_filename(file.filename)
                 timestamp = datetime.now().strftime('%H%M%S')
                 name, ext = os.path.splitext(filename)
-                new_filename = f"{name}_{timestamp}{ext}"
+                new_filename = f"image_{len(os.listdir(upload_path)) + 1}_{timestamp}{ext}"
                 
-                file_path = os.path.join(date_folder, new_filename)
+                file_path = os.path.join(upload_path, new_filename)
                 file.save(file_path)
                 
-                # Redimensionar si es imagen
-                if ext.lower() in ['.jpg', '.jpeg', '.png', '.gif']:
-                    resize_image(file_path)
+                # Redimensionar imagen
+                resize_image(file_path)
                 
                 # Guardar en base de datos
                 photo = Photo(
                     filename=new_filename,
-                    original_filename=file.filename,
-                    file_path=f'uploads/{date_str}/{new_filename}',
+                    original_filename=filename,  # Agregar el nombre original del archivo
+                    file_path=os.path.join('uploads', date_folder, new_filename).replace('\\', '/'),
                     date_taken=date_obj,
-                    uploaded_by=current_user.username
+                    uploaded_by=current_user.username,
+                    status='pendiente'
                 )
                 
                 db.session.add(photo)
                 uploaded_count += 1
-            else:
-                flash(f'Archivo no válido: {file.filename}', 'error')
         
         if uploaded_count > 0:
             db.session.commit()
-            flash(f'Se subieron {uploaded_count} foto(s) correctamente', 'success')
+            flash(f'{uploaded_count} foto(s) subida(s) correctamente', 'success')
+        else:
+            flash('No se pudieron subir las fotos. Verifica el formato.', 'error')
         
         return redirect(url_for('view_day', date_str=date_str))
     
-    photos = Photo.query.filter_by(date_taken=date_obj).all()
-    return render_template('upload.html',
-                         date=date_obj,
-                         date_str=date_str,
-                         photos=photos)
+    return render_template('upload.html', 
+                         date=date_obj, 
+                         date_str=date_str)
 
-@app.route('/delete_photo/<int:photo_id>')
+@app.route('/update_photo_status/<int:photo_id>', methods=['POST'])
+@login_required
+def update_photo_status(photo_id):
+    """Actualizar estado de una foto"""
+    photo = Photo.query.get_or_404(photo_id)
+    new_status = request.form.get('status')
+    
+    if new_status in ['pendiente', 'hecho', 'entregado']:
+        photo.status = new_status
+        db.session.commit()
+        flash('Estado actualizado correctamente', 'success')
+    else:
+        flash('Estado inválido', 'error')
+    
+    return redirect(url_for('view_day', date_str=photo.date_taken.strftime('%Y-%m-%d')))
+
+@app.route('/change_status/<int:photo_id>/<string:new_status>')
+@login_required
+def change_status(photo_id, new_status):
+    """Cambiar estado de una foto via GET"""
+    photo = Photo.query.get_or_404(photo_id)
+    
+    if new_status in ['pendiente', 'hecho', 'entregado']:
+        photo.status = new_status
+        db.session.commit()
+        flash(f'Foto marcada como {new_status}', 'success')
+    else:
+        flash('Estado inválido', 'error')
+    
+    return redirect(url_for('view_day', date_str=photo.date_taken.strftime('%Y-%m-%d')))
+
+@app.route('/delete_photo/<int:photo_id>', methods=['GET', 'POST'])
 @login_required
 def delete_photo(photo_id):
     """Eliminar una foto"""
     photo = Photo.query.get_or_404(photo_id)
     date_str = photo.date_taken.strftime('%Y-%m-%d')
     
+    if request.method == 'GET':
+        # Mostrar página de confirmación
+        return render_template('confirm_delete_photo.html', photo=photo, date_str=date_str)
+    
+    # POST - proceder con la eliminación
     try:
         # Eliminar archivo físico
-        if os.path.exists(photo.file_path):
-            os.remove(photo.file_path)
+        full_path = os.path.join(Config.UPLOAD_FOLDER, photo.file_path)
+        if os.path.exists(full_path):
+            os.remove(full_path)
         
-        # Eliminar de base de datos
+        # Eliminar de la base de datos
         db.session.delete(photo)
         db.session.commit()
         
         flash('Foto eliminada correctamente', 'success')
     except Exception as e:
         flash('Error al eliminar la foto', 'error')
-    
-    return redirect(url_for('view_day', date_str=date_str))
-
-@app.route('/change_status/<int:photo_id>/<new_status>')
-@login_required
-def change_status(photo_id, new_status):
-    """Cambiar el estado de una foto"""
-    valid_statuses = ['pendiente', 'hecho', 'entregado']
-    
-    if new_status not in valid_statuses:
-        flash('Estado no válido', 'error')
-        return redirect(url_for('index'))
-    
-    photo = Photo.query.get_or_404(photo_id)
-    date_str = photo.date_taken.strftime('%Y-%m-%d')
-    
-    photo.status = new_status
-    photo.status_updated_by = current_user.username
-    photo.status_updated_at = datetime.now()
-    
-    db.session.commit()
-    
-    status_names = {
-        'pendiente': 'Pendiente',
-        'hecho': 'Hecho',
-        'entregado': 'Entregado'
-    }
-    flash(f'Estado cambiado a: {status_names[new_status]}', 'success')
+        db.session.rollback()
     
     return redirect(url_for('view_day', date_str=date_str))
 

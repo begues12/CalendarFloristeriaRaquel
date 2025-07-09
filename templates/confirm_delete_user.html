@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmar Eliminación - Floristería{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white text-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Confirmar Eliminación
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-times fa-3x text-danger mb-3"></i>
+                    <h6>¿Estás seguro de que quieres eliminar al usuario?</h6>
+                    <div class="alert alert-warning mt-3">
+                        <strong>{{ user.username }}</strong> ({{ user.full_name }})
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle me-2"></i>Información importante:</h6>
+                    <ul class="mb-0">
+                        <li>Los documentos subidos por este usuario se conservarán</li>
+                        <li>Las fotos subidas se conservarán</li>
+                        <li>Los registros de tiempo se conservarán para auditoría</li>
+                        <li>Esta acción <strong>NO se puede deshacer</strong></li>
+                    </ul>
+                </div>
+
+                <form method="POST" class="d-flex gap-2 justify-content-center">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>
+                        Sí, Eliminar Usuario
+                    </button>
+                    <a href="{{ url_for('manage_users') }}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>
+                        Cancelar
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card-header {
+    border-bottom: 2px solid rgba(255,255,255,0.2);
+}
+
+.alert ul {
+    padding-left: 1.2rem;
+}
+
+.alert li {
+    margin-bottom: 0.3rem;
+}
+
+@media (max-width: 576px) {
+    .d-flex.gap-2 {
+        flex-direction: column;
+    }
+    
+    .d-flex.gap-2 .btn {
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
