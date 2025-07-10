@@ -3,11 +3,10 @@
 	"tasks": [
 		{
 			"label": "Ejecutar Calendario Flask",
-			"type": "shell",
-			"command": "C:/Users/afuentes/Documents/CalendarFloristeriaRaquel/.venv/Scripts/python.exe",
-			"args": [
-				"app.py"
-			],
+			"type": "shell",		"command": "C:/Users/afuentes/Documents/CalendarFloristeriaRaquel/.venv/Scripts/python.exe",
+		"args": [
+			"run.py"
+		],
 			"group": "build",
 			"isBackground": true,
 			"problemMatcher": []

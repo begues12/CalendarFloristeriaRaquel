@@ -1,0 +1,3 @@
+"""
+Blueprints de la aplicación
+"""
