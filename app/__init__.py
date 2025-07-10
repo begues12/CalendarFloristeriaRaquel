@@ -8,6 +8,7 @@ gestión de documentos y sistema de privilegios granular.
 
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, current_user
+from flask_migrate import Migrate
 import os
 from dotenv import load_dotenv
 
@@ -47,6 +48,9 @@ def init_extensions(app):
     """Inicializar extensiones Flask"""
     # Base de datos
     db.init_app(app)
+    
+    # Flask-Migrate
+    migrate = Migrate(app, db)
     
     # Flask-Login
     login_manager = LoginManager()
