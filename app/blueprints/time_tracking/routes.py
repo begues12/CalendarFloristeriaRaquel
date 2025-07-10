@@ -130,6 +130,7 @@ def break_start():
     elif time_entry.break_start and not time_entry.break_end:
         flash('Ya has iniciado el descanso', 'warning')
     else:
+        
         time_entry.break_start = datetime.now()
         time_entry.break_end = None  # Resetear fin de descanso
         db.session.commit()
