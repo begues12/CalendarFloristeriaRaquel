@@ -7,6 +7,7 @@ from flask_login import login_required, current_user
 from datetime import datetime, timedelta
 import os
 import subprocess
+import sys
 import json
 from app.models import UserDocument, User, MaintenanceMode, UpdateLog, db
 from . import bp
@@ -283,48 +284,80 @@ def get_current_git_commit():
         return None
 
 def perform_system_update(update_log):
-    """Realizar la actualización del sistema"""
+    """Realizar la actualización del sistema usando script dedicado"""
     try:
-        output_log = []
+        # Usar el script dedicado para actualizaciones
+        python_executable = sys.executable
+        script_path = os.path.join(os.getcwd(), 'scripts', 'system_update.py')
         
-        # 1. Git pull
-        result = subprocess.run(['git', 'pull', 'origin', 'main'], 
-                              capture_output=True, text=True, cwd=os.getcwd())
-        output_log.append(f"Git pull: {result.stdout}")
-        
-        if result.returncode != 0:
-            return {'success': False, 'error': f'Error en git pull: {result.stderr}'}
-        
-        # 2. Instalar dependencias
-        result = subprocess.run(['pip', 'install', '-r', 'requirements.txt'], 
-                              capture_output=True, text=True, cwd=os.getcwd())
-        output_log.append(f"Pip install: {result.stdout}")
+        # Ejecutar script de actualización con salida JSON
+        result = subprocess.run(
+            [python_executable, script_path, '--json'],
+            capture_output=True,
+            text=True,
+            cwd=os.getcwd(),
+            timeout=600  # 10 minutos timeout
+        )
         
         if result.returncode != 0:
-            output_log.append(f"Pip install warning: {result.stderr}")
+            return {
+                'success': False,
+                'error': f'Script de actualización falló: {result.stderr}',
+                'output': result.stdout
+            }
         
-        # 3. Ejecutar migraciones
-        result = subprocess.run(['flask', 'db', 'upgrade'], 
-                              capture_output=True, text=True, cwd=os.getcwd())
-        output_log.append(f"Flask migrate: {result.stdout}")
+        # Parsear resultado JSON
+        try:
+            script_result = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            return {
+                'success': False,
+                'error': 'Error parseando resultado del script de actualización',
+                'output': result.stdout
+            }
         
-        if result.returncode != 0:
-            return {'success': False, 'error': f'Error en migraciones: {result.stderr}'}
+        # Preparar logs para la base de datos
+        output_lines = []
+        if 'logs' in script_result:
+            output_lines.extend(script_result['logs'])
+        
+        # Agregar detalles de cada paso
+        for step in ['git', 'dependencies', 'migrations']:
+            if step in script_result and script_result[step]:
+                step_result = script_result[step]
+                output_lines.append(f"\n--- {step.upper()} ---")
+                output_lines.append(f"Success: {step_result.get('success', False)}")
+                output_lines.append(f"Message: {step_result.get('message', 'N/A')}")
+                if step_result.get('output'):
+                    output_lines.append(f"Output: {step_result['output']}")
         
         # Guardar output en el log
-        update_log.migration_output = '\n'.join(output_log)
+        update_log.migration_output = '\n'.join(output_lines)
         db.session.commit()
         
-        # Desactivar modo mantenimiento
-        maintenance = MaintenanceMode.get_current()
-        if maintenance.is_active:
-            maintenance.deactivate()
+        # Verificar si la actualización fue exitosa
+        overall_success = script_result.get('overall_success', False)
+        
+        if overall_success:
+            # Desactivar modo mantenimiento solo si todo fue exitoso
+            maintenance = MaintenanceMode.get_current()
+            if maintenance.is_active:
+                maintenance.deactivate()
         
         return {
-            'success': True, 
+            'success': overall_success,
             'commit_after': get_current_git_commit(),
-            'output': '\n'.join(output_log)
+            'output': '\n'.join(output_lines),
+            'error': None if overall_success else 'Falló al menos un paso de la actualización'
         }
         
+    except subprocess.TimeoutExpired:
+        return {
+            'success': False, 
+            'error': 'Timeout en actualización del sistema (>10 minutos)'
+        }
     except Exception as e:
-        return {'success': False, 'error': str(e)}
+        return {
+            'success': False, 
+            'error': f'Error inesperado en actualización: {str(e)}'
+        }

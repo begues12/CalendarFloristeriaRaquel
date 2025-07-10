@@ -238,7 +238,7 @@ function confirmarEliminacion(entryId, username, fecha) {
     
     if (confirm(mensaje)) {
         const form = document.getElementById('deleteForm');
-        form.action = `/delete_time_entry/${entryId}`;
+        form.action = `/time/delete_time_entry/${entryId}`;
         form.submit();
     }
 }

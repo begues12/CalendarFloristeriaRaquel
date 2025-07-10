@@ -212,7 +212,7 @@ function confirmarEliminacion(docId, username, filename) {
     
     if (confirm(mensaje)) {
         const form = document.getElementById('deleteForm');
-        form.action = `/admin_delete_document/${docId}`;
+        form.action = `/admin/admin_delete_document/${docId}`;
         form.submit();
     }
 }

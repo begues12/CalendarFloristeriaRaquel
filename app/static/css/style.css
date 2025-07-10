@@ -170,7 +170,9 @@
 
 /* Main Content */
 .main-content {
-    margin-left: 250px;
+    margin-left: 0;
+    padding: 20px;
+    padding-left: 70px; /* Adjusted for sidebar width */
     min-height: 100vh;
     transition: margin-left 0.3s ease;
     background-color: #f8f9fa;
@@ -248,6 +250,7 @@
     
     .main-content {
         margin-left: 0;
+        padding: 0;
     }
     
     .main-content.expanded {

@@ -62,24 +62,71 @@ flask db current
 flask db check
 ```
 
-### Scripts Alternativos
+### Scripts de Actualización del Sistema
 
-Si por alguna razón `flask db` no funciona, puedes usar:
+Para entornos de producción donde los comandos CLI pueden no estar disponibles:
 
-#### Inicializar base de datos:
+#### Script Completo de Actualización
 ```bash
-python scripts/init_database.py --init
+# Actualización completa (git + dependencias + migraciones)
+python scripts/system_update.py
+
+# Solo migraciones
+python scripts/system_update.py --migrate-only
+
+# Solo dependencias
+python scripts/system_update.py --deps-only
+
+# Solo git
+python scripts/system_update.py --git-only
+
+# Salida en JSON (para integración)
+python scripts/system_update.py --json
 ```
 
-#### Verificar estado:
+#### Script Simple de Migraciones
 ```bash
-python scripts/init_database.py --check
+# Solo aplicar migraciones (método más seguro)
+python scripts/apply_migrations.py
 ```
 
-#### Resetear completamente (¡CUIDADO!):
+#### Uso desde el Panel de Administración
+
+El panel de super administrador utiliza automáticamente estos scripts para manejar las actualizaciones del sistema de manera robusta, especialmente en entornos de producción donde los comandos `flask`, `git` o `pip` pueden no estar en el PATH.
+
+### Solución de Problemas de Actualización
+
+#### Error: "No such file or directory: 'flask'"
+Este error ocurre cuando el comando `flask` no está disponible en el PATH del sistema.
+
+**Solución automática**: El sistema ahora usa scripts robustos que manejan este caso:
+1. Intenta usar el CLI de Flask desde el entorno virtual
+2. Si falla, usa `python -m flask`
+3. Como último recurso, ejecuta las migraciones programáticamente
+
+#### Error: "table already exists"
+Este error ocurre cuando hay conflictos entre el estado de la base de datos y las migraciones.
+
+**Solución**:
+1. Verifica el estado actual: `flask db current`
+2. Marca la base de datos en la revisión correcta: `flask db stamp head`
+3. Aplica migraciones: `flask db upgrade`
+
+#### Para Entornos de Producción
+
+**Recomendado**: Usar siempre los scripts Python en lugar de comandos CLI:
 ```bash
-python scripts/init_database.py --reset
+# En lugar de: flask db upgrade
+python scripts/apply_migrations.py
+
+# En lugar de: git pull && pip install -r requirements.txt && flask db upgrade
+python scripts/system_update.py
 ```
+
+**Configuración de Servidor**: 
+- Asegúrate de que el usuario del servidor tenga permisos para escribir en la base de datos
+- Configura variables de entorno si es necesario
+- Testa los scripts en un entorno de staging primero
 
 ### Gestión de Super Administradores
 
