@@ -48,6 +48,34 @@ CalendarFloristeriaRaquel/
 
 ## Instalación y Configuración
 
+### Bases de Datos Soportadas
+
+Este proyecto soporta tanto **SQLite** (por defecto) como **MySQL**:
+
+- **SQLite**: Ideal para desarrollo y aplicaciones pequeñas
+- **MySQL**: Recomendado para producción y múltiples usuarios concurrentes
+
+#### Migración a MySQL
+
+Para usar MySQL en lugar de SQLite, sigue estos pasos:
+
+**Opción 1: Configuración Automática (Recomendada)**
+```bash
+# Windows
+setup_mysql.bat
+
+# Linux/Mac
+python scripts/setup_mysql.py
+```
+
+**Opción 2: Configuración Manual**
+1. Instalar MySQL Server
+2. Instalar dependencias: `pip install PyMySQL cryptography`
+3. Crear archivo `.env` con configuración MySQL
+4. Ejecutar: `python scripts/setup_mysql.py`
+
+📖 **Documentación completa**: [docs/MYSQL_MIGRATION.md](docs/MYSQL_MIGRATION.md)
+
 ### Requisitos Previos
 - Python 3.8+
 - pip

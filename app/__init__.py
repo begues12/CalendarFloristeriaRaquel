@@ -49,6 +49,16 @@ def init_extensions(app):
     # Base de datos
     db.init_app(app)
     
+    # Configuración específica para MySQL
+    if 'mysql' in app.config.get('SQLALCHEMY_DATABASE_URI', ''):
+        # Configurar MySQL para usar UTF-8
+        try:
+            import pymysql
+            pymysql.install_as_MySQLdb()
+            app.logger.info("PyMySQL configurado como driver de MySQL")
+        except ImportError:
+            app.logger.warning("PyMySQL no está disponible, usando driver por defecto")
+    
     # Flask-Migrate
     migrate = Migrate(app, db)
     

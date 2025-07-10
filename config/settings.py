@@ -19,9 +19,24 @@ class Config:
     MAX_FILE_SIZE = int(os.environ.get('MAX_FILE_SIZE', 16 * 1024 * 1024))  # 16MB por defecto
     ALLOWED_EXTENSIONS = set(os.environ.get('ALLOWED_EXTENSIONS', 'png,jpg,jpeg,gif,pdf,doc,docx').split(','))
     
-    # Base de datos
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///floristeria.db'
+    # Base de datos MySQL
+    # Formato: mysql+pymysql://usuario:contraseña@servidor:puerto/base_de_datos
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'mysql+pymysql://root:password@localhost:3306/floristeria'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    # Configuración del pool de conexiones MySQL (optimizada con variables de entorno)
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'pool_recycle': int(os.environ.get('SQLALCHEMY_POOL_RECYCLE', 300)),
+        'pool_timeout': int(os.environ.get('SQLALCHEMY_POOL_TIMEOUT', 20)),
+        'pool_size': int(os.environ.get('SQLALCHEMY_POOL_SIZE', 5)),
+        'max_overflow': int(os.environ.get('SQLALCHEMY_MAX_OVERFLOW', 0)),
+        'echo': os.environ.get('SQLALCHEMY_ECHO', 'False').lower() == 'true'
+    }
+    
+    # Configuración específica de MySQL
+    MYSQL_CHARSET = os.environ.get('MYSQL_CHARSET', 'utf8mb4')
+    MYSQL_COLLATION = os.environ.get('MYSQL_COLLATION', 'utf8mb4_unicode_ci')
     
     # Configuración de la aplicación
     APP_NAME = os.environ.get('APP_NAME') or 'Floristería Raquel'
@@ -40,19 +55,49 @@ class DevelopmentConfig(Config):
     """Configuración para desarrollo"""
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'sqlite:///floristeria_dev.db'
+    
+    # Pool más pequeño para desarrollo
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'pool_recycle': int(os.environ.get('SQLALCHEMY_POOL_RECYCLE', 300)),
+        'pool_timeout': int(os.environ.get('SQLALCHEMY_POOL_TIMEOUT', 20)),
+        'pool_size': int(os.environ.get('SQLALCHEMY_POOL_SIZE', 2)),
+        'max_overflow': int(os.environ.get('SQLALCHEMY_MAX_OVERFLOW', 5)),
+        'echo': os.environ.get('SQLALCHEMY_ECHO', 'False').lower() == 'true'
+    }
 
 
 class ProductionConfig(Config):
     """Configuración para producción"""
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///floristeria_production.db'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'mysql+pymysql://root:password@localhost:3306/floristeria_production'
+    
+    # Pool optimizado para producción
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'pool_recycle': int(os.environ.get('SQLALCHEMY_POOL_RECYCLE', 3600)),
+        'pool_timeout': int(os.environ.get('SQLALCHEMY_POOL_TIMEOUT', 20)),
+        'pool_size': int(os.environ.get('SQLALCHEMY_POOL_SIZE', 10)),
+        'max_overflow': int(os.environ.get('SQLALCHEMY_MAX_OVERFLOW', 20)),
+        'echo': False  # Nunca activar en producción
+    }
 
 
 class TestingConfig(Config):
     """Configuración para pruebas"""
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or 'sqlite:///:memory:'
     WTF_CSRF_ENABLED = False
+    
+    # Pool mínimo para testing
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': False,
+        'pool_recycle': -1,
+        'pool_timeout': 10,
+        'pool_size': 1,
+        'max_overflow': 0,
+        'echo': False
+    }
 
 
 # Diccionario de configuraciones
