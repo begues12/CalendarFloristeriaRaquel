@@ -10,10 +10,12 @@
             {{ date.strftime('%d de %B %Y') }}
         </h2>
         <div class="d-flex gap-2 flex-wrap">
-            <a href="{{ url_for('upload_photo', date_str=date_str) }}" class="btn btn-success">
+            {% if current_user.has_privilege('can_upload_photos') or current_user.is_admin or current_user.is_super_admin %}
+            <a href="{{ url_for('calendar.upload_photo', date_str=date_str) }}" class="btn btn-success">
                 <i class="fas fa-plus me-2"></i>Subir Fotos
             </a>
-            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            {% endif %}
+            <a href="{{ url_for('calendar.index') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Volver
             </a>
         </div>
@@ -54,18 +56,19 @@
                             </div>
                         </div>
                         
+                        {% if photo.uploaded_by == current_user.username or current_user.has_privilege('can_manage_photos') or current_user.is_admin or current_user.is_super_admin %}
                         <div class="status-buttons d-flex justify-content-between mt-3">
-                            <a href="{{ url_for('change_status', photo_id=photo.id, new_status='pendiente') }}" 
+                            <a href="{{ url_for('calendar.change_status', photo_id=photo.id, new_status='pendiente') }}" 
                                class="status-btn pendiente flex-fill {% if photo.status == 'pendiente' %}opacity-50{% endif %}"
                                title="Marcar como pendiente">
                                 ⏳ Pendiente
                             </a>
-                            <a href="{{ url_for('change_status', photo_id=photo.id, new_status='hecho') }}" 
+                            <a href="{{ url_for('calendar.change_status', photo_id=photo.id, new_status='hecho') }}" 
                                class="status-btn hecho flex-fill {% if photo.status == 'hecho' %}opacity-50{% endif %}"
                                title="Marcar como hecho">
                                 ✓ Hecho
                             </a>
-                            <a href="{{ url_for('change_status', photo_id=photo.id, new_status='entregado') }}" 
+                            <a href="{{ url_for('calendar.change_status', photo_id=photo.id, new_status='entregado') }}" 
                                class="status-btn entregado flex-fill {% if photo.status == 'entregado' %}opacity-50{% endif %}"
                                title="Marcar como entregado">
                                 📦 Entregado
@@ -73,12 +76,13 @@
                         </div>
                         
                         <div class="d-flex justify-content-end mt-2">
-                            <a href="{{ url_for('delete_photo', photo_id=photo.id) }}" 
+                            <a href="{{ url_for('calendar.delete_photo', photo_id=photo.id) }}" 
                                class="btn btn-sm btn-outline-danger"
                                onclick="return confirm('¿Estás seguro de que quieres eliminar esta foto?')">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -89,7 +93,7 @@
             <i class="fas fa-images fa-3x text-muted mb-3"></i>
             <h4 class="text-muted">No hay fotos para este día</h4>
             <p class="text-muted">¡Sube algunas fotos para comenzar!</p>
-            <a href="{{ url_for('upload_photo', date_str=date_str) }}" class="btn btn-success">
+            <a href="{{ url_for('calendar.upload_photo', date_str=date_str) }}" class="btn btn-success">
                 <i class="fas fa-plus me-2"></i>Subir Primera Foto
             </a>
         </div>

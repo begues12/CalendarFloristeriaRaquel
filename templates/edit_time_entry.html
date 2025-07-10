@@ -12,7 +12,7 @@
                         <i class="fas fa-edit me-2"></i>
                         Editar Registro de {{ entry.user.username }}
                     </h5>
-                    <a href="{{ url_for('time_reports') }}" class="btn btn-outline-secondary btn-sm">
+                    <a href="{{ url_for('time_tracking.time_reports') }}" class="btn btn-outline-secondary btn-sm">
                         <i class="fas fa-arrow-left me-1"></i>Volver
                     </a>
                 </div>
@@ -119,7 +119,7 @@
                                         <button type="submit" class="btn btn-success me-2">
                                             <i class="fas fa-save me-1"></i>Guardar Cambios
                                         </button>
-                                        <a href="{{ url_for('time_reports') }}" class="btn btn-outline-secondary">
+                                        <a href="{{ url_for('time_tracking.time_reports') }}" class="btn btn-outline-secondary">
                                             <i class="fas fa-times me-1"></i>Cancelar
                                         </a>
                                     </div>
@@ -137,7 +137,7 @@
             </div>
 
             <!-- Formulario oculto para eliminar -->
-            <form id="deleteForm" method="POST" action="{{ url_for('delete_time_entry', entry_id=entry.id) }}" 
+            <form id="deleteForm" method="POST" action="{{ url_for('time_tracking.delete_time_entry', entry_id=entry.id) }}" 
                   style="display: none;">
             </form>
         </div>

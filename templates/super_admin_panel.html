@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Panel Super Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-crown text-warning"></i> Panel de Super Administrador</h2>
+                <div>
+                    <a href="{{ url_for('admin.admin_documents') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Volver a Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado del Sistema -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-server"></i> Estado del Sistema</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <strong>Modo Mantenimiento:</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            {% if maintenance.is_active %}
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-exclamation-triangle"></i> ACTIVO
+                                </span>
+                            {% else %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle"></i> INACTIVO
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if maintenance.is_active %}
+                    <hr>
+                    <div class="alert alert-warning mb-0">
+                        <strong>Mensaje:</strong> {{ maintenance.message }}<br>
+                        <small>
+                            Iniciado por: {{ maintenance.started_by }}<br>
+                            Fecha: {{ maintenance.started_at.strftime('%d/%m/%Y %H:%M') }}
+                            {% if maintenance.estimated_end %}
+                            <br>Estimado hasta: {{ maintenance.estimated_end.strftime('%d/%m/%Y %H:%M') }}
+                            {% endif %}
+                        </small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fab fa-git-alt"></i> Información Git</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4"><strong>Branch:</strong></div>
+                        <div class="col-sm-8"><code>{{ git_info.current_branch }}</code></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4"><strong>Commit:</strong></div>
+                        <div class="col-sm-8"><code>{{ git_info.current_commit }}</code></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Último:</strong></div>
+                        <div class="col-sm-8"><small>{{ git_info.last_commit_message }}</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles de Mantenimiento -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-tools"></i> Control de Mantenimiento</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('admin.toggle_maintenance') }}" class="row g-3">
+                        {% if not maintenance.is_active %}
+                        <div class="col-md-6">
+                            <label for="message" class="form-label">Mensaje de mantenimiento:</label>
+                            <textarea class="form-control" id="message" name="message" rows="2">Sistema en mantenimiento. Volveremos pronto.</textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="estimated_minutes" class="form-label">Duración estimada (min):</label>
+                            <input type="number" class="form-control" id="estimated_minutes" name="estimated_minutes" value="30" min="5" max="1440">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-warning w-100">
+                                <i class="fas fa-pause-circle"></i> Activar Mantenimiento
+                            </button>
+                        </div>
+                        {% else %}
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-play-circle"></i> Desactivar Mantenimiento
+                            </button>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actualización del Sistema -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-sync-alt"></i> Actualización del Sistema</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-3">
+                                Actualiza el sistema desde el repositorio git y ejecuta las migraciones de base de datos.
+                                <br><small class="text-muted">
+                                    <i class="fas fa-info-circle"></i> 
+                                    El modo mantenimiento se activará automáticamente durante la actualización.
+                                </small>
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button type="button" class="btn btn-outline-success me-2" onclick="checkUpdates()">
+                                <i class="fas fa-search"></i> Verificar Actualizaciones
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="confirmUpdate()" id="updateBtn">
+                                <i class="fas fa-download"></i> Actualizar Sistema
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="updateStatus" class="mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historial de Actualizaciones -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-history"></i> Historial de Actualizaciones</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_updates %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Usuario</th>
+                                    <th>Estado</th>
+                                    <th>Commit Antes</th>
+                                    <th>Commit Después</th>
+                                    <th>Duración</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for update in recent_updates %}
+                                <tr>
+                                    <td>{{ update.started_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    <td>{{ update.started_by }}</td>
+                                    <td>
+                                        {% if update.status == 'completed' %}
+                                            <span class="badge bg-success">Completado</span>
+                                        {% elif update.status == 'failed' %}
+                                            <span class="badge bg-danger">Error</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">En progreso</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><code>{{ update.git_commit_before[:8] if update.git_commit_before else '-' }}</code></td>
+                                    <td><code>{{ update.git_commit_after[:8] if update.git_commit_after else '-' }}</code></td>
+                                    <td>
+                                        {% if update.completed_at %}
+                                            {{ ((update.completed_at - update.started_at).total_seconds() / 60) | round(1) }}m
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('admin.view_update_log', log_id=update.id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted">
+                        <i class="fas fa-info-circle"></i> No hay actualizaciones registradas
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function checkUpdates() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+    btn.disabled = true;
+    
+    fetch('{{ url_for("admin.check_updates") }}')
+        .then(response => response.json())
+        .then(data => {
+            const statusDiv = document.getElementById('updateStatus');
+            if (data.error) {
+                statusDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i> Error: ${data.error}</div>`;
+            } else if (data.updates_available) {
+                statusDiv.innerHTML = `<div class="alert alert-info"><i class="fas fa-info-circle"></i> Hay ${data.count} actualizaciones disponibles</div>`;
+            } else {
+                statusDiv.innerHTML = `<div class="alert alert-success"><i class="fas fa-check-circle"></i> El sistema está actualizado</div>`;
+            }
+            statusDiv.style.display = 'block';
+        })
+        .catch(error => {
+            document.getElementById('updateStatus').innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i> Error de conexión</div>`;
+            document.getElementById('updateStatus').style.display = 'block';
+        })
+        .finally(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+}
+
+function confirmUpdate() {
+    if (confirm('¿Estás seguro de que quieres actualizar el sistema?\n\nEsto activará el modo mantenimiento y puede tardar varios minutos.')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("admin.update_system") }}';
+        
+        const csrfToken = document.querySelector('meta[name=csrf-token]');
+        if (csrfToken) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'csrf_token';
+            input.value = csrfToken.getAttribute('content');
+            form.appendChild(input);
+        }
+        
+        document.body.appendChild(form);
+        
+        // Cambiar botón para mostrar que está procesando
+        const updateBtn = document.getElementById('updateBtn');
+        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+        updateBtn.disabled = true;
+        
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

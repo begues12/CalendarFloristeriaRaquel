@@ -10,10 +10,10 @@
             Gestión de Usuarios
         </h2>
         <div class="d-flex gap-2">
-            <a href="{{ url_for('register') }}" class="btn btn-success">
+            <a href="{{ url_for('users.register') }}" class="btn btn-success">
                 <i class="fas fa-user-plus me-2"></i>Crear Usuario
             </a>
-            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <a href="{{ url_for('calendar.index') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Volver
             </a>
         </div>
@@ -29,27 +29,66 @@
                             <div class="user-avatar me-3">
                                 <i class="fas fa-user fa-2x text-primary"></i>
                             </div>
-                            <div>
-                                <h5 class="card-title mb-1">{{ user.username }}</h5>
+                            <div class="flex-grow-1">
+                                <h5 class="card-title mb-1">
+                                    <a href="{{ url_for('users.user_profile', user_id=user.id) }}" 
+                                       class="text-decoration-none">
+                                        {{ user.username }}
+                                        <i class="fas fa-external-link-alt fa-sm text-muted ms-1"></i>
+                                    </a>
+                                </h5>
                                 <small class="text-muted">
-                                    {% if user.username == 'admin' %}
-                                        <i class="fas fa-crown text-warning me-1"></i>Administrador
+                                    {% if user.is_super_admin %}
+                                        <i class="fas fa-crown text-warning me-1"></i>Super Admin
+                                    {% elif user.is_admin %}
+                                        <i class="fas fa-shield-alt text-primary me-1"></i>Administrador
                                     {% else %}
                                         <i class="fas fa-user text-info me-1"></i>Usuario
                                     {% endif %}
+                                    
+                                    {% if not user.is_active %}
+                                        <span class="badge bg-secondary ms-1">Inactivo</span>
+                                    {% endif %}
                                 </small>
+                                {% if user.full_name %}
+                                <div><small class="text-muted">{{ user.full_name }}</small></div>
+                                {% endif %}
                             </div>
                         </div>
                         
-                        <div class="user-actions d-flex gap-2">
-                            <a href="{{ url_for('change_password_admin', user_id=user.id) }}" 
-                               class="btn btn-sm btn-outline-primary flex-fill">
-                                <i class="fas fa-key me-1"></i>Cambiar Contraseña
+                        <div class="user-actions d-flex gap-1 mb-3">
+                            <a href="{{ url_for('users.user_profile', user_id=user.id) }}" 
+                               class="btn btn-sm btn-primary flex-fill" title="Ver ficha completa">
+                                <i class="fas fa-id-card me-1"></i>Ficha
                             </a>
+                            <a href="{{ url_for('users.edit_user', user_id=user.id) }}" 
+                               class="btn btn-sm btn-outline-success flex-fill" title="Editar usuario">
+                                <i class="fas fa-edit me-1"></i>Editar
+                            </a>
+                            <a href="{{ url_for('users.change_password', user_id=user.id) }}" 
+                               class="btn btn-sm btn-outline-warning flex-fill" title="Cambiar contraseña">
+                                <i class="fas fa-key me-1"></i>Pass
+                            </a>
+                        </div>
+                        
+                        <div class="user-actions d-flex gap-2">
                             {% if user.username != 'admin' %}
-                            <a href="{{ url_for('delete_user', user_id=user.id) }}" 
+                            <form method="POST" action="{{ url_for('users.toggle_user_status', user_id=user.id) }}" class="d-inline">
+                                {% if user.is_active %}
+                                <button type="submit" class="btn btn-sm btn-outline-secondary" title="Desactivar usuario">
+                                    <i class="fas fa-user-slash"></i>
+                                </button>
+                                {% else %}
+                                <button type="submit" class="btn btn-sm btn-outline-success" title="Activar usuario">
+                                    <i class="fas fa-user-check"></i>
+                                </button>
+                                {% endif %}
+                            </form>
+                            
+                            <a href="{{ url_for('users.delete_user', user_id=user.id) }}" 
                                class="btn btn-sm btn-outline-danger"
-                               onclick="return confirm('¿Estás seguro de que quieres eliminar este usuario? Las fotos subidas se conservarán.')">
+                               onclick="return confirm('¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer.')"
+                               title="Eliminar usuario">
                                 <i class="fas fa-trash"></i>
                             </a>
                             {% endif %}
@@ -64,7 +103,7 @@
             <i class="fas fa-users fa-3x text-muted mb-3"></i>
             <h4 class="text-muted">No hay usuarios</h4>
             <p class="text-muted">Crea el primer usuario para comenzar</p>
-            <a href="{{ url_for('register') }}" class="btn btn-success">
+            <a href="{{ url_for('users.register') }}" class="btn btn-success">
                 <i class="fas fa-user-plus me-2"></i>Crear Primer Usuario
             </a>
         </div>

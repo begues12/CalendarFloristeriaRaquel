@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
@@ -13,10 +13,32 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=True)
     full_name = db.Column(db.String(100), nullable=True)
+    phone = db.Column(db.String(20), nullable=True)
+    position = db.Column(db.String(100), nullable=True)  # Cargo/Posición
+    hire_date = db.Column(db.Date, nullable=True)  # Fecha de contratación
+    
+    # Permisos principales
     is_admin = db.Column(db.Boolean, default=False)
+    is_super_admin = db.Column(db.Boolean, default=False)  # Super admin para actualizaciones
     is_active = db.Column(db.Boolean, default=True)
     must_change_password = db.Column(db.Boolean, default=True)  # Obligar cambio en primer acceso
+    
+    # Privilegios específicos
+    can_view_calendar = db.Column(db.Boolean, default=True)  # Ver calendario
+    can_upload_photos = db.Column(db.Boolean, default=True)  # Subir fotos
+    can_manage_photos = db.Column(db.Boolean, default=False)  # Gestionar fotos de otros
+    can_time_tracking = db.Column(db.Boolean, default=True)  # Usar fichaje
+    can_view_own_reports = db.Column(db.Boolean, default=True)  # Ver sus propios reportes
+    can_view_all_reports = db.Column(db.Boolean, default=False)  # Ver reportes de todos
+    can_manage_time_entries = db.Column(db.Boolean, default=False)  # Crear/editar entradas de tiempo
+    can_upload_documents = db.Column(db.Boolean, default=True)  # Subir documentos propios
+    can_view_own_documents = db.Column(db.Boolean, default=True)  # Ver documentos propios
+    can_view_all_documents = db.Column(db.Boolean, default=False)  # Ver documentos de todos
+    can_manage_users = db.Column(db.Boolean, default=False)  # Gestionar usuarios
+    can_export_data = db.Column(db.Boolean, default=False)  # Exportar datos
+    
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relaciones
     time_entries = db.relationship('TimeEntry', backref='user', lazy=True, cascade='all, delete-orphan')
@@ -27,6 +49,47 @@ class User(UserMixin, db.Model):
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def get_privileges_dict(self):
+        """Obtener diccionario de privilegios para plantillas"""
+        return {
+            'Calendario': {
+                'can_view_calendar': {'name': 'Ver calendario', 'value': self.can_view_calendar},
+                'can_upload_photos': {'name': 'Subir fotos', 'value': self.can_upload_photos},
+                'can_manage_photos': {'name': 'Gestionar fotos de otros', 'value': self.can_manage_photos},
+            },
+            'Control de Tiempo': {
+                'can_time_tracking': {'name': 'Usar fichaje personal', 'value': self.can_time_tracking},
+                'can_view_own_reports': {'name': 'Ver propios reportes', 'value': self.can_view_own_reports},
+                'can_view_all_reports': {'name': 'Ver reportes de todos', 'value': self.can_view_all_reports},
+                'can_manage_time_entries': {'name': 'Crear/editar entradas de tiempo', 'value': self.can_manage_time_entries},
+            },
+            'Documentos': {
+                'can_upload_documents': {'name': 'Subir documentos propios', 'value': self.can_upload_documents},
+                'can_view_own_documents': {'name': 'Ver documentos propios', 'value': self.can_view_own_documents},
+                'can_view_all_documents': {'name': 'Ver documentos de todos', 'value': self.can_view_all_documents},
+            },
+            'Administración': {
+                'can_manage_users': {'name': 'Gestionar usuarios', 'value': self.can_manage_users},
+                'can_export_data': {'name': 'Exportar datos', 'value': self.can_export_data},
+            }
+        }
+    
+    def has_privilege(self, privilege_name):
+        """Verificar si el usuario tiene un privilegio específico"""
+        # Los admins y super admins tienen acceso completo a todo
+        if self.is_admin or self.is_super_admin:
+            return True
+        return getattr(self, privilege_name, False)
+    
+    def set_default_privileges(self):
+        """Establecer privilegios por defecto para nuevos usuarios"""
+        self.can_view_calendar = True
+        self.can_upload_photos = True
+        self.can_time_tracking = True
+        self.can_view_own_reports = True
+        self.can_upload_documents = True
+        self.can_view_own_documents = True
     
     def __repr__(self):
         return f'<User {self.username}>'
@@ -127,3 +190,77 @@ class Photo(db.Model):
     
     def __repr__(self):
         return f'<Photo {self.filename} - {self.date_taken}>'
+
+class MaintenanceMode(db.Model):
+    __tablename__ = 'maintenance_mode'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    is_active = db.Column(db.Boolean, default=False)
+    message = db.Column(db.Text, nullable=True, default='Sistema en mantenimiento. Volveremos pronto.')
+    started_by = db.Column(db.String(80), nullable=True)
+    started_at = db.Column(db.DateTime, nullable=True)
+    estimated_end = db.Column(db.DateTime, nullable=True)
+    
+    @classmethod
+    def get_current(cls):
+        """Obtiene el estado actual de mantenimiento"""
+        maintenance = cls.query.first()
+        if not maintenance:
+            maintenance = cls(is_active=False)
+            db.session.add(maintenance)
+            db.session.commit()
+        return maintenance
+    
+    def activate(self, user, message=None, estimated_minutes=30):
+        """Activa el modo mantenimiento"""
+        self.is_active = True
+        self.started_by = user.username
+        self.started_at = datetime.utcnow()
+        if estimated_minutes:
+            self.estimated_end = self.started_at + timedelta(minutes=estimated_minutes)
+        if message:
+            self.message = message
+        db.session.commit()
+    
+    def deactivate(self):
+        """Desactiva el modo mantenimiento"""
+        self.is_active = False
+        self.started_by = None
+        self.started_at = None
+        self.estimated_end = None
+        db.session.commit()
+    
+    def __repr__(self):
+        return f'<MaintenanceMode {self.is_active}>'
+
+class UpdateLog(db.Model):
+    __tablename__ = 'update_logs'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    started_by = db.Column(db.String(80), nullable=False)
+    started_at = db.Column(db.DateTime, default=datetime.utcnow)
+    completed_at = db.Column(db.DateTime, nullable=True)
+    status = db.Column(db.String(20), default='in_progress')  # in_progress, completed, failed
+    git_commit_before = db.Column(db.String(40), nullable=True)
+    git_commit_after = db.Column(db.String(40), nullable=True)
+    migration_output = db.Column(db.Text, nullable=True)
+    error_message = db.Column(db.Text, nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    
+    def mark_completed(self, commit_after=None):
+        """Marca la actualización como completada"""
+        self.status = 'completed'
+        self.completed_at = datetime.utcnow()
+        if commit_after:
+            self.git_commit_after = commit_after
+        db.session.commit()
+    
+    def mark_failed(self, error_message):
+        """Marca la actualización como fallida"""
+        self.status = 'failed'
+        self.completed_at = datetime.utcnow()
+        self.error_message = error_message
+        db.session.commit()
+    
+    def __repr__(self):
+        return f'<UpdateLog {self.started_by} - {self.status}>'

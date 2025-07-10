@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}Ficha de Usuario - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-user-circle"></i> 
+                    Ficha de Usuario: {{ user.username }}
+                    {% if not user.is_active %}
+                        <span class="badge bg-secondary ms-2">Inactivo</span>
+                    {% endif %}
+                    {% if user.is_admin %}
+                        <span class="badge bg-primary ms-2">Admin</span>
+                    {% endif %}
+                    {% if user.is_super_admin %}
+                        <span class="badge bg-warning ms-2">Super Admin</span>
+                    {% endif %}
+                </h2>
+                <div>
+                    {% if current_user.is_admin %}
+                    <a href="{{ url_for('users.edit_user', user_id=user.id) }}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Editar Usuario
+                    </a>
+                    {% endif %}
+                    <a href="{{ url_for('users.manage_users') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información Personal -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-id-card"></i> Información Personal</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Usuario:</strong></div>
+                        <div class="col-sm-8">{{ user.username }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Nombre completo:</strong></div>
+                        <div class="col-sm-8">{{ user.full_name or '-' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Email:</strong></div>
+                        <div class="col-sm-8">{{ user.email or '-' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Teléfono:</strong></div>
+                        <div class="col-sm-8">{{ user.phone or '-' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Cargo:</strong></div>
+                        <div class="col-sm-8">{{ user.position or '-' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Fecha contratación:</strong></div>
+                        <div class="col-sm-8">
+                            {% if user.hire_date %}
+                                {{ user.hire_date.strftime('%d/%m/%Y') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado y Fechas -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Estado de la Cuenta</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Estado:</strong></div>
+                        <div class="col-sm-8">
+                            {% if user.is_active %}
+                                <span class="badge bg-success">Activo</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactivo</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Tipo de cuenta:</strong></div>
+                        <div class="col-sm-8">
+                            {% if user.is_super_admin %}
+                                <span class="badge bg-warning">Super Administrador</span>
+                            {% elif user.is_admin %}
+                                <span class="badge bg-primary">Administrador</span>
+                            {% else %}
+                                <span class="badge bg-success">Usuario</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Cambio de contraseña:</strong></div>
+                        <div class="col-sm-8">
+                            {% if user.must_change_password %}
+                                <span class="badge bg-warning">Pendiente</span>
+                            {% else %}
+                                <span class="badge bg-success">Completado</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Creado:</strong></div>
+                        <div class="col-sm-8">{{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
+                    </div>
+                    {% if user.updated_at and user.updated_at != user.created_at %}
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Última actualización:</strong></div>
+                        <div class="col-sm-8">{{ user.updated_at.strftime('%d/%m/%Y %H:%M') }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privilegios -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-key"></i> Privilegios y Permisos</h5>
+                    {% if current_user.is_admin %}
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-magic"></i> Aplicar Set de Privilegios
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <form method="POST" action="{{ url_for('users.set_user_privileges', user_id=user.id) }}" class="d-inline">
+                                    <input type="hidden" name="privilege_set" value="basic">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-user"></i> Básico (Usuario Normal)
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ url_for('users.set_user_privileges', user_id=user.id) }}" class="d-inline">
+                                    <input type="hidden" name="privilege_set" value="supervisor">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-user-tie"></i> Supervisor
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ url_for('users.set_user_privileges', user_id=user.id) }}" class="d-inline">
+                                    <input type="hidden" name="privilege_set" value="admin">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-user-shield"></i> Administrador
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% set privileges = user.get_privileges_dict() %}
+                    <div class="row">
+                        {% for category, privs in privileges.items() %}
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <h6 class="text-primary border-bottom pb-2">
+                                {% if category == 'Calendario' %}
+                                    <i class="fas fa-calendar-alt"></i>
+                                {% elif category == 'Control de Tiempo' %}
+                                    <i class="fas fa-clock"></i>
+                                {% elif category == 'Documentos' %}
+                                    <i class="fas fa-folder"></i>
+                                {% elif category == 'Administración' %}
+                                    <i class="fas fa-cog"></i>
+                                {% endif %}
+                                {{ category }}
+                            </h6>
+                            {% for priv_key, priv_data in privs.items() %}
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" 
+                                       {% if priv_data.value %}checked{% endif %} 
+                                       disabled>
+                                <label class="form-check-label small">
+                                    {{ priv_data.name }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Estadísticas de Uso</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-6"><strong>Entradas de tiempo:</strong></div>
+                        <div class="col-sm-6">{{ user.time_entries|length }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-6"><strong>Documentos subidos:</strong></div>
+                        <div class="col-sm-6">{{ user.documents|length }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if current_user.is_admin %}
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Acciones Administrativas</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('users.change_password', user_id=user.id) }}" class="btn btn-warning btn-sm mb-2 w-100">
+                        <i class="fas fa-key"></i> Cambiar Contraseña
+                    </a>
+                    
+                    <form method="POST" action="{{ url_for('users.toggle_user_status', user_id=user.id) }}" class="d-inline w-100">
+                        {% if user.is_active %}
+                        <button type="submit" class="btn btn-secondary btn-sm mb-2 w-100" 
+                                onclick="return confirm('¿Desactivar este usuario?')">
+                            <i class="fas fa-user-slash"></i> Desactivar Usuario
+                        </button>
+                        {% else %}
+                        <button type="submit" class="btn btn-success btn-sm mb-2 w-100">
+                            <i class="fas fa-user-check"></i> Activar Usuario
+                        </button>
+                        {% endif %}
+                    </form>
+                    
+                    <button type="button" class="btn btn-danger btn-sm w-100" 
+                            onclick="confirmDelete('{{ user.username }}', {{ user.id }})">
+                        <i class="fas fa-trash"></i> Eliminar Usuario
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function confirmDelete(username, userId) {
+    if (confirm(`¿Estás seguro de que quieres eliminar al usuario "${username}"?\n\nEsta acción no se puede deshacer.`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `{{ url_for('users.delete_user', user_id=0) }}`.replace('0', userId);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

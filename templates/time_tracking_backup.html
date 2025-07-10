@@ -6,7 +6,14 @@
 <div class="time-tracking">
     <div class="row">
         <!-- Panel de fichaje -->
-        <div class="col-lg-6 col-12 mb-4">
+                                <a href="{{ url_for('documents.upload_document') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-upload"></i> Subir Documento
+                        </a>
+                        <a href="{{ url_for('documents.my_documents') }}" class="btn btn-outline-info">
+                            <i class="fas fa-folder"></i> Mis Documentos
+                        </a>
+                        {% if current_user.is_admin %}
+                        <a href="{{ url_for('time_tracking.time_reports') }}" class="btn btn-outline-success">ss="col-lg-6 col-12 mb-4">
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">
@@ -217,15 +224,15 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-center gap-3 flex-wrap">
-                        <a href="{{ url_for('documents.upload_document') }}" class="btn btn-outline-primary">
-                            <i class="fas fa-upload"></i> Subir Documento
+                        <a href="{{ url_for('upload_document') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-file-upload me-2"></i>Subir Documento
                         </a>
-                        <a href="{{ url_for('documents.my_documents') }}" class="btn btn-outline-info">
-                            <i class="fas fa-folder"></i> Mis Documentos
+                        <a href="{{ url_for('my_documents') }}" class="btn btn-outline-info">
+                            <i class="fas fa-folder me-2"></i>Mis Documentos
                         </a>
                         {% if current_user.is_admin %}
-                        <a href="{{ url_for('time_tracking.time_reports') }}" class="btn btn-outline-success">
-                            <i class="fas fa-chart-bar"></i> Reportes
+                        <a href="{{ url_for('time_reports') }}" class="btn btn-outline-success">
+                            <i class="fas fa-chart-bar me-2"></i>Reportes
                         </a>
                         {% endif %}
                     </div>
@@ -277,7 +284,6 @@
 </style>
 
 <script>
-// Auto-refresh cada 60 segundos
 setTimeout(function() {
     location.reload();
 }, 60000);

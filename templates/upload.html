@@ -10,7 +10,7 @@
                 <i class="fas fa-upload me-2"></i>
                 Subir Fotos - {{ date.strftime('%d de %B %Y') }}
             </h2>
-            <a href="{{ url_for('view_day', date_str=date_str) }}" class="btn btn-secondary">
+            <a href="{{ url_for('calendar.view_day', date_str=date_str) }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Volver
             </a>
         </div>
