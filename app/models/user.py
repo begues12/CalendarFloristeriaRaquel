@@ -208,7 +208,22 @@ class MaintenanceMode(db.Model):
         if not maintenance:
             maintenance = cls(is_active=False)
             db.session.add(maintenance)
-            db.session.commit()
+            
+            # Intentar commit con reintentos para evitar database lock
+            for attempt in range(3):
+                try:
+                    db.session.commit()
+                    break
+                except Exception as e:
+                    if "database is locked" in str(e).lower() and attempt < 2:
+                        try:
+                            db.session.rollback()
+                        except:
+                            pass
+                        import time
+                        time.sleep(0.5)
+                    else:
+                        raise
         return maintenance
     
     def activate(self, user, message=None, estimated_minutes=30):
@@ -220,7 +235,22 @@ class MaintenanceMode(db.Model):
             self.estimated_end = self.started_at + timedelta(minutes=estimated_minutes)
         if message:
             self.message = message
-        db.session.commit()
+        
+        # Intentar commit con reintentos para evitar database lock
+        for attempt in range(3):
+            try:
+                db.session.commit()
+                break
+            except Exception as e:
+                if "database is locked" in str(e).lower() and attempt < 2:
+                    try:
+                        db.session.rollback()
+                    except:
+                        pass
+                    import time
+                    time.sleep(0.5)
+                else:
+                    raise
     
     def deactivate(self):
         """Desactiva el modo mantenimiento"""
@@ -228,7 +258,22 @@ class MaintenanceMode(db.Model):
         self.started_by = None
         self.started_at = None
         self.estimated_end = None
-        db.session.commit()
+        
+        # Intentar commit con reintentos para evitar database lock
+        for attempt in range(3):
+            try:
+                db.session.commit()
+                break
+            except Exception as e:
+                if "database is locked" in str(e).lower() and attempt < 2:
+                    try:
+                        db.session.rollback()
+                    except:
+                        pass
+                    import time
+                    time.sleep(0.5)
+                else:
+                    raise
     
     def __repr__(self):
         return f'<MaintenanceMode {self.is_active}>'
@@ -253,14 +298,44 @@ class UpdateLog(db.Model):
         self.completed_at = datetime.utcnow()
         if commit_after:
             self.git_commit_after = commit_after
-        db.session.commit()
+        
+        # Intentar commit con reintentos para evitar database lock
+        for attempt in range(3):
+            try:
+                db.session.commit()
+                break
+            except Exception as e:
+                if "database is locked" in str(e).lower() and attempt < 2:
+                    try:
+                        db.session.rollback()
+                    except:
+                        pass
+                    import time
+                    time.sleep(0.5)
+                else:
+                    raise
     
     def mark_failed(self, error_message):
         """Marca la actualización como fallida"""
         self.status = 'failed'
         self.completed_at = datetime.utcnow()
         self.error_message = error_message
-        db.session.commit()
+        
+        # Intentar commit con reintentos para evitar database lock
+        for attempt in range(3):
+            try:
+                db.session.commit()
+                break
+            except Exception as e:
+                if "database is locked" in str(e).lower() and attempt < 2:
+                    try:
+                        db.session.rollback()
+                    except:
+                        pass
+                    import time
+                    time.sleep(0.5)
+                else:
+                    raise
     
     def __repr__(self):
         return f'<UpdateLog {self.started_by} - {self.status}>'

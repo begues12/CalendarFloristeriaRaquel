@@ -181,32 +181,187 @@ def toggle_maintenance():
 @require_super_admin
 def update_system():
     """Actualizar el sistema desde git y ejecutar migraciones"""
+    update_log = None
+    
     try:
-        # Crear log de actualización
-        update_log = UpdateLog(
-            started_by=current_user.username,
-            git_commit_before=get_current_git_commit()
-        )
-        db.session.add(update_log)
-        db.session.commit()
+        # Intentar crear log de actualización con múltiples intentos
+        log_created = False
+        for attempt in range(3):  # 3 intentos
+            try:
+                # Limpiar cualquier transacción pendiente
+                try:
+                    db.session.rollback()
+                    db.session.close()  # Cerrar conexión para forzar nueva
+                except:
+                    pass
+                
+                # Esperar un momento entre intentos
+                if attempt > 0:
+                    import time
+                    time.sleep(0.5)
+                
+                update_log = UpdateLog(
+                    started_by=current_user.username,
+                    git_commit_before=get_current_git_commit()
+                )
+                db.session.add(update_log)
+                db.session.commit()
+                log_created = True
+                break
+                
+            except Exception as db_error:
+                if "database is locked" in str(db_error).lower() or "readonly" in str(db_error).lower():
+                    # Error de BD bloqueada/solo lectura, intentar de nuevo
+                    try:
+                        db.session.rollback()
+                        db.session.close()
+                    except:
+                        pass
+                    
+                    if attempt == 2:  # Último intento
+                        flash(f'Warning: Base de datos bloqueada, continuando sin log: {str(db_error)}', 'warning')
+                        update_log = None
+                        break
+                else:
+                    # Otro tipo de error, no reintentar
+                    flash(f'Warning: No se pudo crear log de actualización: {str(db_error)}', 'warning')
+                    update_log = None
+                    try:
+                        db.session.rollback()
+                        db.session.close()
+                    except:
+                        pass
+                    break
         
-        # Activar modo mantenimiento automáticamente
-        maintenance = MaintenanceMode.get_current()
-        if not maintenance.is_active:
-            maintenance.activate(current_user, 'Actualizando sistema...', 15)
+        # Activar modo mantenimiento automáticamente con reintentos
+        maintenance_activated = False
+        for attempt in range(3):
+            try:
+                maintenance = MaintenanceMode.get_current()
+                if not maintenance.is_active:
+                    maintenance.activate(current_user, 'Actualizando sistema...', 15)
+                    maintenance_activated = True
+                break
+            except Exception as maintenance_error:
+                if "database is locked" in str(maintenance_error).lower():
+                    try:
+                        db.session.rollback()
+                        db.session.close()
+                    except:
+                        pass
+                    
+                    if attempt < 2:  # No es el último intento
+                        import time
+                        time.sleep(0.5)
+                        continue
+                
+                flash(f'Warning: No se pudo activar modo mantenimiento: {str(maintenance_error)}', 'warning')
+                break
         
-        # Ejecutar actualización
+        # Ejecutar actualización (esta es la parte crítica)
         result = perform_system_update(update_log)
         
         if result['success']:
-            update_log.mark_completed(result.get('commit_after'))
-            flash('Sistema actualizado correctamente', 'success')
+            # Intentar actualizar el log si existe con reintentos
+            if update_log:
+                log_updated = False
+                for attempt in range(3):
+                    try:
+                        # Asegurar que tenemos una sesión limpia
+                        db.session.refresh(update_log)
+                        update_log.mark_completed(result.get('commit_after'))
+                        db.session.commit()
+                        log_updated = True
+                        break
+                    except Exception as log_error:
+                        if "database is locked" in str(log_error).lower():
+                            try:
+                                db.session.rollback()
+                                db.session.close()
+                            except:
+                                pass
+                            
+                            if attempt < 2:  # No es el último intento
+                                import time
+                                time.sleep(0.5)
+                                continue
+                        
+                        # Log falló pero actualización fue exitosa
+                        try:
+                            db.session.rollback()
+                            db.session.close()
+                        except:
+                            pass
+                        break
+                
+                if log_updated:
+                    flash('Sistema actualizado correctamente', 'success')
+                else:
+                    flash('Sistema actualizado correctamente (Warning: Log no actualizado por BD bloqueada)', 'success')
+            else:
+                flash('Sistema actualizado correctamente (sin log)', 'success')
         else:
-            update_log.mark_failed(result['error'])
+            # Intentar marcar log como fallido si existe con reintentos
+            if update_log:
+                for attempt in range(3):
+                    try:
+                        db.session.refresh(update_log)
+                        update_log.mark_failed(result['error'])
+                        db.session.commit()
+                        break
+                    except Exception:
+                        if attempt < 2:  # No es el último intento
+                            try:
+                                db.session.rollback()
+                                db.session.close()
+                            except:
+                                pass
+                            import time
+                            time.sleep(0.5)
+                        else:
+                            try:
+                                db.session.rollback()
+                                db.session.close()
+                            except:
+                                pass
+            
             flash(f'Error en la actualización: {result["error"]}', 'error')
             
     except Exception as e:
+        # Intentar marcar log como fallido si existe con reintentos
+        if update_log:
+            for attempt in range(3):
+                try:
+                    db.session.refresh(update_log)
+                    update_log.mark_failed(f'Error inesperado: {str(e)}')
+                    db.session.commit()
+                    break
+                except Exception:
+                    if attempt < 2:  # No es el último intento
+                        try:
+                            db.session.rollback()
+                            db.session.close()
+                        except:
+                            pass
+                        import time
+                        time.sleep(0.5)
+                    else:
+                        try:
+                            db.session.rollback()
+                            db.session.close()
+                        except:
+                            pass
+        
         flash(f'Error inesperado durante la actualización: {str(e)}', 'error')
+    
+    finally:
+        # Asegurar que desactivamos mantenimiento si fue activado
+        try:
+            maintenance = MaintenanceMode.get_current()
+            if maintenance.is_active:
+                maintenance.deactivate()
+        except Exception:
+            pass  # Ignorar errores al desactivar mantenimiento
     
     return redirect(url_for('admin.super_admin_panel'))
 
@@ -284,7 +439,7 @@ def get_current_git_commit():
         return None
 
 
-def perform_system_update(update_log):
+def perform_system_update(update_log=None):
     """Realizar la actualización del sistema usando script dedicado"""
     try:
         # Usar el script dedicado para actualizaciones
@@ -332,18 +487,38 @@ def perform_system_update(update_log):
                 if step_result.get('output'):
                     output_lines.append(f"Output: {step_result['output']}")
         
-        # Guardar output en el log
-        update_log.migration_output = '\n'.join(output_lines)
-        db.session.commit()
+        # Guardar output en el log solo si existe y está disponible
+        if update_log:
+            try:
+                # Limpiar sesión antes de escribir
+                try:
+                    db.session.rollback()
+                except:
+                    pass
+                
+                # Refrescar el objeto para asegurar que esté en la sesión actual
+                db.session.refresh(update_log)
+                update_log.migration_output = '\n'.join(output_lines)
+                db.session.commit()
+            except Exception as db_error:
+                # Si no se puede escribir en BD, continuar sin log
+                print(f"Warning: No se pudo guardar log en BD: {str(db_error)}")
+                try:
+                    db.session.rollback()
+                except:
+                    pass
         
         # Verificar si la actualización fue exitosa
         overall_success = script_result.get('overall_success', False)
         
         if overall_success:
             # Desactivar modo mantenimiento solo si todo fue exitoso
-            maintenance = MaintenanceMode.get_current()
-            if maintenance.is_active:
-                maintenance.deactivate()
+            try:
+                maintenance = MaintenanceMode.get_current()
+                if maintenance.is_active:
+                    maintenance.deactivate()
+            except Exception as maintenance_error:
+                print(f"Warning: No se pudo desactivar modo mantenimiento: {str(maintenance_error)}")
         
         return {
             'success': overall_success,
