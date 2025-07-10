@@ -283,6 +283,7 @@ def get_current_git_commit():
     except Exception:
         return None
 
+
 def perform_system_update(update_log):
     """Realizar la actualización del sistema usando script dedicado"""
     try:
