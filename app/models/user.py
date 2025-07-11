@@ -349,7 +349,7 @@ class ApiIntegration(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)  # Nombre descriptivo
-    api_type = db.Column(db.String(50), nullable=False)  # weather, events, tasks, custom
+    api_type = db.Column(db.String(50), nullable=False)  # weather, events, tasks, custom, woocommerce
     url = db.Column(db.String(500), nullable=False)  # URL de la API
     api_key = db.Column(db.String(255), nullable=True)  # Clave API (encriptada)
     headers = db.Column(db.Text, nullable=True)  # Headers JSON adicionales
@@ -387,6 +387,189 @@ class ApiIntegration(db.Model):
         except (json.JSONDecodeError, AttributeError, TypeError):
             return None
     
+    @classmethod
+    def create_woocommerce_integration(cls, name, store_url, consumer_key, consumer_secret, 
+                                       integration_type='products', created_by=None):
+        """Crear integración WooCommerce con configuración automática"""
+        import json
+        import base64
+        
+        # Configuraciones predefinidas para diferentes tipos de WooCommerce
+        woocommerce_configs = {
+            'products': {
+                'endpoint': 'products',
+                'params': 'per_page=5&status=publish',
+                'mapping': {
+                    'display_field': 'name',
+                    'image_field': 'images[0].src',
+                    'description_field': 'short_description',
+                    'link_field': 'permalink',
+                    'price_field': 'price_html'
+                },
+                'refresh_interval': 360  # 6 horas
+            },
+            'orders': {
+                'endpoint': 'orders',
+                'params': 'status=processing&per_page=10',
+                'mapping': {
+                    'display_field': 'billing.first_name',
+                    'description_field': 'total',
+                    'status_field': 'status',
+                    'customer_field': 'billing.email',
+                    'items_field': 'line_items[0].name'
+                },
+                'refresh_interval': 30  # 30 minutos
+            },
+            'orders_today': {
+                'endpoint': 'orders',
+                'params': f'after={datetime.now().strftime("%Y-%m-%d")}T00:00:00&per_page=20',
+                'mapping': {
+                    'display_field': 'billing.first_name',
+                    'description_field': 'total',
+                    'status_field': 'status',
+                    'date_field': 'date_created',
+                    'items_field': 'line_items[0].name'
+                },
+                'refresh_interval': 15  # 15 minutos
+            },
+            'featured_products': {
+                'endpoint': 'products',
+                'params': 'featured=true&per_page=3&status=publish',
+                'mapping': {
+                    'display_field': 'name',
+                    'image_field': 'images[0].src',
+                    'description_field': 'price_html',
+                    'link_field': 'permalink'
+                },
+                'refresh_interval': 720  # 12 horas
+            },
+            'low_stock': {
+                'endpoint': 'products',
+                'params': 'stock_status=lowstock&per_page=10',
+                'mapping': {
+                    'display_field': 'name',
+                    'description_field': 'stock_quantity',
+                    'status_field': 'stock_status',
+                    'sku_field': 'sku'
+                },
+                'refresh_interval': 60  # 1 hora
+            }
+        }
+        
+        config = woocommerce_configs.get(integration_type, woocommerce_configs['products'])
+        
+        # Crear credenciales Base64
+        credentials = f"{consumer_key}:{consumer_secret}"
+        encoded_credentials = base64.b64encode(credentials.encode()).decode()
+        
+        # Headers para WooCommerce
+        headers = {
+            "Authorization": f"Basic {encoded_credentials}",
+            "Content-Type": "application/json",
+            "User-Agent": "Floristeria-Calendar/1.0"
+        }
+        
+        # URL completa
+        clean_url = store_url.rstrip('/')
+        full_url = f"{clean_url}/wp-json/wc/v3/{config['endpoint']}?{config['params']}"
+        
+        # Crear la integración
+        integration = cls(
+            name=f"{name} - {integration_type.title()}",
+            api_type='woocommerce',
+            url=full_url,
+            headers=json.dumps(headers),
+            mapping_config=json.dumps(config['mapping']),
+            refresh_interval=config['refresh_interval'],
+            created_by=created_by or 1,
+            is_active=True
+        )
+        
+        return integration
+    
+    def is_woocommerce(self):
+        """Verificar si es una integración WooCommerce"""
+        return self.api_type == 'woocommerce'
+    
+    def get_woocommerce_type(self):
+        """Obtener el tipo específico de WooCommerce basado en la URL"""
+        if not self.is_woocommerce():
+            return None
+            
+        if 'orders' in self.url:
+            if 'after=' in self.url:
+                return 'orders_today'
+            return 'orders'
+        elif 'featured=true' in self.url:
+            return 'featured_products'
+        elif 'stock_status=lowstock' in self.url:
+            return 'low_stock'
+        elif 'products' in self.url:
+            return 'products'
+        
+        return 'custom'
+    
+    def update_woocommerce_credentials(self, consumer_key, consumer_secret):
+        """Actualizar credenciales de WooCommerce"""
+        import json
+        import base64
+        
+        if not self.is_woocommerce():
+            return False
+        
+        try:
+            # Crear nuevas credenciales
+            credentials = f"{consumer_key}:{consumer_secret}"
+            encoded_credentials = base64.b64encode(credentials.encode()).decode()
+            
+            # Actualizar headers
+            headers = json.loads(self.headers) if self.headers else {}
+            headers["Authorization"] = f"Basic {encoded_credentials}"
+            self.headers = json.dumps(headers)
+            
+            return True
+        except Exception:
+            return False
+    
+    def get_woocommerce_display_config(self):
+        """Obtener configuración de visualización específica para WooCommerce"""
+        wc_type = self.get_woocommerce_type()
+        
+        display_configs = {
+            'products': {
+                'icon': 'fas fa-shopping-bag',
+                'color': '#28a745',
+                'title_template': 'Producto: {name}',
+                'description_template': '{price_html}'
+            },
+            'orders': {
+                'icon': 'fas fa-receipt',
+                'color': '#ffc107',
+                'title_template': 'Pedido: {billing.first_name}',
+                'description_template': 'Total: {total} - Estado: {status}'
+            },
+            'orders_today': {
+                'icon': 'fas fa-calendar-day',
+                'color': '#dc3545',
+                'title_template': 'Pedido Hoy: {billing.first_name}',
+                'description_template': '{line_items[0].name} - {total}'
+            },
+            'featured_products': {
+                'icon': 'fas fa-star',
+                'color': '#fd7e14',
+                'title_template': 'Destacado: {name}',
+                'description_template': '{price_html}'
+            },
+            'low_stock': {
+                'icon': 'fas fa-exclamation-triangle',
+                'color': '#dc3545',
+                'title_template': 'Stock Bajo: {name}',
+                'description_template': 'Quedan: {stock_quantity}'
+            }
+        }
+        
+        return display_configs.get(wc_type, display_configs['products'])
+
     def __repr__(self):
         return f'<ApiIntegration {self.name} - {self.api_type}>'
 

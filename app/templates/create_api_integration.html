@@ -36,11 +36,18 @@
                                     <label for="api_type" class="form-label">Tipo de API <span class="text-danger">*</span></label>
                                     <select class="form-select" id="api_type" name="api_type" required>
                                         <option value="">Seleccionar tipo...</option>
+                                        <option value="woocommerce">🛒 WooCommerce (Recomendado)</option>
                                         <option value="weather">🌤️ Clima</option>
                                         <option value="events">📅 Eventos</option>
                                         <option value="tasks">✅ Tareas</option>
                                         <option value="custom">⚙️ Personalizada</option>
                                     </select>
+                                    <div class="form-text">
+                                        💡 Para WooCommerce, recomendamos usar el 
+                                        <a href="{{ url_for('calendar.setup_woocommerce') }}" class="text-decoration-none">
+                                            Configurador Automático
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

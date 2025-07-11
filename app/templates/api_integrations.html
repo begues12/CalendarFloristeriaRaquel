@@ -9,15 +9,23 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="fas fa-plug"></i> Integraciones de API</h2>
                 <div>
-                    <a href="{{ url_for('calendar.create_api_integration') }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Nueva Integración
-                    </a>
-                    <a href="{{ url_for('calendar.sync_all_apis') }}" class="btn btn-success">
-                        <i class="fas fa-sync"></i> Sincronizar Todo
-                    </a>
-                    <a href="{{ url_for('calendar.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i> Volver al Calendario
-                    </a>
+                    <!-- Botón específico WooCommerce -->
+                    <div class="btn-group me-2">
+                        <a href="{{ url_for('calendar.setup_woocommerce') }}" class="btn btn-success">
+                            <i class="fab fa-wordpress me-1"></i>Configurar WooCommerce
+                        </a>
+                        <a href="{{ url_for('calendar.create_api_integration') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Otra API
+                        </a>
+                    </div>
+                    <div class="btn-group">
+                        <a href="{{ url_for('calendar.sync_all_apis') }}" class="btn btn-outline-success">
+                            <i class="fas fa-sync"></i> Sincronizar Todo
+                        </a>
+                        <a href="{{ url_for('calendar.index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -56,6 +64,12 @@
                                             <i class="fas fa-calendar-alt text-success"></i> Eventos
                                         {% elif integration.api_type == 'tasks' %}
                                             <i class="fas fa-tasks text-warning"></i> Tareas
+                                        {% elif integration.api_type == 'woocommerce' %}
+                                            <i class="fab fa-wordpress text-primary"></i> 
+                                            <strong class="text-primary">WooCommerce</strong>
+                                            {% if integration.get_woocommerce_type %}
+                                                <br><small class="text-muted">{{ integration.get_woocommerce_type().title() }}</small>
+                                            {% endif %}
                                         {% else %}
                                             <i class="fas fa-cog text-secondary"></i> Personalizada
                                         {% endif %}
@@ -94,10 +108,17 @@
                                                     title="Probar conexión">
                                                 <i class="fas fa-vial"></i>
                                             </button>
+                                            {% if integration.api_type == 'woocommerce' %}
+                                            <a href="{{ url_for('calendar.sync_woocommerce_integration', integration_id=integration.id) }}" 
+                                               class="btn btn-sm btn-outline-success" title="Sincronizar WooCommerce">
+                                                <i class="fab fa-wordpress"></i>
+                                            </a>
+                                            {% else %}
                                             <a href="{{ url_for('calendar.sync_api_integration', integration_id=integration.id) }}" 
                                                class="btn btn-sm btn-outline-success" title="Sincronizar">
                                                 <i class="fas fa-sync"></i>
                                             </a>
+                                            {% endif %}
                                             <a href="{{ url_for('calendar.edit_api_integration', integration_id=integration.id) }}" 
                                                class="btn btn-sm btn-outline-primary" title="Editar">
                                                 <i class="fas fa-edit"></i>

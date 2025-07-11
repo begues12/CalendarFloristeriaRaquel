@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Configurar WooCommerce - {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fab fa-wordpress text-primary me-2"></i>
+                        Configurar WooCommerce
+                    </h2>
+                    <p class="text-muted mb-0">Configura tu tienda WooCommerce en pocos pasos</p>
+                </div>
+                <a href="{{ url_for('calendar.api_integrations') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Volver
+                </a>
+            </div>
+
+            <!-- Información de ayuda -->
+            <div class="alert alert-info">
+                <h6><i class="fas fa-info-circle me-2"></i>¿Cómo obtener las claves de API?</h6>
+                <ol class="mb-0">
+                    <li>Ve a tu panel de WordPress: <strong>WooCommerce → Ajustes → Avanzado → REST API</strong></li>
+                    <li>Haz clic en <strong>"Agregar clave"</strong></li>
+                    <li>Asigna permisos de <strong>"Lectura"</strong> como mínimo</li>
+                    <li>Copia la <strong>Clave de consumidor (ck_...)</strong> y <strong>Secreto (cs_...)</strong></li>
+                </ol>
+            </div>
+
+            <!-- Formulario -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cog me-2"></i>Configuración de la Tienda
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <!-- URL de la tienda -->
+                        <div class="mb-4">
+                            <label for="store_url" class="form-label">
+                                <i class="fas fa-globe me-1"></i>URL de tu tienda
+                            </label>
+                            <input type="url" class="form-control form-control-lg" id="store_url" name="store_url" 
+                                   placeholder="https://mi-tienda.com" required>
+                            <div class="form-text">La URL principal de tu tienda WooCommerce</div>
+                        </div>
+
+                        <!-- Credenciales API -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="consumer_key" class="form-label">
+                                        <i class="fas fa-key me-1"></i>Consumer Key
+                                    </label>
+                                    <input type="text" class="form-control" id="consumer_key" name="consumer_key" 
+                                           placeholder="ck_..." required>
+                                    <div class="form-text">Clave que comienza con ck_</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="consumer_secret" class="form-label">
+                                        <i class="fas fa-lock me-1"></i>Consumer Secret
+                                    </label>
+                                    <input type="password" class="form-control" id="consumer_secret" name="consumer_secret" 
+                                           placeholder="cs_..." required>
+                                    <div class="form-text">Secreto que comienza con cs_</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tipo de integración -->
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-list me-1"></i>¿Qué quieres mostrar en el calendario?
+                            </label>
+                            <div class="row">
+                                {% for type_key, type_info in wc_types.items() %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="integration_type" 
+                                               id="type_{{ type_key }}" value="{{ type_key }}" 
+                                               {% if type_key == 'products' %}checked{% endif %}>
+                                        <label class="form-check-label" for="type_{{ type_key }}">
+                                            <div class="d-flex align-items-start">
+                                                <i class="{{ type_info.icon }} text-primary me-2 mt-1"></i>
+                                                <div>
+                                                    <strong>{{ type_info.name }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">{{ type_info.description }}</small>
+                                                    <br>
+                                                    <small class="text-success">{{ type_info.recommended_for }}</small>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Nombre personalizado -->
+                        <div class="mb-4">
+                            <label for="custom_name" class="form-label">
+                                <i class="fas fa-tag me-1"></i>Nombre personalizado (opcional)
+                            </label>
+                            <input type="text" class="form-control" id="custom_name" name="custom_name" 
+                                   placeholder="Mi Tienda - Productos">
+                            <div class="form-text">Si lo dejas vacío, se generará automáticamente</div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('calendar.api_integrations') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-rocket me-1"></i>Configurar WooCommerce
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <i class="fas fa-check-circle me-2"></i>Beneficios
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check text-success me-2"></i>Configuración automática</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Sincronización inteligente</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Mapeo optimizado</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Actualización automática</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-info">
+                        <div class="card-header bg-info text-white">
+                            <i class="fas fa-lightbulb me-2"></i>Casos de uso
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-star text-warning me-2"></i>Dashboard de ventas</li>
+                                <li><i class="fas fa-calendar text-primary me-2"></i>Seguimiento de pedidos</li>
+                                <li><i class="fas fa-chart-line text-success me-2"></i>Control de inventario</li>
+                                <li><i class="fas fa-users text-info me-2"></i>Gestión de clientes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mostrar/ocultar password
+document.addEventListener('DOMContentLoaded', function() {
+    const togglePassword = document.createElement('button');
+    togglePassword.type = 'button';
+    togglePassword.className = 'btn btn-outline-secondary';
+    togglePassword.innerHTML = '<i class="fas fa-eye"></i>';
+    
+    const secretInput = document.getElementById('consumer_secret');
+    const secretContainer = secretInput.parentElement;
+    
+    // Crear input group
+    const inputGroup = document.createElement('div');
+    inputGroup.className = 'input-group';
+    
+    secretContainer.insertBefore(inputGroup, secretInput);
+    inputGroup.appendChild(secretInput);
+    
+    const appendDiv = document.createElement('div');
+    appendDiv.className = 'input-group-append';
+    appendDiv.appendChild(togglePassword);
+    inputGroup.appendChild(appendDiv);
+    
+    togglePassword.addEventListener('click', function() {
+        const type = secretInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        secretInput.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        icon.className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    });
+});
+
+// Auto-completar ejemplos
+document.getElementById('store_url').addEventListener('blur', function() {
+    const url = this.value;
+    if (url && !document.getElementById('custom_name').value) {
+        const domain = url.replace(/https?:\/\//, '').split('/')[0];
+        const selectedType = document.querySelector('input[name="integration_type"]:checked').value;
+        const typeName = document.querySelector(`label[for="type_${selectedType}"] strong`).textContent;
+        document.getElementById('custom_name').value = `${domain} - ${typeName}`;
+    }
+});
+
+// Actualizar nombre cuando cambie el tipo
+document.querySelectorAll('input[name="integration_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const storeUrl = document.getElementById('store_url').value;
+        if (storeUrl && !document.getElementById('custom_name').value) {
+            const domain = storeUrl.replace(/https?:\/\//, '').split('/')[0];
+            const typeName = this.closest('.form-check').querySelector('strong').textContent;
+            document.getElementById('custom_name').value = `${domain} - ${typeName}`;
+        }
+    });
+});
+</script>
+{% endblock %}

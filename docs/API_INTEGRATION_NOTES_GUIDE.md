@@ -22,13 +22,22 @@ The API Integration system allows you to fetch data from external APIs and displ
 - Click the Admin Toolbar (visible only to admins/super admins)
 - Select "Gestionar APIs"
 
-#### 2. Create New API Integration
-- Click "Nueva Integración"
+#### 2. Quick WooCommerce Setup (Recommended)
+- Click "Configurar WooCommerce" (green button)
+- Enter your store details:
+  - **Store URL**: Your WooCommerce site URL
+  - **Consumer Key**: From WooCommerce → Settings → Advanced → REST API
+  - **Consumer Secret**: From the same location
+  - **Integration Type**: Choose what to display (Products, Orders, etc.)
+- Click "Configurar WooCommerce" to auto-configure
+
+#### 3. Manual API Integration
+- Click "Otra API" for non-WooCommerce integrations
 - Fill in the required fields:
   - **Name**: Descriptive name for your API
+  - **API Type**: Select WooCommerce or other types
   - **API URL**: The endpoint URL
-  - **API Key**: Authentication key (if required)
-  - **Headers**: Additional HTTP headers (JSON format)
+  - **Headers**: Authentication headers (JSON format)
   - **Mapping Configuration**: How to extract data from API response
 
 #### 3. Mapping Configuration
@@ -69,6 +78,53 @@ The mapping configuration tells the system how to extract useful information fro
   "link_field": "articles[0].url"
 }
 ```
+
+**WooCommerce API (Products):**
+```json
+{
+  "display_field": "name",
+  "image_field": "images[0].src",
+  "description_field": "price_html",
+  "link_field": "permalink"
+}
+```
+
+**WooCommerce API (Orders):**
+```json
+{
+  "display_field": "billing.first_name",
+  "description_field": "total",
+  "status_field": "status",
+  "date_field": "date_created"
+}
+```
+
+#### 5. WooCommerce Integration Setup
+
+**Step 1: Generate API Keys**
+- Go to WooCommerce → Settings → Advanced → REST API
+- Create new API key with Read/Write permissions
+- Copy Consumer Key (ck_...) and Consumer Secret (cs_...)
+
+**Step 2: Configure Headers**
+For WooCommerce, use Basic Authentication:
+```json
+{
+  "Authorization": "Basic [BASE64_ENCODED_CREDENTIALS]",
+  "Content-Type": "application/json"
+}
+```
+
+To generate the BASE64 credentials:
+1. Combine: `ck_your_key:cs_your_secret`
+2. Encode in Base64
+3. Example: `ck_abc123:cs_def456` becomes `Y2tfYWJjMTIzOmNzX2RlZjQ1Ng==`
+
+**Step 3: Common WooCommerce URLs**
+- Products: `https://yourstore.com/wp-json/wc/v3/products`
+- Orders: `https://yourstore.com/wp-json/wc/v3/orders`
+- Customers: `https://yourstore.com/wp-json/wc/v3/customers`
+- Categories: `https://yourstore.com/wp-json/wc/v3/products/categories`
 
 ### Managing API Data
 
@@ -220,6 +276,36 @@ Calendar Notes allow users to create, edit, and manage text notes associated wit
 ## Troubleshooting
 
 ### Common API Issues
+
+### Common API Issues
+
+**"Unexpected token '<'"** (HTML response instead of JSON)
+- **Causa**: La URL no existe o requiere autenticación
+- **Solución**: 
+  1. Verifica que la URL esté correcta: `https://tu-tienda.com/wp-json/wc/v3/products`
+  2. Asegúrate de que las credenciales estén en Base64
+  3. Comprueba que WooCommerce REST API esté habilitado
+  4. Prueba la URL en el navegador primero
+
+**Ejemplo de URL correcta para WooCommerce:**
+```
+https://tu-tienda.com/wp-json/wc/v3/products?per_page=5
+```
+
+**Ejemplo de credenciales Base64:**
+Para claves `ck_cda0de90e5b9c4ef0130a0aa98a92dc526425c78:cs_e35c00cd198e198148fbf2cdbe96d1044c5169fc`
+
+1. Combinar con dos puntos: `ck_cda0de90e5b9c4ef0130a0aa98a92dc526425c78:cs_e35c00cd198e198148fbf2cdbe96d1044c5169fc`
+2. Codificar en Base64: `Y2tfY2RhMGRlOTBlNWI5YzRlZjAxMzBhMGFhOThhOTJkYzUyNjQyNWM3ODpjc19lMzVjMDBjZDE5OGUxOTgxNDhmYjJjZGJlOTZkMTA0NGM1MTY5ZmM=`
+
+**Headers completos para WooCommerce:**
+```json
+{
+  "Authorization": "Basic Y2tfY2RhMGRlOTBlNWI5YzRlZjAxMzBhMGFhOThhOTJkYzUyNjQyNWM3ODpjc19lMzVjMDBjZDE5OGUxOTgxNDhmYjJjZGJlOTZkMTA0NGM1MTY5ZmM=",
+  "Content-Type": "application/json",
+  "User-Agent": "Floristeria-Calendar/1.0"
+}
+```
 
 **"API not responding"**
 - Check URL validity

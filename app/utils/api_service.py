@@ -416,3 +416,213 @@ class ApiIntegrationService:
             })
         
         return results
+
+    @staticmethod
+    def create_woocommerce_integration(store_url: str, consumer_key: str, consumer_secret: str, 
+                                     integration_type: str = 'products', name: str = None, 
+                                     created_by: int = 1) -> Dict[str, Any]:
+        """Crear integración WooCommerce con configuración automática"""
+        try:
+            # Validar URL de tienda
+            if not store_url.startswith(('http://', 'https://')):
+                store_url = f"https://{store_url}"
+            
+            # Generar nombre automático si no se proporciona
+            if not name:
+                domain = store_url.replace('https://', '').replace('http://', '').split('/')[0]
+                name = f"WooCommerce {domain}"
+            
+            # Crear la integración usando el método del modelo
+            integration = ApiIntegration.create_woocommerce_integration(
+                name=name,
+                store_url=store_url,
+                consumer_key=consumer_key,
+                consumer_secret=consumer_secret,
+                integration_type=integration_type,
+                created_by=created_by
+            )
+            
+            # Guardar en base de datos
+            db.session.add(integration)
+            db.session.commit()
+            
+            # Probar la conexión
+            test_result = ApiIntegrationService.test_api_connection(integration)
+            
+            return {
+                'success': True,
+                'integration_id': integration.id,
+                'message': f'Integración WooCommerce creada: {integration.name}',
+                'test_result': test_result
+            }
+            
+        except Exception as e:
+            logger.error(f"Error creando integración WooCommerce: {e}")
+            return {
+                'success': False,
+                'message': f'Error al crear integración: {str(e)}'
+            }
+    
+    @staticmethod
+    def get_woocommerce_integration_types():
+        """Obtener tipos de integración WooCommerce disponibles"""
+        return {
+            'products': {
+                'name': 'Productos',
+                'description': 'Productos publicados de la tienda',
+                'icon': 'fas fa-shopping-bag',
+                'recommended_for': 'Mostrar catálogo de productos'
+            },
+            'orders': {
+                'name': 'Pedidos',
+                'description': 'Pedidos en proceso',
+                'icon': 'fas fa-receipt',
+                'recommended_for': 'Gestión de pedidos'
+            },
+            'orders_today': {
+                'name': 'Pedidos de Hoy',
+                'description': 'Pedidos realizados hoy',
+                'icon': 'fas fa-calendar-day',
+                'recommended_for': 'Dashboard diario'
+            },
+            'featured_products': {
+                'name': 'Productos Destacados',
+                'description': 'Productos marcados como destacados',
+                'icon': 'fas fa-star',
+                'recommended_for': 'Promoción de productos'
+            },
+            'low_stock': {
+                'name': 'Stock Bajo',
+                'description': 'Productos con stock bajo',
+                'icon': 'fas fa-exclamation-triangle',
+                'recommended_for': 'Alertas de inventario'
+            }
+        }
+    
+    @staticmethod
+    def sync_woocommerce_data(integration: ApiIntegration, target_date: date = None) -> Dict[str, Any]:
+        """Sincronizar datos específicos de WooCommerce"""
+        if not integration.is_woocommerce():
+            return {'success': False, 'message': 'No es una integración WooCommerce'}
+        
+        try:
+            # Obtener datos de la API
+            result = ApiIntegrationService.fetch_api_data(integration)
+            if not result['success']:
+                return result
+            
+            api_data = result['data']
+            target_date = target_date or date.today()
+            
+            # Procesar datos según el tipo de WooCommerce
+            wc_type = integration.get_woocommerce_type()
+            display_config = integration.get_woocommerce_display_config()
+            
+            # Limpiar datos existentes para la fecha
+            ApiData.query.filter_by(
+                integration_id=integration.id,
+                date_for=target_date
+            ).delete()
+            
+            # Procesar cada item según el tipo
+            items_created = 0
+            
+            if isinstance(api_data, list):
+                for item in api_data[:10]:  # Limitar a 10 items
+                    processed_item = ApiIntegrationService._process_woocommerce_item(
+                        item, integration, display_config, target_date
+                    )
+                    if processed_item:
+                        db.session.add(processed_item)
+                        items_created += 1
+            elif isinstance(api_data, dict):
+                processed_item = ApiIntegrationService._process_woocommerce_item(
+                    api_data, integration, display_config, target_date
+                )
+                if processed_item:
+                    db.session.add(processed_item)
+                    items_created += 1
+            
+            # Actualizar estado de sincronización
+            integration.last_sync = datetime.utcnow()
+            integration.last_sync_status = 'success'
+            integration.last_error = None
+            
+            db.session.commit()
+            
+            return {
+                'success': True,
+                'items_created': items_created,
+                'message': f'Sincronizados {items_created} items de WooCommerce'
+            }
+            
+        except Exception as e:
+            logger.error(f"Error sincronizando WooCommerce {integration.name}: {e}")
+            integration.last_sync_status = 'error'
+            integration.last_error = str(e)
+            db.session.commit()
+            
+            return {
+                'success': False,
+                'message': f'Error en sincronización: {str(e)}'
+            }
+    
+    @staticmethod
+    def _process_woocommerce_item(item: Dict, integration: ApiIntegration, 
+                                display_config: Dict, target_date: date) -> Optional[ApiData]:
+        """Procesar un item individual de WooCommerce"""
+        try:
+            # Extraer datos usando el mapeo
+            mapping = json.loads(integration.mapping_config)
+            
+            title = ApiIntegrationService._extract_nested_value(item, mapping.get('display_field', ''))
+            description = ApiIntegrationService._extract_nested_value(item, mapping.get('description_field', ''))
+            image_url = ApiIntegrationService._extract_nested_value(item, mapping.get('image_field', ''))
+            
+            if not title:
+                return None
+            
+            # Crear ApiData
+            api_data_item = ApiData(
+                integration_id=integration.id,
+                date_for=target_date,
+                title=str(title)[:200],  # Truncar si es muy largo
+                description=str(description) if description else None,
+                image_url=image_url if image_url else None,
+                icon=display_config.get('icon', 'fas fa-shopping-cart'),
+                color=display_config.get('color', '#007bff'),
+                data_json=json.dumps(item),
+                is_visible=True
+            )
+            
+            return api_data_item
+            
+        except Exception as e:
+            logger.error(f"Error procesando item WooCommerce: {e}")
+            return None
+    
+    @staticmethod
+    def _extract_nested_value(data: Dict, path: str) -> Any:
+        """Extraer valor anidado usando notación de punto y arrays"""
+        if not path or not data:
+            return None
+        
+        try:
+            value = data
+            parts = path.split('.')
+            
+            for part in parts:
+                if '[' in part and ']' in part:
+                    # Manejar arrays como 'images[0]'
+                    key = part.split('[')[0]
+                    index = int(part.split('[')[1].split(']')[0])
+                    value = value.get(key, [])[index] if len(value.get(key, [])) > index else None
+                else:
+                    value = value.get(part) if isinstance(value, dict) else None
+                
+                if value is None:
+                    break
+            
+            return value
+        except (KeyError, IndexError, ValueError, TypeError):
+            return None

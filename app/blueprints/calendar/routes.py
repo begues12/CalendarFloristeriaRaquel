@@ -454,6 +454,71 @@ def sync_all_apis():
     
     return redirect(url_for('calendar.api_integrations'))
 
+@bp.route('/api-integrations/woocommerce/setup', methods=['GET', 'POST'])
+@login_required
+def setup_woocommerce():
+    """Configuración rápida para WooCommerce"""
+    if not (current_user.is_admin or current_user.is_super_admin):
+        abort(403)
+    
+    if request.method == 'POST':
+        try:
+            store_url = request.form['store_url']
+            consumer_key = request.form['consumer_key']
+            consumer_secret = request.form['consumer_secret']
+            integration_type = request.form['integration_type']
+            custom_name = request.form.get('custom_name', '').strip()
+            
+            # Crear integración usando el servicio
+            result = ApiIntegrationService.create_woocommerce_integration(
+                store_url=store_url,
+                consumer_key=consumer_key,
+                consumer_secret=consumer_secret,
+                integration_type=integration_type,
+                name=custom_name,
+                created_by=current_user.id
+            )
+            
+            if result['success']:
+                flash(result['message'], 'success')
+                if result['test_result']['success']:
+                    flash('Conexión verificada correctamente', 'success')
+                else:
+                    flash(f"Advertencia: {result['test_result']['message']}", 'warning')
+                return redirect(url_for('calendar.api_integrations'))
+            else:
+                flash(result['message'], 'error')
+                
+        except Exception as e:
+            flash(f'Error al configurar WooCommerce: {str(e)}', 'error')
+    
+    # Obtener tipos disponibles
+    wc_types = ApiIntegrationService.get_woocommerce_integration_types()
+    
+    return render_template('setup_woocommerce.html', wc_types=wc_types)
+
+@bp.route('/api-integrations/<int:integration_id>/woocommerce/sync')
+@login_required
+def sync_woocommerce_integration(integration_id):
+    """Sincronizar integración WooCommerce específica"""
+    if not (current_user.is_admin or current_user.is_super_admin):
+        abort(403)
+    
+    integration = ApiIntegration.query.get_or_404(integration_id)
+    
+    if not integration.is_woocommerce():
+        flash('Esta no es una integración WooCommerce', 'error')
+        return redirect(url_for('calendar.api_integrations'))
+    
+    result = ApiIntegrationService.sync_woocommerce_data(integration)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('calendar.api_integrations'))
+
 # =============================================================================
 # RUTAS PARA NOTAS DEL CALENDARIO
 # =============================================================================
