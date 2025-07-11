@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración de Base de Datos - Floristería Raquel{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-database"></i> Configuración de Base de Datos</h2>
+                    <p class="text-muted">Gestiona la configuración de la base de datos del sistema</p>
+                </div>
+                <a href="{{ url_for('admin.super_admin_panel') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al Panel
+                </a>
+            </div>
+
+            <!-- Estado Actual -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-info-circle"></i> Estado Actual</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-4"><strong>Tipo:</strong></div>
+                                <div class="col-sm-8">
+                                    <span class="badge badge-{{ 'primary' if current_db_type == 'mysql' else 'secondary' }}">
+                                        {{ current_db_type.upper() }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-sm-4"><strong>Estado:</strong></div>
+                                <div class="col-sm-8">
+                                    {% if connection_status == 'connected' %}
+                                        <span class="badge badge-success">Conectado</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Error</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-sm-4"><strong>Tablas:</strong></div>
+                                <div class="col-sm-8">{{ table_count }} tablas encontradas</div>
+                            </div>
+                            {% if connection_error %}
+                            <div class="row mt-2">
+                                <div class="col-12">
+                                    <div class="alert alert-danger alert-sm">
+                                        <strong>Error:</strong> {{ connection_error }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-table"></i> Tablas de la Base de Datos</h5>
+                        </div>
+                        <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                            {% if tables %}
+                                <ul class="list-unstyled mb-0">
+                                    {% for table in tables %}
+                                    <li><i class="fas fa-table text-muted"></i> {{ table }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No se encontraron tablas</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuración de Base de Datos -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-cog"></i> Cambiar Configuración de Base de Datos</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('admin.switch_database') }}" id="dbConfigForm">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Tipo de Base de Datos</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="db_type" id="db_sqlite" value="sqlite" 
+                                               {{ 'checked' if current_db_type == 'sqlite' else '' }}>
+                                        <label class="form-check-label" for="db_sqlite">
+                                            <i class="fas fa-file-alt"></i> SQLite
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="db_type" id="db_mysql" value="mysql"
+                                               {{ 'checked' if current_db_type == 'mysql' else '' }}>
+                                        <label class="form-check-label" for="db_mysql">
+                                            <i class="fas fa-database"></i> MySQL
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-9">
+                                <!-- Configuración SQLite -->
+                                <div id="sqlite-config" class="db-config" style="{{ 'display: block;' if current_db_type == 'sqlite' else 'display: none;' }}">
+                                    <h6>Configuración SQLite</h6>
+                                    <div class="form-group">
+                                        <label for="sqlite_path">Ruta del archivo SQLite:</label>
+                                        <input type="text" class="form-control" name="sqlite_path" id="sqlite_path" 
+                                               value="sqlite:///floristeria.db" placeholder="sqlite:///ruta/archivo.db">
+                                        <small class="form-text text-muted">Formato: sqlite:///ruta/archivo.db</small>
+                                    </div>
+                                </div>
+
+                                <!-- Configuración MySQL -->
+                                <div id="mysql-config" class="db-config" style="{{ 'display: block;' if current_db_type == 'mysql' else 'display: none;' }}">
+                                    <h6>Configuración MySQL</h6>
+                                    {% if not pymysql_available %}
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle"></i> 
+                                        <strong>PyMySQL no está instalado.</strong> 
+                                        Ejecuta: <code>pip install PyMySQL cryptography</code>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="mysql_host">Host:</label>
+                                                <input type="text" class="form-control" name="mysql_host" id="mysql_host" 
+                                                       value="localhost" placeholder="localhost">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="mysql_port">Puerto:</label>
+                                                <input type="number" class="form-control" name="mysql_port" id="mysql_port" 
+                                                       value="3306" placeholder="3306">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="mysql_user">Usuario:</label>
+                                                <input type="text" class="form-control" name="mysql_user" id="mysql_user" 
+                                                       value="root" placeholder="root">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="mysql_password">Contraseña:</label>
+                                                <input type="password" class="form-control" name="mysql_password" id="mysql_password" 
+                                                       placeholder="Contraseña de MySQL">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="mysql_database">Base de Datos:</label>
+                                        <input type="text" class="form-control" name="mysql_database" id="mysql_database" 
+                                               value="floristeria" placeholder="floristeria">
+                                    </div>
+                                    
+                                    <button type="button" class="btn btn-info btn-sm" id="testConnection">
+                                        <i class="fas fa-plug"></i> Probar Conexión
+                                    </button>
+                                    <div id="connectionResult" class="mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Guardar Configuración
+                                </button>
+                                <button type="button" class="btn btn-warning" onclick="createBackup()">
+                                    <i class="fas fa-archive"></i> Crear Backup
+                                </button>
+                            </div>
+                            <small class="text-muted align-self-center">
+                                <i class="fas fa-info-circle"></i> 
+                                La aplicación debe reiniciarse para aplicar los cambios
+                            </small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- URI Actual -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6><i class="fas fa-link"></i> URI de Conexión Actual</h6>
+                </div>
+                <div class="card-body">
+                    <code class="d-block p-2 bg-light rounded">{{ current_db_uri }}</code>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Cambiar entre configuraciones de BD
+document.querySelectorAll('input[name="db_type"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('.db-config').forEach(function(config) {
+            config.style.display = 'none';
+        });
+        
+        if (this.value === 'sqlite') {
+            document.getElementById('sqlite-config').style.display = 'block';
+        } else if (this.value === 'mysql') {
+            document.getElementById('mysql-config').style.display = 'block';
+        }
+    });
+});
+
+// Probar conexión MySQL
+document.getElementById('testConnection').addEventListener('click', function() {
+    const button = this;
+    const resultDiv = document.getElementById('connectionResult');
+    
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Probando...';
+    
+    const formData = new FormData();
+    formData.append('db_type', 'mysql');
+    formData.append('mysql_host', document.getElementById('mysql_host').value);
+    formData.append('mysql_port', document.getElementById('mysql_port').value);
+    formData.append('mysql_user', document.getElementById('mysql_user').value);
+    formData.append('mysql_password', document.getElementById('mysql_password').value);
+    formData.append('mysql_database', document.getElementById('mysql_database').value);
+    
+    fetch('{{ url_for("admin.test_database_connection") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const alertClass = data.warning ? 'alert-warning' : 'alert-success';
+            resultDiv.innerHTML = `<div class="alert ${alertClass} alert-sm">${data.message}</div>`;
+        } else {
+            resultDiv.innerHTML = `<div class="alert alert-danger alert-sm">${data.message}</div>`;
+        }
+    })
+    .catch(error => {
+        resultDiv.innerHTML = `<div class="alert alert-danger alert-sm">Error de red: ${error}</div>`;
+    })
+    .finally(() => {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-plug"></i> Probar Conexión';
+    });
+});
+
+// Crear backup
+function createBackup() {
+    if (confirm('¿Crear backup de la base de datos actual?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("admin.backup_database") }}';
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Confirmación antes de cambiar BD
+document.getElementById('dbConfigForm').addEventListener('submit', function(e) {
+    const currentType = '{{ current_db_type }}';
+    const selectedType = document.querySelector('input[name="db_type"]:checked').value;
+    
+    if (currentType !== selectedType) {
+        if (!confirm('¿Estás seguro de cambiar el tipo de base de datos? Se recomienda crear un backup primero.')) {
+            e.preventDefault();
+        }
+    }
+});
+</script>
+{% endblock %}

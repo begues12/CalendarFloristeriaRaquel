@@ -2,10 +2,16 @@
 Rutas administrativas: gestión de documentos de todos los usuarios
 """
 
-from flask import render_template, request, redirect, url_for, flash, send_file, jsonify, abort
+from flask import render_template, request, redirect, url_for, flash, send_file, jsonify, abort, current_app
 from flask_login import login_required, current_user
 from datetime import datetime, timedelta
 import os
+import subprocess
+import sys
+import json
+from sqlalchemy import text
+from app.models import UserDocument, User, MaintenanceMode, UpdateLog, db
+from . import bp
 import subprocess
 import sys
 import json
@@ -316,15 +322,8 @@ def update_system():
                                 db.session.close()
                             except:
                                 pass
-                            import time
-                            time.sleep(0.5)
-                        else:
-                            try:
-                                db.session.rollback()
-                                db.session.close()
-                            except:
-                                pass
-            
+                        import time
+                        time.sleep(0.5)
             flash(f'Error en la actualización: {result["error"]}', 'error')
             
     except Exception as e:
@@ -537,3 +536,259 @@ def perform_system_update(update_log=None):
             'success': False, 
             'error': f'Error inesperado en actualización: {str(e)}'
         }
+
+# ===============================================
+# GESTIÓN DE BASE DE DATOS
+# ===============================================
+
+@bp.route('/database_config')
+@login_required
+@require_super_admin
+def database_config():
+    """Panel de configuración de base de datos"""
+    # Obtener configuración actual
+    current_db_uri = current_app.config.get('SQLALCHEMY_DATABASE_URI', '')
+    
+    # Determinar tipo de BD actual
+    if 'mysql' in current_db_uri.lower():
+        current_db_type = 'mysql'
+    elif 'sqlite' in current_db_uri.lower():
+        current_db_type = 'sqlite'
+    else:
+        current_db_type = 'unknown'
+    
+    # Verificar estado de la conexión
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        connection_status = 'connected'
+        connection_error = None
+    except Exception as e:
+        connection_status = 'error'
+        connection_error = str(e)
+    
+    # Información de las tablas
+    try:
+        inspector = db.inspect(db.engine)
+        tables = inspector.get_table_names()
+        table_count = len(tables)
+    except Exception:
+        table_count = 0
+        tables = []
+    
+    # Verificar si PyMySQL está disponible
+    try:
+        import pymysql
+        pymysql_available = True
+    except ImportError:
+        pymysql_available = False
+    
+    return render_template('database_config.html',
+                         current_db_type=current_db_type,
+                         current_db_uri=current_db_uri,
+                         connection_status=connection_status,
+                         connection_error=connection_error,
+                         table_count=table_count,
+                         tables=tables,
+                         pymysql_available=pymysql_available)
+
+@bp.route('/switch_database', methods=['POST'])
+@login_required
+@require_super_admin
+def switch_database():
+    """Cambiar configuración de base de datos"""
+    try:
+        db_type = request.form.get('db_type')
+        
+        if db_type == 'sqlite':
+            new_db_uri = request.form.get('sqlite_path', 'sqlite:///floristeria.db')
+        elif db_type == 'mysql':
+            mysql_host = request.form.get('mysql_host', 'localhost')
+            mysql_port = request.form.get('mysql_port', '3306')
+            mysql_user = request.form.get('mysql_user', 'root')
+            mysql_password = request.form.get('mysql_password', '')
+            mysql_database = request.form.get('mysql_database', 'floristeria')
+            
+            new_db_uri = f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_database}"
+        else:
+            flash('Tipo de base de datos no válido', 'error')
+            return redirect(url_for('admin.database_config'))
+        
+        # Actualizar archivo .env
+        env_file = os.path.join(os.getcwd(), '.env')
+        env_content = []
+        database_url_updated = False
+        
+        # Leer archivo .env existente si existe
+        if os.path.exists(env_file):
+            with open(env_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith('DATABASE_URL='):
+                        env_content.append(f'DATABASE_URL={new_db_uri}\n')
+                        database_url_updated = True
+                    else:
+                        env_content.append(line)
+        
+        # Si no se encontró DATABASE_URL, agregarlo
+        if not database_url_updated:
+            env_content.append(f'DATABASE_URL={new_db_uri}\n')
+        
+        # Escribir archivo .env actualizado
+        with open(env_file, 'w', encoding='utf-8') as f:
+            f.writelines(env_content)
+        
+        flash(f'Configuración actualizada a {db_type.upper()}. Reinicia la aplicación para aplicar los cambios.', 'success')
+        
+    except Exception as e:
+        flash(f'Error actualizando configuración: {str(e)}', 'error')
+    
+    return redirect(url_for('admin.database_config'))
+
+@bp.route('/test_database_connection', methods=['POST'])
+@login_required
+@require_super_admin
+def test_database_connection():
+    """Probar conexión a base de datos con parámetros dados"""
+    try:
+        db_type = request.form.get('db_type')
+        
+        if db_type == 'mysql':
+            mysql_host = request.form.get('mysql_host', 'localhost')
+            mysql_port = int(request.form.get('mysql_port', '3306'))
+            mysql_user = request.form.get('mysql_user', 'root')
+            mysql_password = request.form.get('mysql_password', '')
+            mysql_database = request.form.get('mysql_database', 'floristeria')
+            
+            # Probar conexión MySQL
+            import pymysql
+            conn = pymysql.connect(
+                host=mysql_host,
+                port=mysql_port,
+                user=mysql_user,
+                password=mysql_password
+            )
+            
+            # Verificar si la base de datos existe
+            cursor = conn.cursor()
+            cursor.execute(f"SHOW DATABASES LIKE '{mysql_database}'")
+            db_exists = cursor.fetchone() is not None
+            
+            cursor.close()
+            conn.close()
+            
+            if db_exists:
+                return jsonify({
+                    'success': True, 
+                    'message': f'Conexión exitosa. Base de datos "{mysql_database}" encontrada.'
+                })
+            else:
+                return jsonify({
+                    'success': True, 
+                    'message': f'Conexión exitosa, pero la base de datos "{mysql_database}" no existe. Se creará automáticamente.',
+                    'warning': True
+                })
+        
+        elif db_type == 'sqlite':
+            sqlite_path = request.form.get('sqlite_path', 'sqlite:///floristeria.db')
+            # Para SQLite, simplemente verificamos que el directorio existe
+            if sqlite_path.startswith('sqlite:///'):
+                file_path = sqlite_path.replace('sqlite:///', '')
+                directory = os.path.dirname(file_path) or '.'
+                if os.access(directory, os.W_OK):
+                    return jsonify({
+                        'success': True, 
+                        'message': 'Ruta SQLite válida y escribible.'
+                    })
+                else:
+                    return jsonify({
+                        'success': False, 
+                        'message': 'No se puede escribir en el directorio especificado.'
+                    })
+            else:
+                return jsonify({
+                    'success': False, 
+                    'message': 'Formato de ruta SQLite inválido.'
+                })
+        
+        return jsonify({
+            'success': False, 
+            'message': 'Tipo de base de datos no soportado.'
+        })
+        
+    except ImportError:
+        return jsonify({
+            'success': False, 
+            'message': 'PyMySQL no está instalado. Ejecuta: pip install PyMySQL'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False, 
+            'message': f'Error de conexión: {str(e)}'
+        })
+
+@bp.route('/backup_database', methods=['POST'])
+@login_required
+@require_super_admin
+def backup_database():
+    """Crear backup de la base de datos actual"""
+    try:
+        from datetime import datetime
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        
+        current_db_uri = current_app.config.get('SQLALCHEMY_DATABASE_URI', '')
+        
+        if 'sqlite' in current_db_uri.lower():
+            # Backup SQLite
+            if current_db_uri.startswith('sqlite:///'):
+                source_file = current_db_uri.replace('sqlite:///', '')
+                if os.path.exists(source_file):
+                    backup_file = f"backups/sqlite_backup_{timestamp}.db"
+                    os.makedirs('backups', exist_ok=True)
+                    
+                    import shutil
+                    shutil.copy2(source_file, backup_file)
+                    
+                    flash(f'Backup SQLite creado: {backup_file}', 'success')
+                else:
+                    flash('Archivo SQLite no encontrado', 'error')
+            else:
+                flash('Formato SQLite no soportado para backup', 'error')
+                
+        elif 'mysql' in current_db_uri.lower():
+            # Backup MySQL usando mysqldump
+            import re
+            match = re.match(r'mysql\+pymysql://([^:]+):([^@]+)@([^:]+):(\d+)/([^?]+)', current_db_uri)
+            if match:
+                user, password, host, port, database = match.groups()
+                backup_file = f"backups/mysql_backup_{timestamp}.sql"
+                os.makedirs('backups', exist_ok=True)
+                
+                # Intentar usar mysqldump
+                try:
+                    result = subprocess.run([
+                        'mysqldump',
+                        f'--host={host}',
+                        f'--port={port}',
+                        f'--user={user}',
+                        f'--password={password}',
+                        database
+                    ], capture_output=True, text=True, cwd=os.getcwd())
+                    
+                    if result.returncode == 0:
+                        with open(backup_file, 'w', encoding='utf-8') as f:
+                            f.write(result.stdout)
+                        flash(f'Backup MySQL creado: {backup_file}', 'success')
+                    else:
+                        flash(f'Error en mysqldump: {result.stderr}', 'error')
+                        
+                except FileNotFoundError:
+                    flash('mysqldump no encontrado. Instala MySQL client tools.', 'error')
+            else:
+                flash('No se pudo parsear la URI de MySQL', 'error')
+        else:
+            flash('Tipo de base de datos no soportado para backup', 'error')
+            
+    except Exception as e:
+        flash(f'Error creando backup: {str(e)}', 'error')
+    
+    return redirect(url_for('admin.database_config'))

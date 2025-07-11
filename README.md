@@ -142,6 +142,42 @@ Utiliza la tarea configurada: `Ctrl+Shift+P` → "Tasks: Run Task" → "Ejecutar
 
 ## Gestión de Base de Datos
 
+### Panel de Configuración (Super Admin)
+
+El sistema incluye un **panel de configuración de base de datos** completo accesible desde el Panel de Super Administrador:
+
+#### 🔧 Funcionalidades Disponibles
+- **Cambio de motor**: Migración entre SQLite ↔ MySQL
+- **Configuración en tiempo real**: Edita configuraciones sin reiniciar
+- **Backup automático**: Respaldo antes de cambios críticos
+- **Prueba de conexión**: Valida configuraciones antes de aplicar
+- **Monitor de estado**: Estado actual y estadísticas de la BD
+
+#### 📖 Acceso al Panel
+1. Iniciar sesión como **Super Administrador**
+2. Ir a **Panel de Super Administrador**
+3. Sección "**Gestión de Base de Datos**"
+4. Clic en "**Configurar Base de Datos**"
+
+#### 🗃️ Tipos Soportados
+- **SQLite**: Ideal para desarrollo y despliegues pequeños
+- **MySQL**: Recomendado para producción y múltiples usuarios
+
+#### ⚙️ Variables de Entorno
+```bash
+# Configuración principal
+DATABASE_URL=mysql+pymysql://user:pass@localhost:3306/floristeria
+DEV_DATABASE_URL=sqlite:///floristeria_dev.db
+
+# Configuración MySQL
+MYSQL_CHARSET=utf8mb4
+MYSQL_COLLATION=utf8mb4_unicode_ci
+
+# Pool de conexiones
+SQLALCHEMY_POOL_RECYCLE=300
+SQLALCHEMY_POOL_SIZE=5
+```
+
 ### Comandos Flask-Migrate
 
 ```bash
@@ -221,6 +257,7 @@ python scripts/manage_super_admin.py help
 
 #### 👥 Administración
 - Panel de super administración
+- **🆕 Configuración de Base de Datos**: Cambio entre SQLite y MySQL
 - Modo mantenimiento
 - Actualizaciones del sistema
 - Gestión de usuarios y privilegios
@@ -247,6 +284,8 @@ Control granular de acceso basado en privilegios específicos:
 
 Consulta la carpeta `docs/` para documentación detallada:
 - `MIGRACIONES.md` - Guía completa de migraciones
+- `MYSQL_MIGRATION.md` - Migración específica a MySQL
+- **`DATABASE_CONFIG_PANEL.md`** - Guía del panel de configuración de BD
 - `PRIVILEGIOS_SISTEMA.md` - Guía de privilegios del sistema
 - `TROUBLESHOOTING.md` - Solución de problemas
 - `DEPLOY.md` - Documentación de despliegue
