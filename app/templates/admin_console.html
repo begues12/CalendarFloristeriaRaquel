@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}Consola Administrativa - Floristería Raquel{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-terminal"></i> Consola Administrativa</h2>
+                    <p class="text-muted">Ejecuta comandos del sistema de forma segura</p>
+                </div>
+                <a href="{{ url_for('admin.super_admin_panel') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al Panel
+                </a>
+            </div>
+
+            <!-- Advertencia de Seguridad -->
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Advertencia:</strong> Solo se permiten comandos seguros de lectura y diagnóstico.
+                Los comandos están restringidos por seguridad.
+            </div>
+
+            <!-- Terminal -->
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-terminal"></i> Terminal</h5>
+                </div>
+                <div class="card-body bg-dark text-light" style="min-height: 400px;">
+                    <!-- Historial de comandos -->
+                    <div id="terminal-output" style="height: 350px; overflow-y: auto; font-family: 'Courier New', monospace;">
+                        <div class="text-success">
+                            === Consola Administrativa Floristería Raquel ===<br>
+                            Comandos permitidos: ls, dir, pwd, python --version, pip list, git status, flask db current, etc.<br>
+                            Escribe 'help' para ver comandos disponibles.<br><br>
+                        </div>
+                    </div>
+                    
+                    <!-- Input de comando -->
+                    <div class="input-group mt-2">
+                        <span class="input-group-text bg-success text-white">$</span>
+                        <input type="text" id="command-input" class="form-control bg-dark text-light border-secondary" 
+                               placeholder="Ingresa tu comando aquí..." autocomplete="off">
+                        <button class="btn btn-success" onclick="executeCommand()">
+                            <i class="fas fa-play"></i> Ejecutar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comandos Rápidos -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-bolt"></i> Comandos Rápidos - Sistema</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn-group-vertical w-100" role="group">
+                                <button class="btn btn-outline-primary btn-sm" onclick="quickCommand('python --version')">
+                                    <i class="fas fa-python"></i> Versión Python
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="quickCommand('pip list')">
+                                    <i class="fas fa-list"></i> Paquetes Instalados
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="quickCommand('pwd')">
+                                    <i class="fas fa-folder"></i> Directorio Actual
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="quickCommand('whoami')">
+                                    <i class="fas fa-user"></i> Usuario Actual
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-code-branch"></i> Comandos Rápidos - Git/Flask</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn-group-vertical w-100" role="group">
+                                <button class="btn btn-outline-info btn-sm" onclick="quickCommand('git status')">
+                                    <i class="fab fa-git-alt"></i> Estado Git
+                                </button>
+                                <button class="btn btn-outline-info btn-sm" onclick="quickCommand('git log --oneline -5')">
+                                    <i class="fas fa-history"></i> Últimos Commits
+                                </button>
+                                <button class="btn btn-outline-info btn-sm" onclick="quickCommand('flask db current')">
+                                    <i class="fas fa-database"></i> Migración Actual
+                                </button>
+                                <button class="btn btn-outline-info btn-sm" onclick="quickCommand('flask --version')">
+                                    <i class="fas fa-flask"></i> Versión Flask
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scripts Disponibles -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-file-code"></i> Scripts de Gestión Disponibles</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-warning btn-sm w-100 mb-2" 
+                                    onclick="quickCommand('python scripts/check_database.py')">
+                                <i class="fas fa-database"></i> Verificar BD
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-warning btn-sm w-100 mb-2" 
+                                    onclick="quickCommand('python scripts/manage_super_admin.py --list')">
+                                <i class="fas fa-crown"></i> Listar Super Admins
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-warning btn-sm w-100 mb-2" 
+                                    onclick="quickCommand('python scripts/demo_database_config.py')">
+                                <i class="fas fa-cogs"></i> Demo Config BD
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let commandHistory = [];
+let historyIndex = -1;
+
+// Configurar enter para ejecutar comando
+document.getElementById('command-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        executeCommand();
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        navigateHistory(-1);
+    } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        navigateHistory(1);
+    }
+});
+
+// Configurar teclas de historial
+document.getElementById('command-input').addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        navigateHistory(-1);
+    } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        navigateHistory(1);
+    }
+});
+
+function navigateHistory(direction) {
+    if (commandHistory.length === 0) return;
+    
+    historyIndex += direction;
+    
+    if (historyIndex < 0) {
+        historyIndex = 0;
+    } else if (historyIndex >= commandHistory.length) {
+        historyIndex = commandHistory.length - 1;
+    }
+    
+    document.getElementById('command-input').value = commandHistory[historyIndex] || '';
+}
+
+function quickCommand(command) {
+    document.getElementById('command-input').value = command;
+    executeCommand();
+}
+
+function executeCommand() {
+    const input = document.getElementById('command-input');
+    const command = input.value.trim();
+    
+    if (!command) return;
+    
+    // Añadir al historial
+    if (commandHistory[commandHistory.length - 1] !== command) {
+        commandHistory.push(command);
+    }
+    historyIndex = commandHistory.length;
+    
+    // Mostrar comando en terminal
+    appendToTerminal(`<span class="text-success">$ ${command}</span>`, false);
+    
+    // Mostrar indicador de carga
+    const loadingId = 'loading-' + Date.now();
+    appendToTerminal(`<span id="${loadingId}" class="text-warning"><i class="fas fa-spinner fa-spin"></i> Ejecutando...</span>`, false);
+    
+    // Ejecutar comando
+    fetch('{{ url_for("admin.execute_command") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'command=' + encodeURIComponent(command)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Remover indicador de carga
+        document.getElementById(loadingId).remove();
+        
+        if (data.error) {
+            appendToTerminal(`<span class="text-danger">Error: ${data.error}</span>`, true);
+            if (data.allowed_commands) {
+                appendToTerminal(`<span class="text-info">Comandos permitidos: ${data.allowed_commands.join(', ')}</span>`, true);
+            }
+        } else {
+            if (data.output) {
+                appendToTerminal(escapeHtml(data.output), true);
+            }
+            if (data.error) {
+                appendToTerminal(`<span class="text-warning">Stderr: ${escapeHtml(data.error)}</span>`, true);
+            }
+            if (data.return_code !== 0) {
+                appendToTerminal(`<span class="text-warning">Exit code: ${data.return_code}</span>`, true);
+            }
+        }
+    })
+    .catch(error => {
+        document.getElementById(loadingId).remove();
+        appendToTerminal(`<span class="text-danger">Error de conexión: ${error}</span>`, true);
+    });
+    
+    // Limpiar input
+    input.value = '';
+}
+
+function appendToTerminal(text, addNewLine) {
+    const output = document.getElementById('terminal-output');
+    const newLine = addNewLine ? '<br>' : '';
+    output.innerHTML += text + newLine;
+    output.scrollTop = output.scrollHeight;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;');
+}
+
+// Mostrar comando help al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        quickCommand('help');
+    }, 500);
+});
+
+// Comando help personalizado
+function showHelp() {
+    const helpText = `
+<span class="text-info">Comandos disponibles:</span><br>
+<span class="text-white">• Sistema:</span> ls, dir, pwd, whoami<br>
+<span class="text-white">• Python:</span> python --version, pip list, pip show [package]<br>
+<span class="text-white">• Git:</span> git status, git log --oneline -5, git branch<br>
+<span class="text-white">• Flask:</span> flask --version, flask db current, flask db history<br>
+<span class="text-white">• Scripts:</span> python scripts/[script_name].py<br><br>
+<span class="text-warning">Nota:</span> Solo comandos de lectura están permitidos por seguridad.<br>
+`;
+    appendToTerminal(helpText, true);
+}
+
+// Interceptar comando help
+const originalExecuteCommand = executeCommand;
+executeCommand = function() {
+    const command = document.getElementById('command-input').value.trim();
+    if (command.toLowerCase() === 'help') {
+        appendToTerminal(`<span class="text-success">$ ${command}</span>`, false);
+        showHelp();
+        document.getElementById('command-input').value = '';
+        return;
+    }
+    originalExecuteCommand();
+};
+</script>
+
+{% endblock %}

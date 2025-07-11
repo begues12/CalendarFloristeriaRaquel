@@ -792,3 +792,247 @@ def backup_database():
         flash(f'Error creando backup: {str(e)}', 'error')
     
     return redirect(url_for('admin.database_config'))
+
+
+@bp.route('/admin_console')
+@login_required
+@require_super_admin
+def admin_console():
+    """Panel de consola administrativa"""
+    return render_template('admin_console.html')
+
+
+@bp.route('/execute_command', methods=['POST'])
+@login_required
+@require_super_admin
+def execute_command():
+    """Ejecutar comando en la consola administrativa"""
+    try:
+        command = request.form.get('command', '').strip()
+        
+        if not command:
+            return jsonify({'error': 'Comando vacío'})
+        
+        # Lista blanca de comandos permitidos para seguridad
+        allowed_commands = [
+            'ls', 'dir', 'pwd', 'whoami', 'python --version',
+            'pip list', 'pip show', 'flask --version',
+            'git status', 'git log --oneline -5', 'git branch',
+            'flask db current', 'flask db history', 'flask db show',
+            'python -c', 'python scripts/',
+        ]
+        
+        # Verificar si el comando está permitido
+        command_allowed = False
+        for allowed in allowed_commands:
+            if command.startswith(allowed):
+                command_allowed = True
+                break
+        
+        if not command_allowed:
+            return jsonify({
+                'error': f'Comando no permitido por seguridad: {command}',
+                'allowed_commands': allowed_commands
+            })
+        
+        # Ejecutar comando
+        if os.name == 'nt':  # Windows
+            result = subprocess.run(
+                command, 
+                shell=True, 
+                capture_output=True, 
+                text=True,
+                cwd=os.getcwd(),
+                timeout=30
+            )
+        else:  # Unix/Linux
+            result = subprocess.run(
+                command.split(), 
+                capture_output=True, 
+                text=True,
+                cwd=os.getcwd(),
+                timeout=30
+            )
+        
+        return jsonify({
+            'output': result.stdout,
+            'error': result.stderr,
+            'return_code': result.returncode,
+            'command': command
+        })
+        
+    except subprocess.TimeoutExpired:
+        return jsonify({'error': 'Comando excedió el tiempo límite (30s)'})
+    except Exception as e:
+        return jsonify({'error': f'Error ejecutando comando: {str(e)}'})
+
+
+@bp.route('/database_manager')
+@login_required
+@require_super_admin
+def database_manager():
+    """Gestor de base de datos avanzado"""
+    try:
+        # Información de la base de datos actual
+        db_info = {
+            'engine': str(db.engine.url),
+            'dialect': db.engine.dialect.name,
+            'driver': getattr(db.engine.dialect, 'driver', 'unknown'),
+            'tables': [],
+            'indexes': [],
+            'stats': {}
+        }
+        
+        # Obtener información de tablas
+        inspector = db.inspect(db.engine)
+        tables = inspector.get_table_names()
+        
+        for table_name in tables:
+            columns = inspector.get_columns(table_name)
+            indexes = inspector.get_indexes(table_name)
+            
+            # Contar registros
+            try:
+                count_result = db.session.execute(text(f"SELECT COUNT(*) FROM {table_name}"))
+                record_count = count_result.scalar()
+            except:
+                record_count = 0
+            
+            table_info = {
+                'name': table_name,
+                'columns': len(columns),
+                'indexes': len(indexes),
+                'records': record_count,
+                'column_details': [
+                    {
+                        'name': col['name'],
+                        'type': str(col['type']),
+                        'nullable': col['nullable'],
+                        'default': str(col.get('default', '')) if col.get('default') is not None else None
+                    }
+                    for col in columns
+                ]
+            }
+            db_info['tables'].append(table_info)
+        
+        # Estadísticas generales
+        db_info['stats'] = {
+            'total_tables': len(tables),
+            'total_records': sum(table['records'] for table in db_info['tables']),
+            'connection_pool_size': getattr(db.engine.pool, 'size', 'N/A'),
+            'connection_pool_checked_out': getattr(db.engine.pool, 'checkedout', 'N/A')
+        }
+        
+        return render_template('database_manager.html', db_info=db_info)
+        
+    except Exception as e:
+        flash(f'Error obteniendo información de base de datos: {str(e)}', 'error')
+        return redirect(url_for('admin.super_admin_panel'))
+
+
+@bp.route('/execute_sql', methods=['POST'])
+@login_required
+@require_super_admin
+def execute_sql():
+    """Ejecutar consulta SQL"""
+    try:
+        sql_query = request.form.get('sql_query', '').strip()
+        
+        if not sql_query:
+            return jsonify({'error': 'Consulta SQL vacía'})
+        
+        # Lista blanca de comandos SQL permitidos (solo lectura por seguridad)
+        allowed_sql_start = ['SELECT', 'SHOW', 'DESCRIBE', 'EXPLAIN']
+        
+        query_upper = sql_query.upper().strip()
+        sql_allowed = False
+        
+        for allowed in allowed_sql_start:
+            if query_upper.startswith(allowed):
+                sql_allowed = True
+                break
+        
+        if not sql_allowed:
+            return jsonify({
+                'error': 'Solo se permiten consultas de lectura (SELECT, SHOW, DESCRIBE, EXPLAIN)',
+                'query': sql_query
+            })
+        
+        # Ejecutar consulta
+        result = db.session.execute(text(sql_query))
+        
+        # Procesar resultados
+        if result.returns_rows:
+            columns = list(result.keys())
+            rows = []
+            for row in result:
+                rows.append([str(val) if val is not None else 'NULL' for val in row])
+            
+            return jsonify({
+                'success': True,
+                'columns': columns,
+                'rows': rows,
+                'row_count': len(rows),
+                'query': sql_query
+            })
+        else:
+            return jsonify({
+                'success': True,
+                'message': 'Consulta ejecutada correctamente (sin resultados)',
+                'query': sql_query
+            })
+            
+    except Exception as e:
+        return jsonify({
+            'error': f'Error ejecutando SQL: {str(e)}',
+            'query': sql_query
+        })
+
+
+@bp.route('/database_optimize', methods=['POST'])
+@login_required
+@require_super_admin
+def database_optimize():
+    """Optimizar base de datos"""
+    try:
+        optimization_type = request.form.get('optimization_type', 'analyze')
+        
+        if db.engine.dialect.name == 'mysql':
+            if optimization_type == 'analyze':
+                # Analizar todas las tablas
+                inspector = db.inspect(db.engine)
+                tables = inspector.get_table_names()
+                
+                for table in tables:
+                    db.session.execute(text(f"ANALYZE TABLE {table}"))
+                
+                db.session.commit()
+                flash(f'Análisis completado para {len(tables)} tablas', 'success')
+                
+            elif optimization_type == 'optimize':
+                # Optimizar todas las tablas
+                inspector = db.inspect(db.engine)
+                tables = inspector.get_table_names()
+                
+                for table in tables:
+                    db.session.execute(text(f"OPTIMIZE TABLE {table}"))
+                
+                db.session.commit()
+                flash(f'Optimización completada para {len(tables)} tablas', 'success')
+                
+        elif db.engine.dialect.name == 'sqlite':
+            if optimization_type == 'vacuum':
+                db.session.execute(text("VACUUM"))
+                db.session.commit()
+                flash('VACUUM ejecutado en SQLite', 'success')
+            elif optimization_type == 'analyze':
+                db.session.execute(text("ANALYZE"))
+                db.session.commit()
+                flash('ANALYZE ejecutado en SQLite', 'success')
+        else:
+            flash(f'Optimización no soportada para {db.engine.dialect.name}', 'warning')
+            
+    except Exception as e:
+        flash(f'Error durante optimización: {str(e)}', 'error')
+    
+    return redirect(url_for('admin.database_manager'))

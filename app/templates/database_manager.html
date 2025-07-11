@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}Gestor de Base de Datos - Floristería Raquel{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-database"></i> Gestor de Base de Datos</h2>
+                    <p class="text-muted">Administración avanzada de la base de datos</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('admin.database_config') }}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-cogs"></i> Configuración
+                    </a>
+                    <a href="{{ url_for('admin.super_admin_panel') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver al Panel
+                    </a>
+                </div>
+            </div>
+
+            <!-- Información General -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0"><i class="fas fa-info-circle"></i> Información de la Base de Datos</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td><strong>Motor:</strong></td>
+                                            <td>{{ db_info.dialect.title() }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Driver:</strong></td>
+                                            <td>{{ db_info.driver }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>URI:</strong></td>
+                                            <td><small class="text-muted">{{ db_info.engine[:50] }}...</small></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td><strong>Total Tablas:</strong></td>
+                                            <td><span class="badge bg-info">{{ db_info.stats.total_tables }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Total Registros:</strong></td>
+                                            <td><span class="badge bg-success">{{ db_info.stats.total_records }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pool Conexiones:</strong></td>
+                                            <td>{{ db_info.stats.connection_pool_size }} / {{ db_info.stats.connection_pool_checked_out }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-warning text-dark">
+                            <h6 class="mb-0"><i class="fas fa-tools"></i> Herramientas de Optimización</h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('admin.database_optimize') }}">
+                                {% if db_info.dialect == 'mysql' %}
+                                <div class="mb-3">
+                                    <label class="form-label">Tipo de optimización:</label>
+                                    <select name="optimization_type" class="form-select form-select-sm">
+                                        <option value="analyze">Analizar Tablas</option>
+                                        <option value="optimize">Optimizar Tablas</option>
+                                    </select>
+                                </div>
+                                {% elif db_info.dialect == 'sqlite' %}
+                                <div class="mb-3">
+                                    <label class="form-label">Tipo de optimización:</label>
+                                    <select name="optimization_type" class="form-select form-select-sm">
+                                        <option value="vacuum">VACUUM</option>
+                                        <option value="analyze">ANALYZE</option>
+                                    </select>
+                                </div>
+                                {% endif %}
+                                <button type="submit" class="btn btn-warning btn-sm w-100">
+                                    <i class="fas fa-wrench"></i> Optimizar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Consulta SQL -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h6 class="mb-0"><i class="fas fa-terminal"></i> Ejecutor de Consultas SQL (Solo Lectura)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="sql-query" class="form-label">Consulta SQL:</label>
+                                <textarea id="sql-query" class="form-control" rows="4" 
+                                          placeholder="SELECT * FROM users LIMIT 10;&#10;SHOW TABLES;&#10;DESCRIBE users;"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Consultas Rápidas:</label>
+                            <div class="btn-group-vertical w-100" role="group">
+                                <button class="btn btn-outline-primary btn-sm" onclick="setQuery('SHOW TABLES;')">
+                                    Mostrar Tablas
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="setQuery('SELECT * FROM users LIMIT 10;')">
+                                    Usuarios (10)
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="setQuery('SELECT COUNT(*) as total FROM users;')">
+                                    Contar Usuarios
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="setQuery('DESCRIBE users;')">
+                                    Estructura Users
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button onclick="executeSQL()" class="btn btn-success">
+                            <i class="fas fa-play"></i> Ejecutar Consulta
+                        </button>
+                        <small class="text-muted">Solo consultas SELECT, SHOW, DESCRIBE y EXPLAIN están permitidas</small>
+                    </div>
+                    
+                    <!-- Resultados -->
+                    <div id="sql-results" class="mt-3" style="display: none;">
+                        <hr>
+                        <h6>Resultados:</h6>
+                        <div id="sql-output"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tablas de la Base de Datos -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-table"></i> Tablas de la Base de Datos</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tabla</th>
+                                    <th>Columnas</th>
+                                    <th>Índices</th>
+                                    <th>Registros</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for table in db_info.tables %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ table.name }}</strong>
+                                        <br><small class="text-muted">{{ table.records }} registros</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ table.columns }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ table.indexes }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ table.records }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group-vertical btn-group-sm" role="group">
+                                            <button class="btn btn-outline-primary btn-sm" 
+                                                    onclick="setQuery('SELECT * FROM {{ table.name }} LIMIT 10;')">
+                                                <i class="fas fa-eye"></i> Ver Datos
+                                            </button>
+                                            <button class="btn btn-outline-info btn-sm" 
+                                                    onclick="setQuery('DESCRIBE {{ table.name }};')">
+                                                <i class="fas fa-list"></i> Estructura
+                                            </button>
+                                            <button class="btn btn-outline-secondary btn-sm" 
+                                                    onclick="toggleTableDetails('{{ table.name }}')">
+                                                <i class="fas fa-info-circle"></i> Detalles
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Detalles de la tabla (oculto por defecto) -->
+                                <tr id="details-{{ table.name }}" style="display: none;">
+                                    <td colspan="5">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6>Columnas de {{ table.name }}:</h6>
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Nombre</th>
+                                                                <th>Tipo</th>
+                                                                <th>Nullable</th>
+                                                                <th>Default</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for column in table.column_details %}
+                                                            <tr>
+                                                                <td><code>{{ column.name }}</code></td>
+                                                                <td><span class="badge bg-light text-dark">{{ column.type }}</span></td>
+                                                                <td>
+                                                                    {% if column.nullable %}
+                                                                        <span class="badge bg-warning">YES</span>
+                                                                    {% else %}
+                                                                        <span class="badge bg-danger">NO</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td>
+                                                                    {% if column.default %}
+                                                                        <code>{{ column.default }}</code>
+                                                                    {% else %}
+                                                                        <span class="text-muted">NULL</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setQuery(query) {
+    document.getElementById('sql-query').value = query;
+}
+
+function toggleTableDetails(tableName) {
+    const detailsRow = document.getElementById('details-' + tableName);
+    if (detailsRow.style.display === 'none') {
+        detailsRow.style.display = 'table-row';
+    } else {
+        detailsRow.style.display = 'none';
+    }
+}
+
+function executeSQL() {
+    const query = document.getElementById('sql-query').value.trim();
+    
+    if (!query) {
+        alert('Por favor ingresa una consulta SQL');
+        return;
+    }
+    
+    const resultsDiv = document.getElementById('sql-results');
+    const outputDiv = document.getElementById('sql-output');
+    
+    // Mostrar loading
+    resultsDiv.style.display = 'block';
+    outputDiv.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Ejecutando consulta...</div>';
+    
+    fetch('{{ url_for("admin.execute_sql") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'sql_query=' + encodeURIComponent(query)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            outputDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Error:</strong> ${data.error}
+                </div>
+            `;
+        } else if (data.success) {
+            if (data.columns && data.rows) {
+                // Mostrar resultados en tabla
+                let tableHtml = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        Consulta ejecutada exitosamente. ${data.row_count} filas retornadas.
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead class="table-dark">
+                                <tr>
+                `;
+                
+                // Headers
+                data.columns.forEach(col => {
+                    tableHtml += `<th>${col}</th>`;
+                });
+                tableHtml += '</tr></thead><tbody>';
+                
+                // Rows
+                data.rows.forEach(row => {
+                    tableHtml += '<tr>';
+                    row.forEach(cell => {
+                        tableHtml += `<td>${cell}</td>`;
+                    });
+                    tableHtml += '</tr>';
+                });
+                
+                tableHtml += '</tbody></table></div>';
+                outputDiv.innerHTML = tableHtml;
+            } else {
+                outputDiv.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        ${data.message}
+                    </div>
+                `;
+            }
+        }
+    })
+    .catch(error => {
+        outputDiv.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Error de conexión:</strong> ${error}
+            </div>
+        `;
+    });
+}
+
+// Agregar shortcut Ctrl+Enter para ejecutar
+document.getElementById('sql-query').addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        executeSQL();
+    }
+});
+</script>
+
+{% endblock %}

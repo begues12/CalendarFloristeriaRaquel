@@ -204,6 +204,26 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Herramientas Avanzadas -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="d-grid">
+                                <a href="{{ url_for('admin.database_manager') }}" class="btn btn-info">
+                                    <i class="fas fa-database"></i> Gestor de Base de Datos
+                                </a>
+                                <small class="text-muted text-center mt-1">Administración avanzada, consultas SQL, optimización</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-grid">
+                                <a href="{{ url_for('admin.admin_console') }}" class="btn btn-dark">
+                                    <i class="fas fa-terminal"></i> Consola Administrativa
+                                </a>
+                                <small class="text-muted text-center mt-1">Ejecutar comandos del sistema de forma segura</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -258,6 +258,8 @@ python scripts/manage_super_admin.py help
 #### 👥 Administración
 - Panel de super administración
 - **🆕 Configuración de Base de Datos**: Cambio entre SQLite y MySQL
+- **🆕 Consola Administrativa**: Ejecutar comandos del sistema de forma segura
+- **🆕 Gestor de Base de Datos**: Administración avanzada, consultas SQL, optimización
 - Modo mantenimiento
 - Actualizaciones del sistema
 - Gestión de usuarios y privilegios
