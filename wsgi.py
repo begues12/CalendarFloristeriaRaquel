@@ -15,5 +15,8 @@ config_name = os.environ.get('FLASK_CONFIG') or 'production'
 # Crear la aplicación
 application = create_app(config[config_name])
 
+# Print data base environment variable
+print(f"Database URL: {application.config['SQLALCHEMY_DATABASE_URI']}")
+
 if __name__ == "__main__":
     application.run()

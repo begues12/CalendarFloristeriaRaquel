@@ -11,6 +11,7 @@ print("   URL: http://localhost:5000/login")
 
 print("\n👑 SUPER ADMINISTRADOR:")
 print("   Usuario: admin")
+print("   Email: admin@floristeria.local")
 print("   Contraseña: admin123")
 print("   Permisos: Acceso completo + Panel Super Admin")
 

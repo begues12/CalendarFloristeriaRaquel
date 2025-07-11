@@ -36,6 +36,7 @@ class User(UserMixin, db.Model):
     can_view_all_documents = db.Column(db.Boolean, default=False)  # Ver documentos de todos
     can_manage_users = db.Column(db.Boolean, default=False)  # Gestionar usuarios
     can_export_data = db.Column(db.Boolean, default=False)  # Exportar datos
+    can_manage_notes = db.Column(db.Boolean, default=True)  # Gestionar notas del calendario
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -57,6 +58,7 @@ class User(UserMixin, db.Model):
                 'can_view_calendar': {'name': 'Ver calendario', 'value': self.can_view_calendar},
                 'can_upload_photos': {'name': 'Subir fotos', 'value': self.can_upload_photos},
                 'can_manage_photos': {'name': 'Gestionar fotos de otros', 'value': self.can_manage_photos},
+                'can_manage_notes': {'name': 'Gestionar notas del calendario', 'value': self.can_manage_notes},
             },
             'Control de Tiempo': {
                 'can_time_tracking': {'name': 'Usar fichaje personal', 'value': self.can_time_tracking},
@@ -90,6 +92,7 @@ class User(UserMixin, db.Model):
         self.can_view_own_reports = True
         self.can_upload_documents = True
         self.can_view_own_documents = True
+        self.can_manage_notes = True
     
     def __repr__(self):
         return f'<User {self.username}>'
@@ -339,3 +342,114 @@ class UpdateLog(db.Model):
     
     def __repr__(self):
         return f'<UpdateLog {self.started_by} - {self.status}>'
+
+class ApiIntegration(db.Model):
+    """Configuraciones de integraciones con APIs externas"""
+    __tablename__ = 'api_integrations'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)  # Nombre descriptivo
+    api_type = db.Column(db.String(50), nullable=False)  # weather, events, tasks, custom
+    url = db.Column(db.String(500), nullable=False)  # URL de la API
+    api_key = db.Column(db.String(255), nullable=True)  # Clave API (encriptada)
+    headers = db.Column(db.Text, nullable=True)  # Headers JSON adicionales
+    request_method = db.Column(db.String(10), default='GET')  # GET, POST, etc.
+    request_body = db.Column(db.Text, nullable=True)  # Body para POST
+    mapping_config = db.Column(db.Text, nullable=False)  # JSON con mapeo de datos
+    refresh_interval = db.Column(db.Integer, default=60)  # Minutos entre actualizaciones
+    is_active = db.Column(db.Boolean, default=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_sync = db.Column(db.DateTime, nullable=True)
+    last_sync_status = db.Column(db.String(20), default='pending')  # success, error, pending
+    last_error = db.Column(db.Text, nullable=True)
+    
+    # Relación con el creador
+    creator = db.relationship('User', backref='api_integrations')
+    
+    def get_mapped_value(self, data, field_key):
+        """Obtener valor mapeado desde los datos de la API"""
+        import json
+        try:
+            mapping = json.loads(self.mapping_config) if isinstance(self.mapping_config, str) else self.mapping_config
+            field_path = mapping.get(field_key)
+            if not field_path:
+                return None
+            
+            # Navegar a través del objeto usando dot notation
+            value = data
+            for key in field_path.split('.'):
+                value = value.get(key)
+                if value is None:
+                    return None
+            return value
+        except (json.JSONDecodeError, AttributeError, TypeError):
+            return None
+    
+    def __repr__(self):
+        return f'<ApiIntegration {self.name} - {self.api_type}>'
+
+class ApiData(db.Model):
+    """Datos obtenidos de las APIs que se muestran como imágenes en el calendario"""
+    __tablename__ = 'api_data'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    integration_id = db.Column(db.Integer, db.ForeignKey('api_integrations.id'), nullable=False)
+    date_for = db.Column(db.Date, nullable=False)  # Fecha para la que aplica el dato
+    title = db.Column(db.String(200), nullable=False)  # Título a mostrar
+    description = db.Column(db.Text, nullable=True)  # Descripción
+    image_url = db.Column(db.String(500), nullable=True)  # URL de imagen externa
+    icon = db.Column(db.String(50), nullable=True)  # Icono FontAwesome o emoji
+    color = db.Column(db.String(7), default='#007bff')  # Color hex
+    data_json = db.Column(db.Text, nullable=True)  # Datos originales en JSON
+    is_visible = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relación con la integración
+    integration = db.relationship('ApiIntegration', backref='data_entries')
+    
+    def __repr__(self):
+        return f'<ApiData {self.title} - {self.date_for}>'
+
+class CalendarNote(db.Model):
+    """Notas del calendario"""
+    __tablename__ = 'calendar_notes'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    date_for = db.Column(db.Date, nullable=False)  # Fecha de la nota
+    title = db.Column(db.String(200), nullable=False)  # Título de la nota
+    content = db.Column(db.Text, nullable=True)  # Contenido de la nota
+    color = db.Column(db.String(7), default='#ffc107')  # Color hex
+    priority = db.Column(db.String(10), default='normal')  # low, normal, high, urgent
+    is_private = db.Column(db.Boolean, default=False)  # Solo visible para el creador
+    is_reminder = db.Column(db.Boolean, default=False)  # Es recordatorio
+    reminder_time = db.Column(db.Time, nullable=True)  # Hora del recordatorio
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relación con el creador
+    creator = db.relationship('User', backref='calendar_notes')
+    
+    def get_priority_display(self):
+        priority_map = {
+            'low': 'Baja',
+            'normal': 'Normal', 
+            'high': 'Alta',
+            'urgent': 'Urgente'
+        }
+        return priority_map.get(self.priority, self.priority)
+    
+    def get_priority_color(self):
+        color_map = {
+            'low': '#6c757d',
+            'normal': '#007bff',
+            'high': '#fd7e14', 
+            'urgent': '#dc3545'
+        }
+        return color_map.get(self.priority, '#007bff')
+    
+    def __repr__(self):
+        return f'<CalendarNote {self.title} - {self.date_for}>'

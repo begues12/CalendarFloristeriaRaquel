@@ -806,36 +806,15 @@ def admin_console():
 @login_required
 @require_super_admin
 def execute_command():
-    """Ejecutar comando en la consola administrativa"""
+    """Ejecutar comando en la consola administrativa - SIN RESTRICCIONES"""
     try:
         command = request.form.get('command', '').strip()
         
         if not command:
             return jsonify({'error': 'Comando vacío'})
         
-        # Lista blanca de comandos permitidos para seguridad
-        allowed_commands = [
-            'ls', 'dir', 'pwd', 'whoami', 'python --version',
-            'pip list', 'pip show', 'flask --version',
-            'git status', 'git log --oneline -5', 'git branch',
-            'flask db current', 'flask db history', 'flask db show',
-            'python -c', 'python scripts/',
-        ]
-        
-        # Verificar si el comando está permitido
-        command_allowed = False
-        for allowed in allowed_commands:
-            if command.startswith(allowed):
-                command_allowed = True
-                break
-        
-        if not command_allowed:
-            return jsonify({
-                'error': f'Comando no permitido por seguridad: {command}',
-                'allowed_commands': allowed_commands
-            })
-        
-        # Ejecutar comando
+        # SIN RESTRICCIONES - Acceso completo para uso interno de la empresa
+        # Ejecutar comando directamente
         if os.name == 'nt':  # Windows
             result = subprocess.run(
                 command, 
@@ -843,15 +822,16 @@ def execute_command():
                 capture_output=True, 
                 text=True,
                 cwd=os.getcwd(),
-                timeout=30
+                timeout=120  # Aumentado a 2 minutos
             )
         else:  # Unix/Linux
             result = subprocess.run(
-                command.split(), 
+                command, 
+                shell=True,  # Cambiado a shell=True para permitir pipes y redirecciones
                 capture_output=True, 
                 text=True,
                 cwd=os.getcwd(),
-                timeout=30
+                timeout=120  # Aumentado a 2 minutos
             )
         
         return jsonify({
@@ -862,7 +842,7 @@ def execute_command():
         })
         
     except subprocess.TimeoutExpired:
-        return jsonify({'error': 'Comando excedió el tiempo límite (30s)'})
+        return jsonify({'error': 'Comando excedió el tiempo límite (2 minutos)'})
     except Exception as e:
         return jsonify({'error': f'Error ejecutando comando: {str(e)}'})
 
@@ -934,32 +914,22 @@ def database_manager():
 @login_required
 @require_super_admin
 def execute_sql():
-    """Ejecutar consulta SQL"""
+    """Ejecutar consulta SQL - SIN RESTRICCIONES"""
     try:
         sql_query = request.form.get('sql_query', '').strip()
         
         if not sql_query:
             return jsonify({'error': 'Consulta SQL vacía'})
         
-        # Lista blanca de comandos SQL permitidos (solo lectura por seguridad)
-        allowed_sql_start = ['SELECT', 'SHOW', 'DESCRIBE', 'EXPLAIN']
-        
-        query_upper = sql_query.upper().strip()
-        sql_allowed = False
-        
-        for allowed in allowed_sql_start:
-            if query_upper.startswith(allowed):
-                sql_allowed = True
-                break
-        
-        if not sql_allowed:
-            return jsonify({
-                'error': 'Solo se permiten consultas de lectura (SELECT, SHOW, DESCRIBE, EXPLAIN)',
-                'query': sql_query
-            })
+        # SIN RESTRICCIONES - Acceso completo para uso interno de la empresa
+        # Permitir cualquier tipo de consulta SQL (SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, etc.)
         
         # Ejecutar consulta
         result = db.session.execute(text(sql_query))
+        
+        # Para consultas que modifican datos, hacer commit
+        if any(sql_query.upper().strip().startswith(cmd) for cmd in ['INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP', 'ALTER']):
+            db.session.commit()
         
         # Procesar resultados
         if result.returns_rows:
@@ -976,13 +946,22 @@ def execute_sql():
                 'query': sql_query
             })
         else:
+            # Para consultas sin resultados (INSERT, UPDATE, DELETE, etc.)
+            affected_rows = result.rowcount if hasattr(result, 'rowcount') else 0
             return jsonify({
                 'success': True,
-                'message': 'Consulta ejecutada correctamente (sin resultados)',
+                'message': f'Consulta ejecutada correctamente. Filas afectadas: {affected_rows}',
+                'affected_rows': affected_rows,
                 'query': sql_query
             })
             
     except Exception as e:
+        # Rollback en caso de error
+        try:
+            db.session.rollback()
+        except:
+            pass
+        
         return jsonify({
             'error': f'Error ejecutando SQL: {str(e)}',
             'query': sql_query

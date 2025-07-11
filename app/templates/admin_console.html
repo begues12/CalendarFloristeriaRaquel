@@ -17,10 +17,10 @@
             </div>
 
             <!-- Advertencia de Seguridad -->
-            <div class="alert alert-warning">
-                <i class="fas fa-exclamation-triangle"></i>
-                <strong>Advertencia:</strong> Solo se permiten comandos seguros de lectura y diagnóstico.
-                Los comandos están restringidos por seguridad.
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>Acceso Completo:</strong> Puedes ejecutar cualquier comando del sistema.
+                Esta herramienta está diseñada para uso interno de la empresa con acceso total.
             </div>
 
             <!-- Terminal -->
@@ -33,7 +33,8 @@
                     <div id="terminal-output" style="height: 350px; overflow-y: auto; font-family: 'Courier New', monospace;">
                         <div class="text-success">
                             === Consola Administrativa Floristería Raquel ===<br>
-                            Comandos permitidos: ls, dir, pwd, python --version, pip list, git status, flask db current, etc.<br>
+                            🔓 ACCESO COMPLETO: Todos los comandos están permitidos<br>
+                            Puedes ejecutar cualquier comando del sistema sin restricciones.<br>
                             Escribe 'help' para ver comandos disponibles.<br><br>
                         </div>
                     </div>
@@ -65,11 +66,14 @@
                                 <button class="btn btn-outline-primary btn-sm" onclick="quickCommand('pip list')">
                                     <i class="fas fa-list"></i> Paquetes Instalados
                                 </button>
-                                <button class="btn btn-outline-primary btn-sm" onclick="quickCommand('pwd')">
-                                    <i class="fas fa-folder"></i> Directorio Actual
+                                <button class="btn btn-outline-primary btn-sm" onclick="quickCommand('dir')">
+                                    <i class="fas fa-folder"></i> Listar Archivos
                                 </button>
                                 <button class="btn btn-outline-primary btn-sm" onclick="quickCommand('whoami')">
                                     <i class="fas fa-user"></i> Usuario Actual
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" onclick="quickCommand('pip install --upgrade pip')">
+                                    <i class="fas fa-arrow-up"></i> Actualizar Pip
                                 </button>
                             </div>
                         </div>
@@ -94,6 +98,75 @@
                                 </button>
                                 <button class="btn btn-outline-info btn-sm" onclick="quickCommand('flask --version')">
                                     <i class="fas fa-flask"></i> Versión Flask
+                                </button>
+                                <button class="btn btn-outline-warning btn-sm" onclick="quickCommand('git pull')">
+                                    <i class="fas fa-download"></i> Actualizar Código
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comandos Avanzados -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-tools"></i> Comandos Avanzados</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn-group-vertical w-100" role="group">
+                                <button class="btn btn-outline-danger btn-sm" onclick="quickCommand('tasklist | findstr python')">
+                                    <i class="fas fa-list"></i> Procesos Python
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="quickCommand('netstat -an | findstr :5000')">
+                                    <i class="fas fa-network-wired"></i> Puerto 5000
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="quickCommand('systeminfo')">
+                                    <i class="fas fa-desktop"></i> Info Sistema
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-database"></i> Base de Datos</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn-group-vertical w-100" role="group">
+                                <button class="btn btn-outline-primary btn-sm" onclick="quickCommand('flask db upgrade')">
+                                    <i class="fas fa-arrow-up"></i> Migrar BD
+                                </button>
+                                <button class="btn btn-outline-info btn-sm" onclick="quickCommand('flask db history')">
+                                    <i class="fas fa-history"></i> Historial BD
+                                </button>
+                                <button class="btn btn-outline-warning btn-sm" onclick="quickCommand('dir instance')">
+                                    <i class="fas fa-folder"></i> Ver BD Files
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-file-code"></i> Scripts</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn-group-vertical w-100" role="group">
+                                <button class="btn btn-outline-warning btn-sm" onclick="quickCommand('python scripts/check_database.py')">
+                                    <i class="fas fa-database"></i> Verificar BD
+                                </button>
+                                <button class="btn btn-outline-warning btn-sm" onclick="quickCommand('python scripts/manage_super_admin.py --list')">
+                                    <i class="fas fa-crown"></i> Super Admins
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" onclick="quickCommand('dir scripts')">
+                                    <i class="fas fa-list"></i> Ver Scripts
                                 </button>
                             </div>
                         </div>
@@ -261,13 +334,27 @@ document.addEventListener('DOMContentLoaded', function() {
 // Comando help personalizado
 function showHelp() {
     const helpText = `
-<span class="text-info">Comandos disponibles:</span><br>
-<span class="text-white">• Sistema:</span> ls, dir, pwd, whoami<br>
-<span class="text-white">• Python:</span> python --version, pip list, pip show [package]<br>
-<span class="text-white">• Git:</span> git status, git log --oneline -5, git branch<br>
-<span class="text-white">• Flask:</span> flask --version, flask db current, flask db history<br>
-<span class="text-white">• Scripts:</span> python scripts/[script_name].py<br><br>
-<span class="text-warning">Nota:</span> Solo comandos de lectura están permitidos por seguridad.<br>
+<span class="text-info">🔓 CONSOLA CON ACCESO COMPLETO - Floristería Raquel</span><br>
+<span class="text-success">Puedes ejecutar CUALQUIER comando del sistema sin restricciones.</span><br><br>
+
+<span class="text-warning">Ejemplos de comandos disponibles:</span><br>
+<span class="text-white">• Sistema:</span> dir, ls, cd, mkdir, rmdir, del, copy, move<br>
+<span class="text-white">• Procesos:</span> tasklist, taskkill, netstat, systeminfo<br>
+<span class="text-white">• Python:</span> python --version, pip install [package], pip uninstall [package]<br>
+<span class="text-white">• Git:</span> git status, git pull, git push, git commit, git add<br>
+<span class="text-white">• Flask:</span> flask run, flask db upgrade, flask db migrate<br>
+<span class="text-white">• Base de Datos:</span> mysql, sqlite3 [archivo.db]<br>
+<span class="text-white">• Red:</span> ping [host], curl [url], wget [url]<br>
+<span class="text-white">• Archivos:</span> type [archivo], more [archivo], find, grep<br><br>
+
+<span class="text-info">Ejemplos útiles para la empresa:</span><br>
+<span class="text-white">• pip install PyMySQL cryptography</span> - Instalar dependencias BD<br>
+<span class="text-white">• git pull && flask db upgrade</span> - Actualizar y migrar<br>
+<span class="text-white">• tasklist | findstr python</span> - Ver procesos Python<br>
+<span class="text-white">• dir instance\\*.db</span> - Ver archivos de BD<br>
+<span class="text-white">• python scripts\\check_database.py</span> - Verificar BD<br><br>
+
+<span class="text-warning">💡 Tip:</span> Usa las flechas ↑/↓ para navegar el historial de comandos.<br>
 `;
     appendToTerminal(helpText, true);
 }

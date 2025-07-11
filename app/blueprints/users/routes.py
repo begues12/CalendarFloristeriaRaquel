@@ -29,11 +29,11 @@ def register():
         return redirect(url_for('calendar.index'))
     
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['username'].strip()
         password = request.form['password']
         confirm_password = request.form['confirm_password']
-        full_name = request.form.get('full_name', '')
-        email = request.form.get('email', '')
+        full_name = request.form.get('full_name', '').strip()
+        email = request.form.get('email', '').strip()
         is_admin = 'is_admin' in request.form
         
         if password != confirm_password:
@@ -42,19 +42,43 @@ def register():
             flash('La contraseña debe tener al menos 4 caracteres', 'error')
         elif User.query.filter_by(username=username).first():
             flash('El usuario ya existe', 'error')
+        elif email and User.query.filter_by(email=email).first():
+            flash('El email ya está siendo usado por otro usuario', 'error')
         else:
-            user = User(
-                username=username,
-                full_name=full_name,
-                email=email,
-                is_admin=is_admin,
-                must_change_password=True  # Nuevo usuario debe cambiar contraseña
-            )
-            user.set_password(password)
-            user.set_default_privileges()  # Establecer privilegios por defecto
-            
-            db.session.add(user)
-            db.session.commit()
+            # Si no se proporciona email, generar uno único
+            if not email:
+                # Crear usuario temporal para obtener ID
+                temp_user = User(
+                    username=username,
+                    full_name=full_name,
+                    email=None,  # Temporal
+                    is_admin=is_admin,
+                    must_change_password=True
+                )
+                temp_user.set_password(password)
+                temp_user.set_default_privileges()
+                
+                db.session.add(temp_user)
+                db.session.flush()  # Para obtener el ID sin commit
+                
+                # Asignar email único basado en ID
+                temp_user.email = f"user{temp_user.id}@floristeria.local"
+                
+                db.session.commit()
+                user = temp_user
+            else:
+                user = User(
+                    username=username,
+                    full_name=full_name,
+                    email=email,
+                    is_admin=is_admin,
+                    must_change_password=True
+                )
+                user.set_password(password)
+                user.set_default_privileges()
+                
+                db.session.add(user)
+                db.session.commit()
             
             flash(f'Usuario {username} creado correctamente', 'success')
             return redirect(url_for('users.manage_users'))
@@ -150,7 +174,21 @@ def edit_user(user_id):
         try:
             # Datos básicos del perfil
             user.full_name = request.form.get('full_name', '').strip()
-            user.email = request.form.get('email', '').strip()
+            
+            # Email con validación para evitar constraint UNIQUE
+            email = request.form.get('email', '').strip()
+            if not email:  # Si está vacío, generar email único
+                # Generar email único para evitar constraint UNIQUE
+                email = f"user{user.id}@floristeria.local"
+                user.email = email
+            else:
+                # Verificar que el email no esté siendo usado por otro usuario
+                existing_user = User.query.filter(User.email == email, User.id != user.id).first()
+                if existing_user:
+                    flash(f'El email {email} ya está siendo usado por otro usuario', 'error')
+                    return render_template('edit_user.html', user=user)
+                user.email = email
+            
             user.phone = request.form.get('phone', '').strip()
             user.position = request.form.get('position', '').strip()
             

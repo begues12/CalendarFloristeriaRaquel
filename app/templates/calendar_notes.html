@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Notas - {{ date.strftime('%d/%m/%Y') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-sticky-note"></i> 
+                    Notas del {{ date.strftime('%d de %B de %Y') }}
+                </h2>
+                <div>
+                    <a href="{{ url_for('calendar.create_note', date_str=date_str) }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nueva Nota
+                    </a>
+                    <a href="{{ url_for('calendar.view_day', date_str=date_str) }}" class="btn btn-outline-info">
+                        <i class="fas fa-images"></i> Ver Fotos
+                    </a>
+                    <a href="{{ url_for('calendar.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver al Calendario
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if notes %}
+    <div class="row">
+        {% for note in notes %}
+        <div class="col-lg-6 col-xl-4 mb-4">
+            <div class="card h-100 border-start border-4" style="border-color: {{ note.color }}!important;">
+                <div class="card-header d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">{{ note.title }}</h6>
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Prioridad -->
+                            <span class="badge" style="background-color: {{ note.get_priority_color() }};">
+                                {{ note.get_priority_display() }}
+                            </span>
+                            
+                            <!-- Recordatorio -->
+                            {% if note.is_reminder and note.reminder_time %}
+                                <span class="badge bg-info">
+                                    <i class="fas fa-clock"></i> {{ note.reminder_time.strftime('%H:%M') }}
+                                </span>
+                            {% endif %}
+                            
+                            <!-- Privacidad -->
+                            {% if note.is_private %}
+                                <span class="badge bg-secondary">
+                                    <i class="fas fa-lock"></i> Privada
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Menú de acciones -->
+                    {% if note.created_by == current_user.id or current_user.is_admin or current_user.is_super_admin %}
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('calendar.edit_note', note_id=note.id) }}">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ url_for('calendar.delete_note', note_id=note.id) }}" 
+                                      onsubmit="return confirm('¿Estás seguro de eliminar esta nota?');">
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if note.content %}
+                <div class="card-body">
+                    <p class="card-text">{{ note.content|nl2br|safe }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="card-footer text-muted">
+                    <small>
+                        <i class="fas fa-user"></i> {{ note.creator.full_name or note.creator.username }}
+                        <span class="ms-2">
+                            <i class="fas fa-calendar"></i> {{ note.created_at.strftime('%d/%m/%Y %H:%M') }}
+                        </span>
+                        {% if note.updated_at != note.created_at %}
+                            <span class="ms-2">
+                                <i class="fas fa-edit"></i> Editada {{ note.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                            </span>
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-sticky-note fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay notas para este día</h4>
+                    <p class="text-muted">Agrega la primera nota para organizar tu día.</p>
+                    <a href="{{ url_for('calendar.create_note', date_str=date_str) }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Crear Primera Nota
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Navegación de días -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                {% set prev_date = (date - timedelta(days=1)) %}
+                {% set next_date = (date + timedelta(days=1)) %}
+                
+                <a href="{{ url_for('calendar.view_notes', date_str=prev_date.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-outline-primary">
+                    <i class="fas fa-chevron-left"></i> {{ prev_date.strftime('%d/%m') }}
+                </a>
+                
+                <span class="align-self-center text-muted">
+                    <i class="fas fa-calendar"></i> {{ date.strftime('%A, %d de %B de %Y') }}
+                </span>
+                
+                <a href="{{ url_for('calendar.view_notes', date_str=next_date.strftime('%Y-%m-%d')) }}" 
+                   class="btn btn-outline-primary">
+                    {{ next_date.strftime('%d/%m') }} <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Filtro de color personalizado para las tarjetas de notas */
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Mejorar la visualización de contenido largo */
+.card-text {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+/* Estilo para badges de prioridad */
+.badge {
+    font-size: 0.75em;
+}
+</style>
+
+<script>
+// Agregar funcionalidad para expandir/contraer notas largas
+document.addEventListener('DOMContentLoaded', function() {
+    const cardTexts = document.querySelectorAll('.card-text');
+    
+    cardTexts.forEach(text => {
+        if (text.scrollHeight > text.clientHeight) {
+            text.style.cursor = 'pointer';
+            text.title = 'Click para expandir';
+            
+            text.addEventListener('click', function() {
+                if (this.style.maxHeight === 'none') {
+                    this.style.maxHeight = '150px';
+                    this.title = 'Click para expandir';
+                } else {
+                    this.style.maxHeight = 'none';
+                    this.title = 'Click para contraer';
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

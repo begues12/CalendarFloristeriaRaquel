@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Integraciones de API{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-plug"></i> Integraciones de API</h2>
+                <div>
+                    <a href="{{ url_for('calendar.create_api_integration') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nueva Integración
+                    </a>
+                    <a href="{{ url_for('calendar.sync_all_apis') }}" class="btn btn-success">
+                        <i class="fas fa-sync"></i> Sincronizar Todo
+                    </a>
+                    <a href="{{ url_for('calendar.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver al Calendario
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if integrations %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Estado</th>
+                                    <th>Última Sync</th>
+                                    <th>Intervalo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for integration in integrations %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ integration.name }}</strong>
+                                        {% if not integration.is_active %}
+                                            <span class="badge bg-secondary ms-1">Inactiva</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if integration.api_type == 'weather' %}
+                                            <i class="fas fa-cloud-sun text-info"></i> Clima
+                                        {% elif integration.api_type == 'events' %}
+                                            <i class="fas fa-calendar-alt text-success"></i> Eventos
+                                        {% elif integration.api_type == 'tasks' %}
+                                            <i class="fas fa-tasks text-warning"></i> Tareas
+                                        {% else %}
+                                            <i class="fas fa-cog text-secondary"></i> Personalizada
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if integration.last_sync_status == 'success' %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check"></i> Exitoso
+                                            </span>
+                                        {% elif integration.last_sync_status == 'error' %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-exclamation-triangle"></i> Error
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-clock"></i> Pendiente
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if integration.last_sync %}
+                                            <small class="text-muted">
+                                                {{ integration.last_sync.strftime('%d/%m/%Y %H:%M') }}
+                                            </small>
+                                        {% else %}
+                                            <small class="text-muted">Nunca</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ integration.refresh_interval }} min</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-info test-api-btn" 
+                                                    data-integration-id="{{ integration.id }}"
+                                                    title="Probar conexión">
+                                                <i class="fas fa-vial"></i>
+                                            </button>
+                                            <a href="{{ url_for('calendar.sync_api_integration', integration_id=integration.id) }}" 
+                                               class="btn btn-sm btn-outline-success" title="Sincronizar">
+                                                <i class="fas fa-sync"></i>
+                                            </a>
+                                            <a href="{{ url_for('calendar.edit_api_integration', integration_id=integration.id) }}" 
+                                               class="btn btn-sm btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form method="POST" action="{{ url_for('calendar.delete_api_integration', integration_id=integration.id) }}" 
+                                                  class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta integración?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% if integration.last_error %}
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="alert alert-danger alert-sm mb-0">
+                                            <small><strong>Error:</strong> {{ integration.last_error }}</small>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-plug fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay integraciones configuradas</h4>
+                    <p class="text-muted">Comienza agregando una nueva integración de API para mostrar datos externos en tu calendario.</p>
+                    <a href="{{ url_for('calendar.create_api_integration') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Crear Primera Integración
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal para resultados de prueba -->
+<div class="modal fade" id="testResultModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Resultado de Prueba de API</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="testResultContent">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Probando...</span>
+                        </div>
+                        <p class="mt-2">Probando conexión...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Manejar pruebas de API
+    document.querySelectorAll('.test-api-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const integrationId = this.dataset.integrationId;
+            const modal = new bootstrap.Modal(document.getElementById('testResultModal'));
+            
+            // Mostrar modal con spinner
+            document.getElementById('testResultContent').innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Probando...</span>
+                    </div>
+                    <p class="mt-2">Probando conexión...</p>
+                </div>
+            `;
+            modal.show();
+            
+            // Hacer petición de prueba
+            fetch(`/calendar/api-integrations/${integrationId}/test`)
+                .then(response => response.json())
+                .then(data => {
+                    let content = '';
+                    if (data.success) {
+                        content = `
+                            <div class="alert alert-success">
+                                <h6><i class="fas fa-check"></i> Conexión Exitosa</h6>
+                                <p class="mb-2">${data.message}</p>
+                                <small class="text-muted">Código: ${data.status_code}</small>
+                            </div>
+                            <h6>Respuesta:</h6>
+                            <pre class="bg-light p-2 rounded"><code>${JSON.stringify(data.response, null, 2)}</code></pre>
+                        `;
+                    } else {
+                        content = `
+                            <div class="alert alert-danger">
+                                <h6><i class="fas fa-exclamation-triangle"></i> Error de Conexión</h6>
+                                <p class="mb-0">${data.message}</p>
+                            </div>
+                        `;
+                    }
+                    document.getElementById('testResultContent').innerHTML = content;
+                })
+                .catch(error => {
+                    document.getElementById('testResultContent').innerHTML = `
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Error</h6>
+                            <p class="mb-0">Error al realizar la prueba: ${error.message}</p>
+                        </div>
+                    `;
+                });
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -54,7 +54,7 @@ class Config:
 class DevelopmentConfig(Config):
     """Configuración para desarrollo"""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'sqlite:///floristeria_dev.db'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or 'sqlite:///floristeria.db'
     
     # Pool más pequeño para desarrollo
     SQLALCHEMY_ENGINE_OPTIONS = {

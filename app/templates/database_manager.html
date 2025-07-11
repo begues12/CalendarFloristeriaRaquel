@@ -103,41 +103,57 @@
             <!-- Consulta SQL -->
             <div class="card mb-4">
                 <div class="card-header bg-dark text-white">
-                    <h6 class="mb-0"><i class="fas fa-terminal"></i> Ejecutor de Consultas SQL (Solo Lectura)</h6>
+                    <h6 class="mb-0"><i class="fas fa-terminal"></i> Ejecutor de Consultas SQL (Acceso Completo)</h6>
                 </div>
                 <div class="card-body">
+                    <div class="alert alert-success">
+                        <i class="fas fa-unlock"></i>
+                        <strong>Acceso Total:</strong> Puedes ejecutar cualquier consulta SQL (SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, etc.)
+                    </div>
+                    
                     <div class="row">
                         <div class="col-md-8">
                             <div class="mb-3">
                                 <label for="sql-query" class="form-label">Consulta SQL:</label>
                                 <textarea id="sql-query" class="form-control" rows="4" 
-                                          placeholder="SELECT * FROM users LIMIT 10;&#10;SHOW TABLES;&#10;DESCRIBE users;"></textarea>
+                                          placeholder="SELECT * FROM users LIMIT 10;&#10;INSERT INTO users (username, email) VALUES ('nuevo', 'email@test.com');&#10;UPDATE users SET is_admin = 1 WHERE username = 'admin';&#10;CREATE TABLE nueva_tabla (id INT PRIMARY KEY, nombre VARCHAR(100));"></textarea>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Consultas Rápidas:</label>
                             <div class="btn-group-vertical w-100" role="group">
                                 <button class="btn btn-outline-primary btn-sm" onclick="setQuery('SHOW TABLES;')">
-                                    Mostrar Tablas
+                                    📋 Mostrar Tablas
                                 </button>
                                 <button class="btn btn-outline-primary btn-sm" onclick="setQuery('SELECT * FROM users LIMIT 10;')">
-                                    Usuarios (10)
+                                    👥 Ver Usuarios
                                 </button>
                                 <button class="btn btn-outline-primary btn-sm" onclick="setQuery('SELECT COUNT(*) as total FROM users;')">
-                                    Contar Usuarios
+                                    🔢 Contar Usuarios
                                 </button>
-                                <button class="btn btn-outline-primary btn-sm" onclick="setQuery('DESCRIBE users;')">
-                                    Estructura Users
+                                <button class="btn btn-outline-info btn-sm" onclick="setQuery('DESCRIBE users;')">
+                                    📝 Estructura Users
+                                </button>
+                                <button class="btn btn-outline-warning btn-sm" onclick="setQuery('SHOW CREATE TABLE users;')">
+                                    🏗️ DDL Users
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" onclick="setQuery('SELECT table_name, table_rows FROM information_schema.tables WHERE table_schema = DATABASE();')">
+                                    📊 Stats Tablas
                                 </button>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="d-flex justify-content-between">
-                        <button onclick="executeSQL()" class="btn btn-success">
-                            <i class="fas fa-play"></i> Ejecutar Consulta
-                        </button>
-                        <small class="text-muted">Solo consultas SELECT, SHOW, DESCRIBE y EXPLAIN están permitidas</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button onclick="executeSQL()" class="btn btn-success me-2">
+                                <i class="fas fa-play"></i> Ejecutar Consulta
+                            </button>
+                            <button onclick="clearQuery()" class="btn btn-outline-secondary">
+                                <i class="fas fa-eraser"></i> Limpiar
+                            </button>
+                        </div>
+                        <small class="text-success">✅ Todas las consultas SQL están permitidas</small>
                     </div>
                     
                     <!-- Resultados -->
@@ -259,6 +275,11 @@ function setQuery(query) {
     document.getElementById('sql-query').value = query;
 }
 
+function clearQuery() {
+    document.getElementById('sql-query').value = '';
+    document.getElementById('sql-results').style.display = 'none';
+}
+
 function toggleTableDetails(tableName) {
     const detailsRow = document.getElementById('details-' + tableName);
     if (detailsRow.style.display === 'none') {
@@ -297,6 +318,7 @@ function executeSQL() {
                 <div class="alert alert-danger">
                     <i class="fas fa-exclamation-triangle"></i>
                     <strong>Error:</strong> ${data.error}
+                    <br><small><strong>Consulta:</strong> <code>${data.query}</code></small>
                 </div>
             `;
         } else if (data.success) {
@@ -319,22 +341,36 @@ function executeSQL() {
                 });
                 tableHtml += '</tr></thead><tbody>';
                 
-                // Rows
-                data.rows.forEach(row => {
+                // Rows (limitar a 100 filas para rendimiento)
+                const maxRows = Math.min(data.rows.length, 100);
+                for (let i = 0; i < maxRows; i++) {
+                    const row = data.rows[i];
                     tableHtml += '<tr>';
                     row.forEach(cell => {
-                        tableHtml += `<td>${cell}</td>`;
+                        // Truncar celdas muy largas
+                        const cellContent = cell.length > 100 ? cell.substring(0, 100) + '...' : cell;
+                        tableHtml += `<td title="${cell}">${cellContent}</td>`;
                     });
                     tableHtml += '</tr>';
-                });
+                }
+                
+                if (data.rows.length > 100) {
+                    tableHtml += `<tr><td colspan="${data.columns.length}" class="text-center text-muted">
+                        <i class="fas fa-info-circle"></i> Mostrando solo las primeras 100 filas de ${data.rows.length}
+                    </td></tr>`;
+                }
                 
                 tableHtml += '</tbody></table></div>';
                 outputDiv.innerHTML = tableHtml;
             } else {
+                // Para consultas de modificación (INSERT, UPDATE, DELETE, etc.)
+                const affectedRows = data.affected_rows || 0;
                 outputDiv.innerHTML = `
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i>
-                        ${data.message}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        ${data.message || 'Consulta ejecutada correctamente'}
+                        ${affectedRows > 0 ? `<br><strong>Filas afectadas:</strong> ${affectedRows}` : ''}
+                        <br><small><strong>Consulta:</strong> <code>${data.query}</code></small>
                     </div>
                 `;
             }

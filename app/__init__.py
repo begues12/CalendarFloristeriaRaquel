@@ -18,6 +18,8 @@ load_dotenv()
 # Importar modelos después de cargar variables de entorno
 from app.models import db, User, MaintenanceMode
 from app.utils.helpers import hours_to_hhmm
+from datetime import timedelta
+import re
 from config.settings import Config
 
 
@@ -87,6 +89,40 @@ def register_filters(app):
         if date:
             return date.strftime(format)
         return ''
+
+    @app.template_filter('nl2br')
+    def nl2br_filter(text):
+        """Filtro Jinja2 para convertir saltos de línea a <br>"""
+        if text:
+            return text.replace('\n', '<br>')
+        return ''
+
+    @app.template_filter('time_elapsed')
+    def time_elapsed_filter(datetime_obj):
+        """Filtro Jinja2 para mostrar tiempo transcurrido"""
+        if not datetime_obj:
+            return ''
+        
+        from datetime import datetime
+        now = datetime.utcnow()
+        diff = now - datetime_obj
+        
+        if diff.days > 0:
+            return f"hace {diff.days} día{'s' if diff.days > 1 else ''}"
+        elif diff.seconds > 3600:
+            hours = diff.seconds // 3600
+            return f"hace {hours} hora{'s' if hours > 1 else ''}"
+        elif diff.seconds > 60:
+            minutes = diff.seconds // 60
+            return f"hace {minutes} minuto{'s' if minutes > 1 else ''}"
+        else:
+            return "hace un momento"
+
+    @app.template_global()
+    def timedelta(**kwargs):
+        """Función global para crear objetos timedelta en templates"""
+        from datetime import timedelta as td
+        return td(**kwargs)
 
 
 def register_middleware(app):

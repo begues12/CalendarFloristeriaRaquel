@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Integración de API{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-plus"></i> Nueva Integración de API</h2>
+                <a href="{{ url_for('calendar.api_integrations') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="POST">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Configuración de la Integración</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Nombre <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name" required 
+                                           placeholder="Ej: Pronóstico del Tiempo">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="api_type" class="form-label">Tipo de API <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="api_type" name="api_type" required>
+                                        <option value="">Seleccionar tipo...</option>
+                                        <option value="weather">🌤️ Clima</option>
+                                        <option value="events">📅 Eventos</option>
+                                        <option value="tasks">✅ Tareas</option>
+                                        <option value="custom">⚙️ Personalizada</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="url" class="form-label">URL de la API <span class="text-danger">*</span></label>
+                            <input type="url" class="form-control" id="url" name="url" required 
+                                   placeholder="https://api.ejemplo.com/datos">
+                            <div class="form-text">La URL completa del endpoint de la API</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="request_method" class="form-label">Método HTTP</label>
+                                    <select class="form-select" id="request_method" name="request_method">
+                                        <option value="GET" selected>GET</option>
+                                        <option value="POST">POST</option>
+                                        <option value="PUT">PUT</option>
+                                        <option value="PATCH">PATCH</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="refresh_interval" class="form-label">Intervalo de Actualización (minutos)</label>
+                                    <input type="number" class="form-control" id="refresh_interval" name="refresh_interval" 
+                                           value="60" min="1" max="1440">
+                                    <div class="form-text">Frecuencia de sincronización automática</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="api_key" class="form-label">Clave de API</label>
+                            <input type="password" class="form-control" id="api_key" name="api_key" 
+                                   placeholder="Opcional - se enviará en headers">
+                            <div class="form-text">Si la API requiere autenticación</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="headers" class="form-label">Headers Adicionales (JSON)</label>
+                            <textarea class="form-control" id="headers" name="headers" rows="3" 
+                                      placeholder='{"Accept": "application/json", "User-Agent": "MiApp/1.0"}'></textarea>
+                            <div class="form-text">Headers HTTP adicionales en formato JSON</div>
+                        </div>
+
+                        <div class="mb-3" id="request_body_container" style="display: none;">
+                            <label for="request_body" class="form-label">Cuerpo de la Petición (JSON)</label>
+                            <textarea class="form-control" id="request_body" name="request_body" rows="3"
+                                      placeholder='{"query": "datos", "limit": 10}'></textarea>
+                            <div class="form-text">Datos a enviar en peticiones POST/PUT</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                                <label class="form-check-label" for="is_active">
+                                    Activar integración
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Configuración de Mapeo</h5>
+                        <small class="text-muted">Define cómo mapear los datos de la API al calendario</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="mapping_config" class="form-label">Configuración de Mapeo (JSON) <span class="text-danger">*</span></label>
+                            <textarea class="form-control font-monospace" id="mapping_config" name="mapping_config" rows="10" required></textarea>
+                            <div class="form-text">
+                                <small>Define cómo extraer y mapear los datos de la respuesta de la API</small>
+                            </div>
+                        </div>
+
+                        <!-- Plantillas de configuración -->
+                        <div class="mb-3">
+                            <label class="form-label">Plantillas de Configuración:</label>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-info btn-sm" onclick="loadTemplate('weather')">
+                                    🌤️ Clima
+                                </button>
+                                <button type="button" class="btn btn-outline-success btn-sm" onclick="loadTemplate('events')">
+                                    📅 Eventos
+                                </button>
+                                <button type="button" class="btn btn-outline-warning btn-sm" onclick="loadTemplate('tasks')">
+                                    ✅ Tareas
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="loadTemplate('custom')">
+                                    ⚙️ Personalizada
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Crear Integración
+                    </button>
+                    <a href="{{ url_for('calendar.api_integrations') }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">💡 Ayuda</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Tipos de API soportados:</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>🌤️ Clima:</strong> APIs meteorológicas</li>
+                        <li><strong>📅 Eventos:</strong> Calendarios externos</li>
+                        <li><strong>✅ Tareas:</strong> Gestores de tareas</li>
+                        <li><strong>⚙️ Personalizada:</strong> Cualquier API</li>
+                    </ul>
+
+                    <h6>Campos de Mapeo Comunes:</h6>
+                    <ul class="list-unstyled">
+                        <li><code>data_path</code>: Ruta a los datos</li>
+                        <li><code>date_field</code>: Campo de fecha</li>
+                        <li><code>title_field</code>: Campo de título</li>
+                        <li><code>description_field</code>: Descripción</li>
+                        <li><code>icon</code>: Icono FontAwesome</li>
+                        <li><code>color</code>: Color hexadecimal</li>
+                    </ul>
+
+                    <h6>Ejemplo de Respuesta API:</h6>
+                    <pre class="bg-light p-2 rounded"><code>{
+  "data": [
+    {
+      "date": "2025-07-15",
+      "title": "Evento",
+      "description": "Detalle"
+    }
+  ]
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Plantillas de configuración
+const templates = {
+    weather: {
+        "data_path": "forecast.forecastday",
+        "date_field": "date",
+        "title_field": "day.condition.text",
+        "icon_field": "day.condition.icon",
+        "temp_field": "day.maxtemp_c",
+        "icon": "fas fa-cloud-sun",
+        "color": "#87CEEB"
+    },
+    events: {
+        "data_path": "events",
+        "date_field": "start.date",
+        "title_field": "summary",
+        "description_field": "description",
+        "icon": "fas fa-calendar-alt",
+        "color": "#28a745"
+    },
+    tasks: {
+        "data_path": "tasks",
+        "date_field": "due_date",
+        "title_field": "title",
+        "status_field": "status",
+        "icon": "fas fa-tasks",
+        "color": "#ffc107"
+    },
+    custom: {
+        "data_path": "data",
+        "date_field": "date",
+        "title_field": "title",
+        "description_field": "description",
+        "icon": "fas fa-info-circle",
+        "color": "#007bff"
+    }
+};
+
+function loadTemplate(type) {
+    const config = templates[type];
+    document.getElementById('mapping_config').value = JSON.stringify(config, null, 2);
+    
+    // Actualizar tipo si no está seleccionado
+    if (!document.getElementById('api_type').value) {
+        document.getElementById('api_type').value = type;
+    }
+}
+
+// Mostrar/ocultar campo de body según método HTTP
+document.getElementById('request_method').addEventListener('change', function() {
+    const bodyContainer = document.getElementById('request_body_container');
+    if (this.value === 'POST' || this.value === 'PUT' || this.value === 'PATCH') {
+        bodyContainer.style.display = 'block';
+    } else {
+        bodyContainer.style.display = 'none';
+    }
+});
+
+// Cargar plantilla inicial cuando se selecciona el tipo
+document.getElementById('api_type').addEventListener('change', function() {
+    if (this.value && !document.getElementById('mapping_config').value.trim()) {
+        loadTemplate(this.value);
+    }
+});
+
+// Validar JSON en tiempo real
+document.getElementById('mapping_config').addEventListener('blur', function() {
+    try {
+        if (this.value.trim()) {
+            JSON.parse(this.value);
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        }
+    } catch (e) {
+        this.classList.remove('is-valid');
+        this.classList.add('is-invalid');
+    }
+});
+
+document.getElementById('headers').addEventListener('blur', function() {
+    try {
+        if (this.value.trim()) {
+            JSON.parse(this.value);
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        }
+    } catch (e) {
+        this.classList.remove('is-valid');
+        this.classList.add('is-invalid');
+    }
+});
+
+document.getElementById('request_body').addEventListener('blur', function() {
+    try {
+        if (this.value.trim()) {
+            JSON.parse(this.value);
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        }
+    } catch (e) {
+        this.classList.remove('is-valid');
+        this.classList.add('is-invalid');
+    }
+});
+</script>
+{% endblock %}

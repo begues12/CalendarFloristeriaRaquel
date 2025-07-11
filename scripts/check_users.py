@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 """
-Script para verificar y actualizar usuarios existentes con el campo must_change_password
+Script para verificar usuarios existentes
 """
 
-from models import db, User
-from app import app
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from app import create_app
+from app.models.user import User
 
 def check_users():
+    app = create_app()
     with app.app_context():
         print("=== Estado actual de los usuarios ===")
         
@@ -17,7 +22,13 @@ def check_users():
         
         for user in users:
             print(f"Usuario: {user.username}")
+            print(f"  - ID: {user.id}")
+            print(f"  - Email: {user.email}")
             print(f"  - Nombre completo: {user.full_name}")
+            print(f"  - Es admin: {user.is_admin}")
+            print(f"  - Es activo: {user.is_active}")
+            print(f"  - Debe cambiar contraseña: {user.must_change_password}")
+            print("---")
             print(f"  - Es admin: {user.is_admin}")
             print(f"  - Está activo: {user.is_active}")
             print(f"  - Debe cambiar contraseña: {user.must_change_password}")

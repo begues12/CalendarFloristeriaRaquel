@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Integración - {{ integration.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-edit"></i> Editar Integración: {{ integration.name }}</h2>
+                <a href="{{ url_for('calendar.api_integrations') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="POST">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Configuración de la Integración</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Nombre <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name" required 
+                                           value="{{ integration.name }}" placeholder="Ej: Pronóstico del Tiempo">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="api_type" class="form-label">Tipo de API <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="api_type" name="api_type" required>
+                                        <option value="">Seleccionar tipo...</option>
+                                        <option value="weather" {% if integration.api_type == 'weather' %}selected{% endif %}>🌤️ Clima</option>
+                                        <option value="events" {% if integration.api_type == 'events' %}selected{% endif %}>📅 Eventos</option>
+                                        <option value="tasks" {% if integration.api_type == 'tasks' %}selected{% endif %}>✅ Tareas</option>
+                                        <option value="custom" {% if integration.api_type == 'custom' %}selected{% endif %}>⚙️ Personalizada</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="url" class="form-label">URL de la API <span class="text-danger">*</span></label>
+                            <input type="url" class="form-control" id="url" name="url" required 
+                                   value="{{ integration.url }}" placeholder="https://api.ejemplo.com/datos">
+                            <div class="form-text">La URL completa del endpoint de la API</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="request_method" class="form-label">Método HTTP</label>
+                                    <select class="form-select" id="request_method" name="request_method">
+                                        <option value="GET" {% if integration.request_method == 'GET' %}selected{% endif %}>GET</option>
+                                        <option value="POST" {% if integration.request_method == 'POST' %}selected{% endif %}>POST</option>
+                                        <option value="PUT" {% if integration.request_method == 'PUT' %}selected{% endif %}>PUT</option>
+                                        <option value="PATCH" {% if integration.request_method == 'PATCH' %}selected{% endif %}>PATCH</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="refresh_interval" class="form-label">Intervalo de Actualización (minutos)</label>
+                                    <input type="number" class="form-control" id="refresh_interval" name="refresh_interval" 
+                                           value="{{ integration.refresh_interval }}" min="1" max="1440">
+                                    <div class="form-text">Frecuencia de sincronización automática</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="api_key" class="form-label">Clave de API</label>
+                            <input type="password" class="form-control" id="api_key" name="api_key" 
+                                   value="{{ integration.api_key or '' }}" placeholder="Opcional - se enviará en headers">
+                            <div class="form-text">Si la API requiere autenticación</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="headers" class="form-label">Headers Adicionales (JSON)</label>
+                            <textarea class="form-control" id="headers" name="headers" rows="3" 
+                                      placeholder='{"Accept": "application/json", "User-Agent": "MiApp/1.0"}'>{{ integration.headers or '' }}</textarea>
+                            <div class="form-text">Headers HTTP adicionales en formato JSON</div>
+                        </div>
+
+                        <div class="mb-3" id="request_body_container" {% if integration.request_method == 'GET' %}style="display: none;"{% endif %}>
+                            <label for="request_body" class="form-label">Cuerpo de la Petición (JSON)</label>
+                            <textarea class="form-control" id="request_body" name="request_body" rows="3"
+                                      placeholder='{"query": "datos", "limit": 10}'>{{ integration.request_body or '' }}</textarea>
+                            <div class="form-text">Datos a enviar en peticiones POST/PUT</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
+                                       {% if integration.is_active %}checked{% endif %}>
+                                <label class="form-check-label" for="is_active">
+                                    Activar integración
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Configuración de Mapeo</h5>
+                        <small class="text-muted">Define cómo mapear los datos de la API al calendario</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="mapping_config" class="form-label">Configuración de Mapeo (JSON) <span class="text-danger">*</span></label>
+                            <textarea class="form-control font-monospace" id="mapping_config" name="mapping_config" rows="10" required>{{ integration.mapping_config }}</textarea>
+                            <div class="form-text">
+                                <small>Define cómo extraer y mapear los datos de la respuesta de la API</small>
+                            </div>
+                        </div>
+
+                        <!-- Plantillas de configuración -->
+                        <div class="mb-3">
+                            <label class="form-label">Plantillas de Configuración:</label>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-info btn-sm" onclick="loadTemplate('weather')">
+                                    🌤️ Clima
+                                </button>
+                                <button type="button" class="btn btn-outline-success btn-sm" onclick="loadTemplate('events')">
+                                    📅 Eventos
+                                </button>
+                                <button type="button" class="btn btn-outline-warning btn-sm" onclick="loadTemplate('tasks')">
+                                    ✅ Tareas
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="loadTemplate('custom')">
+                                    ⚙️ Personalizada
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Actualizar Integración
+                    </button>
+                    <a href="{{ url_for('calendar.api_integrations') }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 Estado de la Integración</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-6">Estado:</dt>
+                        <dd class="col-sm-6">
+                            {% if integration.last_sync_status == 'success' %}
+                                <span class="badge bg-success">Exitoso</span>
+                            {% elif integration.last_sync_status == 'error' %}
+                                <span class="badge bg-danger">Error</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Pendiente</span>
+                            {% endif %}
+                        </dd>
+                        
+                        <dt class="col-sm-6">Última Sync:</dt>
+                        <dd class="col-sm-6">
+                            {% if integration.last_sync %}
+                                {{ integration.last_sync.strftime('%d/%m/%Y %H:%M') }}
+                            {% else %}
+                                Nunca
+                            {% endif %}
+                        </dd>
+                        
+                        <dt class="col-sm-6">Datos:</dt>
+                        <dd class="col-sm-6">
+                            {{ integration.data_entries|length }} entradas
+                        </dd>
+                        
+                        <dt class="col-sm-6">Creada:</dt>
+                        <dd class="col-sm-6">
+                            {{ integration.created_at.strftime('%d/%m/%Y') }}
+                        </dd>
+                    </dl>
+
+                    {% if integration.last_error %}
+                    <div class="alert alert-danger mt-3">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Último Error:</h6>
+                        <small>{{ integration.last_error }}</small>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-outline-info btn-sm test-api-btn" 
+                                data-integration-id="{{ integration.id }}">
+                            <i class="fas fa-vial"></i> Probar Conexión
+                        </button>
+                        <a href="{{ url_for('calendar.sync_api_integration', integration_id=integration.id) }}" 
+                           class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-sync"></i> Sincronizar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">💡 Ayuda</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Campos de Mapeo Comunes:</h6>
+                    <ul class="list-unstyled">
+                        <li><code>data_path</code>: Ruta a los datos</li>
+                        <li><code>date_field</code>: Campo de fecha</li>
+                        <li><code>title_field</code>: Campo de título</li>
+                        <li><code>description_field</code>: Descripción</li>
+                        <li><code>icon</code>: Icono FontAwesome</li>
+                        <li><code>color</code>: Color hexadecimal</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para resultados de prueba -->
+<div class="modal fade" id="testResultModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Resultado de Prueba de API</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="testResultContent">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Probando...</span>
+                        </div>
+                        <p class="mt-2">Probando conexión...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Plantillas de configuración (mismas que en crear)
+const templates = {
+    weather: {
+        "data_path": "forecast.forecastday",
+        "date_field": "date",
+        "title_field": "day.condition.text",
+        "icon_field": "day.condition.icon",
+        "temp_field": "day.maxtemp_c",
+        "icon": "fas fa-cloud-sun",
+        "color": "#87CEEB"
+    },
+    events: {
+        "data_path": "events",
+        "date_field": "start.date",
+        "title_field": "summary",
+        "description_field": "description",
+        "icon": "fas fa-calendar-alt",
+        "color": "#28a745"
+    },
+    tasks: {
+        "data_path": "tasks",
+        "date_field": "due_date",
+        "title_field": "title",
+        "status_field": "status",
+        "icon": "fas fa-tasks",
+        "color": "#ffc107"
+    },
+    custom: {
+        "data_path": "data",
+        "date_field": "date",
+        "title_field": "title",
+        "description_field": "description",
+        "icon": "fas fa-info-circle",
+        "color": "#007bff"
+    }
+};
+
+function loadTemplate(type) {
+    const config = templates[type];
+    document.getElementById('mapping_config').value = JSON.stringify(config, null, 2);
+}
+
+// Mostrar/ocultar campo de body según método HTTP
+document.getElementById('request_method').addEventListener('change', function() {
+    const bodyContainer = document.getElementById('request_body_container');
+    if (this.value === 'POST' || this.value === 'PUT' || this.value === 'PATCH') {
+        bodyContainer.style.display = 'block';
+    } else {
+        bodyContainer.style.display = 'none';
+    }
+});
+
+// Manejar pruebas de API
+document.querySelector('.test-api-btn').addEventListener('click', function() {
+    const integrationId = this.dataset.integrationId;
+    const modal = new bootstrap.Modal(document.getElementById('testResultModal'));
+    
+    document.getElementById('testResultContent').innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Probando...</span>
+            </div>
+            <p class="mt-2">Probando conexión...</p>
+        </div>
+    `;
+    modal.show();
+    
+    fetch(`/calendar/api-integrations/${integrationId}/test`)
+        .then(response => response.json())
+        .then(data => {
+            let content = '';
+            if (data.success) {
+                content = `
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-check"></i> Conexión Exitosa</h6>
+                        <p class="mb-2">${data.message}</p>
+                        <small class="text-muted">Código: ${data.status_code}</small>
+                    </div>
+                    <h6>Respuesta:</h6>
+                    <pre class="bg-light p-2 rounded"><code>${JSON.stringify(data.response, null, 2)}</code></pre>
+                `;
+            } else {
+                content = `
+                    <div class="alert alert-danger">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Error de Conexión</h6>
+                        <p class="mb-0">${data.message}</p>
+                    </div>
+                `;
+            }
+            document.getElementById('testResultContent').innerHTML = content;
+        })
+        .catch(error => {
+            document.getElementById('testResultContent').innerHTML = `
+                <div class="alert alert-danger">
+                    <h6><i class="fas fa-exclamation-triangle"></i> Error</h6>
+                    <p class="mb-0">Error al realizar la prueba: ${error.message}</p>
+                </div>
+            `;
+        });
+});
+</script>
+{% endblock %}

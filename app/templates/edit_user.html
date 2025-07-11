@@ -210,5 +210,15 @@ document.getElementById('is_admin').addEventListener('change', function() {
         selectAllPrivileges();
     }
 });
+
+// Validación del formulario antes de envío
+document.querySelector('form').addEventListener('submit', function(e) {
+    const emailField = document.getElementById('email');
+    if (!emailField.value.trim()) {
+        // Si el email está vacío, generar uno automático
+        const userId = '{{ user.id }}';
+        emailField.value = `user${userId}@floristeria.local`;
+    }
+});
 </script>
 {% endblock %}

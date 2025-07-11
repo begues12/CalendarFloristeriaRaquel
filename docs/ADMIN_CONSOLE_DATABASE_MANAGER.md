@@ -1,46 +1,56 @@
-# Consola Administrativa y Gestor de Base de Datos
+# Consola Administrativa y Gestor de Base de Datos - ACCESO COMPLETO
 
 ## Descripción
 
-Se han añadido dos nuevas herramientas avanzadas al **Panel de Super Administrador**:
+Se han añadido dos nuevas herramientas avanzadas al **Panel de Super Administrador** con **ACCESO TOTAL** para uso interno de la empresa:
 
-1. **🖥️ Consola Administrativa**: Ejecuta comandos del sistema de forma segura
-2. **🗄️ Gestor de Base de Datos**: Administración avanzada de la base de datos
+1. **🖥️ Consola Administrativa**: Ejecuta CUALQUIER comando del sistema sin restricciones
+2. **🗄️ Gestor de Base de Datos**: Administración total de BD con todas las consultas SQL permitidas
 
-## 🖥️ Consola Administrativa
+## 🖥️ Consola Administrativa - SIN RESTRICCIONES
 
 ### Características
+- **🔓 ACCESO COMPLETO**: Todos los comandos del sistema permitidos
 - **Interfaz tipo terminal** con historial de comandos
-- **Lista blanca de comandos** por seguridad
-- **Comandos rápidos** predefinidos
+- **Comandos rápidos** predefinidos para tareas comunes
 - **Historial navegable** con flechas arriba/abajo
 - **Scripts de gestión** integrados
+- **Timeout extendido** (2 minutos por comando)
 
-### Comandos Permitidos
+### Comandos Disponibles (SIN LÍMITES)
 ```bash
-# Sistema
-ls, dir, pwd, whoami
+# Sistema completo
+dir, ls, cd, mkdir, rmdir, del, copy, move, type, more
+tasklist, taskkill, netstat, systeminfo, ping, curl
 
-# Python
+# Python completo
 python --version
-pip list
-pip show [package]
+pip install [package]
+pip uninstall [package]
+pip upgrade [package]
+python -c "código python"
 
-# Git
-git status
-git log --oneline -5
-git branch
+# Git completo
+git status, git pull, git push, git commit, git add
+git checkout, git branch, git merge, git reset
 
-# Flask
-flask --version
-flask db current
-flask db history
-flask db show
+# Flask completo
+flask run, flask db upgrade, flask db migrate
+flask db current, flask db history, flask shell
 
-# Scripts del proyecto
-python scripts/check_database.py
-python scripts/manage_super_admin.py --list
-python scripts/demo_database_config.py
+# Base de datos
+mysql -u user -p
+sqlite3 archivo.db
+
+# Red y conectividad
+ping google.com
+curl -X GET http://api.ejemplo.com
+wget https://archivo.com/descarga.zip
+
+# Gestión de archivos
+find . -name "*.py"
+grep "texto" archivo.txt
+cat archivo.txt (Linux) / type archivo.txt (Windows)
 ```
 
 ### Acceso
@@ -54,11 +64,12 @@ python scripts/demo_database_config.py
 - **Botones rápidos** para comandos comunes
 - **help** para ver comandos disponibles
 
-## 🗄️ Gestor de Base de Datos
+## 🗄️ Gestor de Base de Datos - TODAS LAS CONSULTAS PERMITIDAS
 
 ### Características
+- **🔓 ACCESO TOTAL**: Cualquier consulta SQL permitida (SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, etc.)
 - **Información detallada** de la base de datos
-- **Ejecutor de consultas SQL** (solo lectura)
+- **Ejecutor de consultas SQL** completo
 - **Explorador de tablas** con detalles de columnas
 - **Herramientas de optimización**
 - **Estadísticas de rendimiento**
@@ -71,11 +82,12 @@ python scripts/demo_database_config.py
 - Número total de tablas y registros
 - Estado del pool de conexiones
 
-#### 🔍 Ejecutor SQL
-- **Solo consultas de lectura** (SELECT, SHOW, DESCRIBE, EXPLAIN)
+#### 🔍 Ejecutor SQL - SIN RESTRICCIONES
+- **TODAS las consultas SQL** permitidas
 - **Consultas rápidas** predefinidas
 - **Resultados en tabla** formateados
 - **Atajo Ctrl+Enter** para ejecutar
+- **Manejo automático de transacciones**
 
 #### 📋 Explorador de Tablas
 - **Lista de todas las tablas** con estadísticas
@@ -94,8 +106,9 @@ python scripts/demo_database_config.py
 1. **Panel Super Admin** → **"Gestor de Base de Datos"**
 2. URL directa: `/admin/database_manager`
 
-### Consultas SQL Ejemplo
+### Consultas SQL - EJEMPLOS SIN RESTRICCIONES
 ```sql
+-- ===== CONSULTAS DE LECTURA =====
 -- Ver todos los usuarios
 SELECT * FROM users LIMIT 10;
 
@@ -110,21 +123,90 @@ SHOW TABLES;
 
 -- Explicar consulta
 EXPLAIN SELECT * FROM users WHERE username = 'admin';
+
+-- Consultas complejas con JOINs
+SELECT u.username, COUNT(d.id) as documentos 
+FROM users u 
+LEFT JOIN user_documents d ON u.id = d.user_id 
+GROUP BY u.id;
+
+-- ===== CONSULTAS DE MODIFICACIÓN =====
+-- Insertar nuevo usuario
+INSERT INTO users (username, email, password_hash) 
+VALUES ('nuevo_usuario', 'email@empresa.com', 'hash_password');
+
+-- Actualizar datos
+UPDATE users SET is_admin = 1 WHERE username = 'admin';
+
+-- Eliminar registros
+DELETE FROM user_documents WHERE created_at < '2023-01-01';
+
+-- ===== CONSULTAS DE ESTRUCTURA =====
+-- Crear nueva tabla
+CREATE TABLE configuracion (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    clave VARCHAR(100) NOT NULL,
+    valor TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Añadir columna
+ALTER TABLE users ADD COLUMN telefono VARCHAR(20);
+
+-- Crear índice
+CREATE INDEX idx_username ON users(username);
+
+-- Eliminar tabla (¡CUIDADO!)
+DROP TABLE tabla_temporal;
+
+-- ===== CONSULTAS DE BACKUP/RESTORE =====
+-- Exportar datos
+SELECT * FROM users INTO OUTFILE '/tmp/users_backup.csv'
+FIELDS TERMINATED BY ',' ENCLOSED BY '"';
+
+-- Información del sistema (MySQL)
+SHOW VARIABLES LIKE 'version%';
+SHOW PROCESSLIST;
+SHOW ENGINE INNODB STATUS;
 ```
 
-## 🔒 Seguridad
+## 🔒 Configuración de Seguridad - USO INTERNO EMPRESA
 
 ### Consola Administrativa
-- **Lista blanca** de comandos permitidos
-- **Timeout de 30 segundos** para comandos
-- **No comandos destructivos** (rm, del, etc.)
-- **Solo comandos de lectura** y diagnóstico
+- **🔓 SIN RESTRICCIONES**: Todos los comandos permitidos
+- **Timeout extendido** (120 segundos por comando)
+- **Shell completo** con pipes y redirecciones
+- **Acceso total al sistema** para administración
 
 ### Gestor de Base de Datos
-- **Solo consultas SELECT** y comandos informativos
-- **No modificaciones** de datos
-- **Validación de consultas** antes de ejecutar
-- **Escape de HTML** en resultados
+- **🔓 TODAS las consultas SQL** permitidas
+- **Modificaciones de datos** habilitadas
+- **Creación/eliminación** de tablas y estructuras
+- **Transacciones automáticas** con rollback en errores
+- **Sin escape de HTML** en resultados (datos crudos)
+
+### ⚠️ IMPORTANTE - USO RESPONSABLE
+Esta configuración está diseñada para **uso interno de la empresa** con personal técnico capacitado:
+
+- **Solo Super Administradores** tienen acceso
+- **Verificación automática** de permisos  
+- **Logs completos** de todas las operaciones
+- **Redirección automática** si no autorizado
+- **Responsabilidad del usuario** en el uso de comandos
+
+### 💡 Buenas Prácticas Recomendadas
+```bash
+# Hacer backup antes de cambios importantes
+python scripts/backup_database.py
+
+# Verificar estado antes de operaciones críticas
+python scripts/check_database.py
+
+# Usar transacciones para cambios múltiples
+BEGIN;
+-- múltiples consultas aquí
+COMMIT; -- o ROLLBACK si hay problemas
+```
 
 ## 📁 Archivos Creados/Modificados
 

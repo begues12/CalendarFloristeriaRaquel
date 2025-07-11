@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Nota - {{ note.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-edit"></i> 
+                    Editar Nota: {{ note.title }}
+                </h2>
+                <a href="{{ url_for('calendar.view_notes', date_str=note.date_for.strftime('%Y-%m-%d')) }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="POST">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Detalles de la Nota</h5>
+                        <small class="text-muted">{{ note.date_for.strftime('%A, %d de %B de %Y') }}</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Título <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" required 
+                                   value="{{ note.title }}" placeholder="Título de la nota">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Contenido</label>
+                            <textarea class="form-control" id="content" name="content" rows="6" 
+                                      placeholder="Escribe el contenido de tu nota aquí...">{{ note.content or '' }}</textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="priority" class="form-label">Prioridad</label>
+                                    <select class="form-select" id="priority" name="priority">
+                                        <option value="low" {% if note.priority == 'low' %}selected{% endif %}>🟢 Baja</option>
+                                        <option value="normal" {% if note.priority == 'normal' %}selected{% endif %}>🔵 Normal</option>
+                                        <option value="high" {% if note.priority == 'high' %}selected{% endif %}>🟠 Alta</option>
+                                        <option value="urgent" {% if note.priority == 'urgent' %}selected{% endif %}>🔴 Urgente</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="color" class="form-label">Color</label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control form-control-color" id="color" name="color" value="{{ note.color }}">
+                                        <input type="text" class="form-control" id="color_text" value="{{ note.color }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_reminder" name="is_reminder" 
+                                               {% if note.is_reminder %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_reminder">
+                                            Es un recordatorio
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3" id="reminder_time_container" {% if not note.is_reminder %}style="display: none;"{% endif %}>
+                                    <label for="reminder_time" class="form-label">Hora del recordatorio</label>
+                                    <input type="time" class="form-control" id="reminder_time" name="reminder_time" 
+                                           value="{{ note.reminder_time.strftime('%H:%M') if note.reminder_time else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_private" name="is_private" 
+                                       {% if note.is_private %}checked{% endif %}>
+                                <label class="form-check-label" for="is_private">
+                                    Nota privada (solo visible para mí)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Actualizar Nota
+                    </button>
+                    <a href="{{ url_for('calendar.view_notes', date_str=note.date_for.strftime('%Y-%m-%d')) }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📋 Vista Previa</h5>
+                </div>
+                <div class="card-body">
+                    <div class="card h-100 border-start border-4" id="preview-card" style="border-color: {{ note.color }}!important;">
+                        <div class="card-header d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1" id="preview-title">{{ note.title }}</h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge" id="preview-priority" style="background-color: {{ note.get_priority_color() }};">
+                                        {{ note.get_priority_display() }}
+                                    </span>
+                                    {% if note.is_reminder and note.reminder_time %}
+                                    <span class="badge bg-info" id="preview-reminder">
+                                        <i class="fas fa-clock"></i> <span id="preview-time">{{ note.reminder_time.strftime('%H:%M') }}</span>
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-info" id="preview-reminder" style="display: none;">
+                                        <i class="fas fa-clock"></i> <span id="preview-time">00:00</span>
+                                    </span>
+                                    {% endif %}
+                                    {% if note.is_private %}
+                                    <span class="badge bg-secondary" id="preview-private">
+                                        <i class="fas fa-lock"></i> Privada
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-secondary" id="preview-private" style="display: none;">
+                                        <i class="fas fa-lock"></i> Privada
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% if note.content %}
+                        <div class="card-body" id="preview-content-container">
+                            <p class="card-text" id="preview-content">{{ note.content }}</p>
+                        </div>
+                        {% else %}
+                        <div class="card-body" id="preview-content-container" style="display: none;">
+                            <p class="card-text" id="preview-content"></p>
+                        </div>
+                        {% endif %}
+                        <div class="card-footer text-muted">
+                            <small>
+                                <i class="fas fa-user"></i> {{ note.creator.full_name or note.creator.username }}
+                                <span class="ms-2">
+                                    <i class="fas fa-calendar"></i> {{ note.date_for.strftime('%d/%m/%Y') }}
+                                </span>
+                                {% if note.updated_at != note.created_at %}
+                                <span class="ms-2 text-info">
+                                    <i class="fas fa-edit"></i> Editada
+                                </span>
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 Información</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-6">Creada:</dt>
+                        <dd class="col-sm-6">{{ note.created_at.strftime('%d/%m/%Y %H:%M') }}</dd>
+                        
+                        {% if note.updated_at != note.created_at %}
+                        <dt class="col-sm-6">Última edición:</dt>
+                        <dd class="col-sm-6">{{ note.updated_at.strftime('%d/%m/%Y %H:%M') }}</dd>
+                        {% endif %}
+                        
+                        <dt class="col-sm-6">Fecha:</dt>
+                        <dd class="col-sm-6">{{ note.date_for.strftime('%A, %d/%m/%Y') }}</dd>
+                        
+                        <dt class="col-sm-6">Visibilidad:</dt>
+                        <dd class="col-sm-6">
+                            {% if note.is_private %}
+                                <span class="badge bg-secondary">Privada</span>
+                            {% else %}
+                                <span class="badge bg-success">Pública</span>
+                            {% endif %}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">💡 Consejos</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-lightbulb text-warning"></i>
+                            <strong>Título descriptivo:</strong> Usa títulos claros y concisos
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-palette text-info"></i>
+                            <strong>Colores:</strong> Usa colores para categorizar tus notas
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-clock text-success"></i>
+                            <strong>Recordatorios:</strong> Establece horarios para tareas importantes
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-lock text-secondary"></i>
+                            <strong>Privacidad:</strong> Las notas privadas solo las verás tú
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos del formulario
+    const titleInput = document.getElementById('title');
+    const contentInput = document.getElementById('content');
+    const prioritySelect = document.getElementById('priority');
+    const colorInput = document.getElementById('color');
+    const colorText = document.getElementById('color_text');
+    const isReminderCheck = document.getElementById('is_reminder');
+    const reminderTimeInput = document.getElementById('reminder_time');
+    const isPrivateCheck = document.getElementById('is_private');
+    
+    // Elementos de vista previa
+    const previewCard = document.getElementById('preview-card');
+    const previewTitle = document.getElementById('preview-title');
+    const previewContent = document.getElementById('preview-content');
+    const previewContentContainer = document.getElementById('preview-content-container');
+    const previewPriority = document.getElementById('preview-priority');
+    const previewReminder = document.getElementById('preview-reminder');
+    const previewTime = document.getElementById('preview-time');
+    const previewPrivate = document.getElementById('preview-private');
+    
+    // Colores por prioridad
+    const priorityColors = {
+        'low': '#6c757d',
+        'normal': '#007bff',
+        'high': '#fd7e14',
+        'urgent': '#dc3545'
+    };
+    
+    const priorityLabels = {
+        'low': 'Baja',
+        'normal': 'Normal',
+        'high': 'Alta',
+        'urgent': 'Urgente'
+    };
+    
+    // Función para actualizar vista previa
+    function updatePreview() {
+        // Título
+        const title = titleInput.value.trim() || 'Título de la nota';
+        previewTitle.textContent = title;
+        
+        // Contenido
+        const content = contentInput.value.trim();
+        if (content) {
+            previewContent.textContent = content;
+            previewContentContainer.style.display = 'block';
+        } else {
+            previewContentContainer.style.display = 'none';
+        }
+        
+        // Color del borde
+        const color = colorInput.value;
+        previewCard.style.borderColor = color + '!important';
+        
+        // Prioridad
+        const priority = prioritySelect.value;
+        previewPriority.textContent = priorityLabels[priority];
+        previewPriority.style.backgroundColor = priorityColors[priority];
+        
+        // Recordatorio
+        if (isReminderCheck.checked && reminderTimeInput.value) {
+            previewReminder.style.display = 'inline-block';
+            previewTime.textContent = reminderTimeInput.value;
+        } else {
+            previewReminder.style.display = 'none';
+        }
+        
+        // Privacidad
+        if (isPrivateCheck.checked) {
+            previewPrivate.style.display = 'inline-block';
+        } else {
+            previewPrivate.style.display = 'none';
+        }
+    }
+    
+    // Eventos para actualizar vista previa en tiempo real
+    titleInput.addEventListener('input', updatePreview);
+    contentInput.addEventListener('input', updatePreview);
+    prioritySelect.addEventListener('change', updatePreview);
+    colorInput.addEventListener('change', function() {
+        colorText.value = this.value;
+        updatePreview();
+    });
+    isReminderCheck.addEventListener('change', function() {
+        const container = document.getElementById('reminder_time_container');
+        if (this.checked) {
+            container.style.display = 'block';
+            if (!reminderTimeInput.value) {
+                const now = new Date();
+                const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                                  now.getMinutes().toString().padStart(2, '0');
+                reminderTimeInput.value = timeString;
+            }
+        } else {
+            container.style.display = 'none';
+        }
+        updatePreview();
+    });
+    reminderTimeInput.addEventListener('change', updatePreview);
+    isPrivateCheck.addEventListener('change', updatePreview);
+    
+    // Sincronizar input de color con texto
+    colorText.addEventListener('change', function() {
+        const color = this.value;
+        if (/^#[0-9A-F]{6}$/i.test(color)) {
+            colorInput.value = color;
+            updatePreview();
+        }
+    });
+});
+</script>
+{% endblock %}
