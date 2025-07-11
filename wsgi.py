@@ -20,3 +20,7 @@ print(f"Database URL: {application.config['SQLALCHEMY_DATABASE_URI']}")
 
 if __name__ == "__main__":
     application.run()
+
+
+# Clave del cliente ck_cda0de90e5b9c4ef0130a0aa98a92dc526425c78
+# Clave secreta de cliente cs_e35c00cd198e198148fbf2cdbe96d1044c5169fc
