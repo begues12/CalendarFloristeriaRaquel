@@ -134,6 +134,9 @@
                                 <button type="button" class="btn btn-outline-warning btn-sm" onclick="loadTemplate('tasks')">
                                     ✅ Tareas
                                 </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="loadTemplate('woocommerce')">
+                                    🛒 WooCommerce
+                                </button>
                                 <button type="button" class="btn btn-outline-secondary btn-sm" onclick="loadTemplate('custom')">
                                     ⚙️ Personalizada
                                 </button>
@@ -256,7 +259,7 @@
 const templates = {
     weather: {
         "data_path": "forecast.forecastday",
-        "date_field": "date",
+        "date_field": "start.date",
         "title_field": "day.condition.text",
         "icon_field": "day.condition.icon",
         "temp_field": "day.maxtemp_c",
@@ -278,6 +281,49 @@ const templates = {
         "status_field": "status",
         "icon": "fas fa-tasks",
         "color": "#ffc107"
+    },
+    woocommerce: {
+        "data_path": "",
+        "date_field": "date_created",
+        "delivery_date_field": "meta_data[key=ywcdd_order_delivery_date].value",
+        "title_template": "🌹 Pedido #{id} - {billing.first_name} {billing.last_name}",
+        "customer_fields": {
+            "name": "{billing.first_name} {billing.last_name}",
+            "email": "billing.email",
+            "phone": "billing.phone"
+        },
+        "delivery_fields": {
+            "recipient": "{shipping.first_name} {shipping.last_name}",
+            "address": "{shipping.address_1}, {shipping.city} {shipping.postcode}",
+            "phone": "shipping.phone"
+        },
+        "order_fields": {
+            "status": "status",
+            "total": "total",
+            "currency": "currency"
+        },
+        "product_fields": {
+            "items_path": "line_items",
+            "name": "name",
+            "quantity": "quantity",
+            "price": "total"
+        },
+        "dedication_fields": {
+            "meta_path": "line_items[].meta_data[]",
+            "dedication_key": "Dedicatoria",
+            "value_field": "display_value"
+        },
+        "status_colors": {
+            "pending": "#ffc107",
+            "processing": "#007bff",
+            "on-hold": "#fd7e14",
+            "completed": "#28a745",
+            "cancelled": "#dc3545",
+            "refunded": "#6c757d",
+            "failed": "#dc3545"
+        },
+        "icon": "fas fa-shopping-cart",
+        "default_color": "#ffc107"
     },
     custom: {
         "data_path": "data",
@@ -319,7 +365,7 @@ document.querySelector('.test-api-btn').addEventListener('click', function() {
     `;
     modal.show();
     
-    fetch(`/calendar/api-integrations/${integrationId}/test`)
+    fetch(`/api-integrations/${integrationId}/test`)
         .then(response => response.json())
         .then(data => {
             let content = '';

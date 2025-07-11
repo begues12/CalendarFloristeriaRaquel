@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.show();
             
             // Hacer petición de prueba
-            fetch(`/calendar/api-integrations/${integrationId}/test`)
+            fetch(`/api-integrations/${integrationId}/test`)
                 .then(response => response.json())
                 .then(data => {
                     let content = '';

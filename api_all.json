@@ -1,0 +1,3578 @@
+[
+  {
+    "_links": {
+      "collection": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders"
+        }
+      ],
+      "self": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders/2214",
+          "targetHints": {
+            "allow": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          }
+        }
+      ]
+    },
+    "billing": {
+      "address_1": "",
+      "address_2": "",
+      "city": "",
+      "company": "",
+      "country": "",
+      "email": "carlatorrandell@gmail.com",
+      "first_name": "Carla",
+      "last_name": "Torrandell Haro",
+      "phone": "638989037",
+      "postcode": "",
+      "state": "B"
+    },
+    "cart_hash": "b3aff183fe946afb1f144923aca52078",
+    "cart_tax": "4.45",
+    "coupon_lines": [],
+    "created_via": "checkout",
+    "currency": "EUR",
+    "currency_symbol": "€",
+    "customer_id": 0,
+    "customer_ip_address": "195.76.178.74",
+    "customer_note": "",
+    "customer_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+    "date_completed": null,
+    "date_completed_gmt": null,
+    "date_created": "2025-07-09T15:01:22",
+    "date_created_gmt": "2025-07-09T13:01:22",
+    "date_modified": "2025-07-09T15:05:04",
+    "date_modified_gmt": "2025-07-09T13:05:04",
+    "date_paid": "2025-07-09T15:05:04",
+    "date_paid_gmt": "2025-07-09T13:05:04",
+    "discount_tax": "0.00",
+    "discount_total": "0.00",
+    "fee_lines": [],
+    "id": 2214,
+    "is_editable": false,
+    "line_items": [
+      {
+        "id": 1855,
+        "image": {
+          "id": "1289",
+          "src": "https://floradomicilio.com/wp-content/uploads/2024/06/ramo_flores_claveles-scaled.jpg"
+        },
+        "meta_data": [
+          {
+            "display_key": "Configura tu ramo",
+            "display_value": "Medio",
+            "id": 14367,
+            "key": "Configura tu ramo",
+            "value": "Medio"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Dedicatoria (+1,00 €)",
+            "id": 14368,
+            "key": "Dedicatoria",
+            "value": "Dedicatoria (+1,00 €)"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Estefanía, Sentimos mucho que estéis pasando por este momento tan difícil. Te queremos y te pensamos todos los días, nos gustaría poder achucharte pero por ahora esperamos que con este ramo (con color rosa of course) nos sientas un poquito más cerca. ¡Muchos abrazos hoy y siempre! Cris, Ona y Carla",
+            "id": 14369,
+            "key": "Dedicatoria",
+            "value": "Estefanía, \r\n\r\nSentimos mucho que estéis pasando por este momento tan difícil. Te queremos y te pensamos todos los días, nos gustaría poder achucharte pero por ahora esperamos que con este ramo (con color rosa of course) nos sientas un poquito más cerca. \r\n\r\n¡Muchos abrazos hoy y siempre!\r\n\r\nCris, Ona y Carla"
+          },
+          {
+            "display_key": "_ywapo_meta_data",
+            "display_value": [
+              {
+                "1-1": {
+                  "0": "Medio",
+                  "addon_id": "1",
+                  "addon_value": "Medio",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Medio",
+                  "option_id": "1"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Estefanía, \r\n\r\nSentimos mucho que estéis pasando por este momento tan difícil. Te queremos y te pensamos todos los días, nos gustaría poder achucharte pero por ahora esperamos que con este ramo (con color rosa of course) nos sientas un poquito más cerca. \r\n\r\n¡Muchos abrazos hoy y siempre!\r\n\r\nCris, Ona y Carla",
+                  "addon_id": "6",
+                  "addon_value": "Estefanía, \r\n\r\nSentimos mucho que estéis pasando por este momento tan difícil. Te queremos y te pensamos todos los días, nos gustaría poder achucharte pero por ahora esperamos que con este ramo (con color rosa of course) nos sientas un poquito más cerca. \r\n\r\n¡Muchos abrazos hoy y siempre!\r\n\r\nCris, Ona y Carla",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Estefanía, \r\n\r\nSentimos mucho que estéis pasando por este momento tan difícil. Te queremos y te pensamos todos los días, nos gustaría poder achucharte pero por ahora esperamos que con este ramo (con color rosa of course) nos sientas un poquito más cerca. \r\n\r\n¡Muchos abrazos hoy y siempre!\r\n\r\nCris, Ona y Carla",
+                  "option_id": "0"
+                }
+              }
+            ],
+            "id": 14370,
+            "key": "_ywapo_meta_data",
+            "value": [
+              {
+                "1-1": {
+                  "0": "Medio",
+                  "addon_id": "1",
+                  "addon_value": "Medio",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Medio",
+                  "option_id": "1"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Estefanía, \r\n\r\nSentimos mucho que estéis pasando por este momento tan difícil. Te queremos y te pensamos todos los días, nos gustaría poder achucharte pero por ahora esperamos que con este ramo (con color rosa of course) nos sientas un poquito más cerca. \r\n\r\n¡Muchos abrazos hoy y siempre!\r\n\r\nCris, Ona y Carla",
+                  "addon_id": "6",
+                  "addon_value": "Estefanía, \r\n\r\nSentimos mucho que estéis pasando por este momento tan difícil. Te queremos y te pensamos todos los días, nos gustaría poder achucharte pero por ahora esperamos que con este ramo (con color rosa of course) nos sientas un poquito más cerca. \r\n\r\n¡Muchos abrazos hoy y siempre!\r\n\r\nCris, Ona y Carla",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Estefanía, \r\n\r\nSentimos mucho que estéis pasando por este momento tan difícil. Te queremos y te pensamos todos los días, nos gustaría poder achucharte pero por ahora esperamos que con este ramo (con color rosa of course) nos sientas un poquito más cerca. \r\n\r\n¡Muchos abrazos hoy y siempre!\r\n\r\nCris, Ona y Carla",
+                  "option_id": "0"
+                }
+              }
+            ]
+          }
+        ],
+        "name": "Ramo de Rosas Rojas y Claveles Marsella",
+        "parent_name": null,
+        "price": 44.545455,
+        "product_id": 1287,
+        "quantity": 1,
+        "sku": "Martina-1-1",
+        "subtotal": "44.55",
+        "subtotal_tax": "4.45",
+        "tax_class": "tasa-reducida",
+        "taxes": [
+          {
+            "id": 2,
+            "subtotal": "4.454545",
+            "total": "4.454545"
+          }
+        ],
+        "total": "44.55",
+        "total_tax": "4.45",
+        "variation_id": 0
+      }
+    ],
+    "meta_data": [
+      {
+        "id": 51075,
+        "key": "_billing_cif",
+        "value": ""
+      },
+      {
+        "id": 51076,
+        "key": "_billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 51077,
+        "key": "is_vat_exempt",
+        "value": "no"
+      },
+      {
+        "id": 51078,
+        "key": "ywcdd_order_delivery_date",
+        "value": "2025-07-10"
+      },
+      {
+        "id": 51079,
+        "key": "ywcdd_order_shipping_date",
+        "value": "2025-07-10"
+      },
+      {
+        "id": 51080,
+        "key": "ywcdd_order_slot_from",
+        "value": ""
+      },
+      {
+        "id": 51081,
+        "key": "ywcdd_order_slot_to",
+        "value": ""
+      },
+      {
+        "id": 51082,
+        "key": "ywcdd_order_carrier_id",
+        "value": "545"
+      },
+      {
+        "id": 51083,
+        "key": "ywcdd_order_processing_method",
+        "value": "1817"
+      },
+      {
+        "id": 51084,
+        "key": "ywcdd_order_carrier",
+        "value": "local"
+      },
+      {
+        "id": 51085,
+        "key": "_wc_cancel_key",
+        "value": "d5979fdcbe7ee200b8d76b020c235773"
+      },
+      {
+        "id": 51086,
+        "key": "billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 51087,
+        "key": "_wc_order_attribution_source_type",
+        "value": "referral"
+      },
+      {
+        "id": 51088,
+        "key": "_wc_order_attribution_referrer",
+        "value": "https://floristeriaraquel.com/"
+      },
+      {
+        "id": 51089,
+        "key": "_wc_order_attribution_utm_source",
+        "value": "floristeriaraquel.com"
+      },
+      {
+        "id": 51090,
+        "key": "_wc_order_attribution_utm_medium",
+        "value": "referral"
+      },
+      {
+        "id": 51091,
+        "key": "_wc_order_attribution_utm_content",
+        "value": "/"
+      },
+      {
+        "id": 51092,
+        "key": "_wc_order_attribution_session_entry",
+        "value": "https://floradomicilio.com/"
+      },
+      {
+        "id": 51093,
+        "key": "_wc_order_attribution_session_start_time",
+        "value": "2025-07-09 12:25:18"
+      },
+      {
+        "id": 51094,
+        "key": "_wc_order_attribution_session_pages",
+        "value": "19"
+      },
+      {
+        "id": 51095,
+        "key": "_wc_order_attribution_session_count",
+        "value": "1"
+      },
+      {
+        "id": 51096,
+        "key": "_wc_order_attribution_user_agent",
+        "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0"
+      },
+      {
+        "id": 51097,
+        "key": "_wc_order_attribution_device_type",
+        "value": "Desktop"
+      }
+    ],
+    "needs_payment": false,
+    "needs_processing": true,
+    "number": "2214",
+    "order_key": "wc_order_FAYzKkp2FoaPY",
+    "parent_id": 0,
+    "payment_method": "redsys",
+    "payment_method_title": "Pagar con Tarjeta",
+    "payment_url": "https://floradomicilio.com/finalizar-compra/order-pay/2214?pay_for_order=true&key=wc_order_FAYzKkp2FoaPY",
+    "prices_include_tax": true,
+    "refunds": [],
+    "shipping": {
+      "address_1": "Avinguda Molí, 37, 2n 2a",
+      "address_2": "",
+      "city": "Viladecans",
+      "company": "",
+      "country": "ES",
+      "first_name": "Estefanía",
+      "last_name": "Maldonado",
+      "phone": "600814495",
+      "postcode": "08840",
+      "state": "B"
+    },
+    "shipping_lines": [
+      {
+        "id": 1856,
+        "instance_id": "3",
+        "meta_data": [
+          {
+            "display_key": "Artículos",
+            "display_value": "Ramo de Rosas Rojas y Claveles Marsella × 1",
+            "id": 14376,
+            "key": "Artículos",
+            "value": "Ramo de Rosas Rojas y Claveles Marsella × 1"
+          }
+        ],
+        "method_id": "flat_rate",
+        "method_title": "Envío a domicilio",
+        "tax_status": "taxable",
+        "taxes": [
+          {
+            "id": 1,
+            "subtotal": "",
+            "total": "1.0332"
+          }
+        ],
+        "total": "4.92",
+        "total_tax": "1.03"
+      }
+    ],
+    "shipping_tax": "1.03",
+    "shipping_total": "4.92",
+    "status": "processing",
+    "tax_lines": [
+      {
+        "compound": false,
+        "id": 1857,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 2,
+        "rate_percent": 10,
+        "shipping_tax_total": "0.00",
+        "tax_total": "4.45"
+      },
+      {
+        "compound": false,
+        "id": 1858,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 1,
+        "rate_percent": 21,
+        "shipping_tax_total": "1.03",
+        "tax_total": "0.00"
+      }
+    ],
+    "total": "54.95",
+    "total_tax": "5.48",
+    "transaction_id": "",
+    "version": "9.7.1"
+  },
+  {
+    "_links": {
+      "collection": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders"
+        }
+      ],
+      "self": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders/2212",
+          "targetHints": {
+            "allow": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          }
+        }
+      ]
+    },
+    "billing": {
+      "address_1": "",
+      "address_2": "",
+      "city": "",
+      "company": "",
+      "country": "",
+      "email": "ruiz.arturojose@gmail.com",
+      "first_name": "Arturo",
+      "last_name": "Ruiz",
+      "phone": "615169138",
+      "postcode": "",
+      "state": "B"
+    },
+    "cart_hash": "fff5035cd45a21437cc9f6e5c6616dc1",
+    "cart_tax": "3.18",
+    "coupon_lines": [],
+    "created_via": "checkout",
+    "currency": "EUR",
+    "currency_symbol": "€",
+    "customer_id": 0,
+    "customer_ip_address": "2a09:bac2:310d:245a::39f:92",
+    "customer_note": "Hola si pueden hacer la entrega lo más temprano posible hoy se los agradecería",
+    "customer_user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1",
+    "date_completed": null,
+    "date_completed_gmt": null,
+    "date_created": "2025-07-09T14:23:23",
+    "date_created_gmt": "2025-07-09T12:23:23",
+    "date_modified": "2025-07-09T14:23:26",
+    "date_modified_gmt": "2025-07-09T12:23:26",
+    "date_paid": "2025-07-09T14:23:26",
+    "date_paid_gmt": "2025-07-09T12:23:26",
+    "discount_tax": "0.00",
+    "discount_total": "0.00",
+    "fee_lines": [],
+    "id": 2212,
+    "is_editable": false,
+    "line_items": [
+      {
+        "id": 1847,
+        "image": {
+          "id": "1152",
+          "src": "https://floradomicilio.com/wp-content/uploads/2024/02/12-rosas_3-scaled.jpg"
+        },
+        "meta_data": [
+          {
+            "display_key": "Configura tu ramo",
+            "display_value": "Básico",
+            "id": 14307,
+            "key": "Configura tu ramo",
+            "value": "Básico"
+          },
+          {
+            "display_key": "_ywapo_meta_data",
+            "display_value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              }
+            ],
+            "id": 14308,
+            "key": "_ywapo_meta_data",
+            "value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              }
+            ]
+          }
+        ],
+        "name": "Ramo de Rosas Rojas Martina",
+        "parent_name": null,
+        "price": 31.818182,
+        "product_id": 779,
+        "quantity": 1,
+        "sku": "Martina-1",
+        "subtotal": "31.82",
+        "subtotal_tax": "3.18",
+        "tax_class": "tasa-reducida",
+        "taxes": [
+          {
+            "id": 2,
+            "subtotal": "3.181818",
+            "total": "3.181818"
+          }
+        ],
+        "total": "31.82",
+        "total_tax": "3.18",
+        "variation_id": 0
+      }
+    ],
+    "meta_data": [
+      {
+        "id": 50948,
+        "key": "_billing_cif",
+        "value": ""
+      },
+      {
+        "id": 50949,
+        "key": "_billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 50950,
+        "key": "is_vat_exempt",
+        "value": "no"
+      },
+      {
+        "id": 50951,
+        "key": "ywcdd_order_delivery_date",
+        "value": "2025-07-10"
+      },
+      {
+        "id": 50952,
+        "key": "ywcdd_order_shipping_date",
+        "value": "2025-07-10"
+      },
+      {
+        "id": 50953,
+        "key": "ywcdd_order_slot_from",
+        "value": ""
+      },
+      {
+        "id": 50954,
+        "key": "ywcdd_order_slot_to",
+        "value": ""
+      },
+      {
+        "id": 50955,
+        "key": "ywcdd_order_carrier_id",
+        "value": "545"
+      },
+      {
+        "id": 50956,
+        "key": "ywcdd_order_processing_method",
+        "value": "1817"
+      },
+      {
+        "id": 50957,
+        "key": "ywcdd_order_carrier",
+        "value": "local"
+      },
+      {
+        "id": 50958,
+        "key": "_wc_cancel_key",
+        "value": "5c6bf86fa7b1a92d24177b9c9e29c3b9"
+      },
+      {
+        "id": 50959,
+        "key": "billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 50960,
+        "key": "_wc_order_attribution_source_type",
+        "value": "typein"
+      },
+      {
+        "id": 50961,
+        "key": "_wc_order_attribution_referrer",
+        "value": "https://floradomicilio.com/producto/ramo-flores-rojas"
+      },
+      {
+        "id": 50962,
+        "key": "_wc_order_attribution_utm_source",
+        "value": "(direct)"
+      },
+      {
+        "id": 50963,
+        "key": "_wc_order_attribution_session_entry",
+        "value": "https://floradomicilio.com/producto/ramo-flores-rojas"
+      },
+      {
+        "id": 50964,
+        "key": "_wc_order_attribution_session_start_time",
+        "value": "2025-07-09 08:14:21"
+      },
+      {
+        "id": 50965,
+        "key": "_wc_order_attribution_session_pages",
+        "value": "5"
+      },
+      {
+        "id": 50966,
+        "key": "_wc_order_attribution_session_count",
+        "value": "3"
+      },
+      {
+        "id": 50967,
+        "key": "_wc_order_attribution_user_agent",
+        "value": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+      },
+      {
+        "id": 50968,
+        "key": "_wc_order_attribution_device_type",
+        "value": "Mobile"
+      },
+      {
+        "id": 50969,
+        "key": "_ppcp_paypal_order_id",
+        "value": "2H845083XH3043237"
+      },
+      {
+        "id": 50970,
+        "key": "_ppcp_paypal_intent",
+        "value": "CAPTURE"
+      },
+      {
+        "id": 50971,
+        "key": "_ppcp_paypal_payment_mode",
+        "value": "live"
+      },
+      {
+        "id": 50972,
+        "key": "_ppcp_paypal_payment_source",
+        "value": "paypal"
+      },
+      {
+        "id": 50973,
+        "key": "_ppcp_paypal_payer_email",
+        "value": "ruiz.arturojose@gmail.com"
+      },
+      {
+        "id": 50977,
+        "key": "_ppcp_paypal_fees",
+        "value": {
+          "gross_amount": {
+            "currency_code": "EUR",
+            "value": "40.95"
+          },
+          "net_amount": {
+            "currency_code": "EUR",
+            "value": "39.41"
+          },
+          "paypal_fee": {
+            "currency_code": "EUR",
+            "value": "1.54"
+          }
+        }
+      },
+      {
+        "id": 50978,
+        "key": "PayPal Transaction Fee",
+        "value": "1.54"
+      }
+    ],
+    "needs_payment": false,
+    "needs_processing": true,
+    "number": "2212",
+    "order_key": "wc_order_5V1l6hxt48i8d",
+    "parent_id": 0,
+    "payment_method": "ppcp-gateway",
+    "payment_method_title": "PayPal",
+    "payment_url": "https://floradomicilio.com/finalizar-compra/order-pay/2212?pay_for_order=true&key=wc_order_5V1l6hxt48i8d",
+    "prices_include_tax": true,
+    "refunds": [],
+    "shipping": {
+      "address_1": "Salamanca",
+      "address_2": "",
+      "city": "gava",
+      "company": "",
+      "country": "ES",
+      "first_name": "Jolisbeth",
+      "last_name": "Pérez de Ruiz",
+      "phone": "603142505",
+      "postcode": "08850",
+      "state": "B"
+    },
+    "shipping_lines": [
+      {
+        "id": 1848,
+        "instance_id": "3",
+        "meta_data": [
+          {
+            "display_key": "Artículos",
+            "display_value": "Ramo de Rosas Rojas Martina × 1",
+            "id": 14314,
+            "key": "Artículos",
+            "value": "Ramo de Rosas Rojas Martina × 1"
+          }
+        ],
+        "method_id": "flat_rate",
+        "method_title": "Envío a domicilio",
+        "tax_status": "taxable",
+        "taxes": [
+          {
+            "id": 1,
+            "subtotal": "",
+            "total": "1.0332"
+          }
+        ],
+        "total": "4.92",
+        "total_tax": "1.03"
+      }
+    ],
+    "shipping_tax": "1.03",
+    "shipping_total": "4.92",
+    "status": "processing",
+    "tax_lines": [
+      {
+        "compound": false,
+        "id": 1849,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 2,
+        "rate_percent": 10,
+        "shipping_tax_total": "0.00",
+        "tax_total": "3.18"
+      },
+      {
+        "compound": false,
+        "id": 1850,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 1,
+        "rate_percent": 21,
+        "shipping_tax_total": "1.03",
+        "tax_total": "0.00"
+      }
+    ],
+    "total": "40.95",
+    "total_tax": "4.21",
+    "transaction_id": "89U828704L0944420",
+    "version": "9.7.1"
+  },
+  {
+    "_links": {
+      "collection": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders"
+        }
+      ],
+      "self": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders/2211",
+          "targetHints": {
+            "allow": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          }
+        }
+      ]
+    },
+    "billing": {
+      "address_1": "",
+      "address_2": "",
+      "city": "",
+      "company": "",
+      "country": "",
+      "email": "laiajm@icloud.com",
+      "first_name": "Laia",
+      "last_name": "Jordi Matesanz",
+      "phone": "610944797",
+      "postcode": "",
+      "state": "B"
+    },
+    "cart_hash": "35726b0793df9024f636b73e92274bb2",
+    "cart_tax": "4.36",
+    "coupon_lines": [],
+    "created_via": "checkout",
+    "currency": "EUR",
+    "currency_symbol": "€",
+    "customer_id": 0,
+    "customer_ip_address": "31.4.137.15",
+    "customer_note": "Recogida en tienda c/ jaume abril 26",
+    "customer_user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1",
+    "date_completed": null,
+    "date_completed_gmt": null,
+    "date_created": "2025-07-07T10:49:18",
+    "date_created_gmt": "2025-07-07T08:49:18",
+    "date_modified": "2025-07-07T10:50:56",
+    "date_modified_gmt": "2025-07-07T08:50:56",
+    "date_paid": "2025-07-07T10:50:56",
+    "date_paid_gmt": "2025-07-07T08:50:56",
+    "discount_tax": "0.00",
+    "discount_total": "0.00",
+    "fee_lines": [],
+    "id": 2211,
+    "is_editable": false,
+    "line_items": [
+      {
+        "id": 1844,
+        "image": {
+          "id": "1318",
+          "src": "https://floradomicilio.com/wp-content/uploads/2023/03/ramo-nat-lila_3-1-scaled.jpg"
+        },
+        "meta_data": [
+          {
+            "display_key": "Configura tu ramo",
+            "display_value": "Medio",
+            "id": 14284,
+            "key": "Configura tu ramo",
+            "value": "Medio"
+          },
+          {
+            "display_key": "_ywapo_meta_data",
+            "display_value": [
+              {
+                "1-1": {
+                  "0": "Medio",
+                  "addon_id": "1",
+                  "addon_value": "Medio",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Medio",
+                  "option_id": "1"
+                }
+              }
+            ],
+            "id": 14285,
+            "key": "_ywapo_meta_data",
+            "value": [
+              {
+                "1-1": {
+                  "0": "Medio",
+                  "addon_id": "1",
+                  "addon_value": "Medio",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Medio",
+                  "option_id": "1"
+                }
+              }
+            ]
+          }
+        ],
+        "name": "Ramo de Flores Alana",
+        "parent_name": null,
+        "price": 43.636364,
+        "product_id": 54,
+        "quantity": 1,
+        "sku": "Alana",
+        "subtotal": "43.64",
+        "subtotal_tax": "4.36",
+        "tax_class": "tasa-reducida",
+        "taxes": [
+          {
+            "id": 2,
+            "subtotal": "4.363636",
+            "total": "4.363636"
+          }
+        ],
+        "total": "43.64",
+        "total_tax": "4.36",
+        "variation_id": 0
+      }
+    ],
+    "meta_data": [
+      {
+        "id": 50886,
+        "key": "_billing_cif",
+        "value": ""
+      },
+      {
+        "id": 50887,
+        "key": "_billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 50888,
+        "key": "is_vat_exempt",
+        "value": "no"
+      },
+      {
+        "id": 50889,
+        "key": "ywcdd_order_delivery_date",
+        "value": "2025-07-07"
+      },
+      {
+        "id": 50890,
+        "key": "ywcdd_order_shipping_date",
+        "value": "2025-07-07"
+      },
+      {
+        "id": 50891,
+        "key": "ywcdd_order_slot_from",
+        "value": ""
+      },
+      {
+        "id": 50892,
+        "key": "ywcdd_order_slot_to",
+        "value": ""
+      },
+      {
+        "id": 50893,
+        "key": "ywcdd_order_carrier_id",
+        "value": "545"
+      },
+      {
+        "id": 50894,
+        "key": "ywcdd_order_processing_method",
+        "value": "1817"
+      },
+      {
+        "id": 50895,
+        "key": "ywcdd_order_carrier",
+        "value": "local"
+      },
+      {
+        "id": 50896,
+        "key": "_wc_cancel_key",
+        "value": "7b6df1abaf034ca8b25d568db65be6ff"
+      },
+      {
+        "id": 50897,
+        "key": "billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 50898,
+        "key": "_wc_order_attribution_source_type",
+        "value": "referral"
+      },
+      {
+        "id": 50899,
+        "key": "_wc_order_attribution_referrer",
+        "value": "https://floristeriaraquel.com/"
+      },
+      {
+        "id": 50900,
+        "key": "_wc_order_attribution_utm_source",
+        "value": "floristeriaraquel.com"
+      },
+      {
+        "id": 50901,
+        "key": "_wc_order_attribution_utm_medium",
+        "value": "referral"
+      },
+      {
+        "id": 50902,
+        "key": "_wc_order_attribution_utm_content",
+        "value": "/"
+      },
+      {
+        "id": 50903,
+        "key": "_wc_order_attribution_session_entry",
+        "value": "https://floradomicilio.com/"
+      },
+      {
+        "id": 50904,
+        "key": "_wc_order_attribution_session_start_time",
+        "value": "2025-07-07 08:37:55"
+      },
+      {
+        "id": 50905,
+        "key": "_wc_order_attribution_session_pages",
+        "value": "11"
+      },
+      {
+        "id": 50906,
+        "key": "_wc_order_attribution_session_count",
+        "value": "1"
+      },
+      {
+        "id": 50907,
+        "key": "_wc_order_attribution_user_agent",
+        "value": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+      },
+      {
+        "id": 50908,
+        "key": "_wc_order_attribution_device_type",
+        "value": "Mobile"
+      }
+    ],
+    "needs_payment": false,
+    "needs_processing": true,
+    "number": "2211",
+    "order_key": "wc_order_kXS4tJEc95bXR",
+    "parent_id": 0,
+    "payment_method": "redsys",
+    "payment_method_title": "Pagar con Tarjeta",
+    "payment_url": "https://floradomicilio.com/finalizar-compra/order-pay/2211?pay_for_order=true&key=wc_order_kXS4tJEc95bXR",
+    "prices_include_tax": true,
+    "refunds": [],
+    "shipping": {
+      "address_1": "C/Jaume abril 26",
+      "address_2": "",
+      "city": "Viladecans",
+      "company": "",
+      "country": "ES",
+      "first_name": "Laia",
+      "last_name": "Jordi Matesanz",
+      "phone": "610944797",
+      "postcode": "08840",
+      "state": "B"
+    },
+    "shipping_lines": [
+      {
+        "id": 1845,
+        "instance_id": "1",
+        "meta_data": [
+          {
+            "display_key": "Artículos",
+            "display_value": "Ramo de Flores Alana × 1",
+            "id": 14291,
+            "key": "Artículos",
+            "value": "Ramo de Flores Alana × 1"
+          }
+        ],
+        "method_id": "free_shipping",
+        "method_title": "Recogida en tienda",
+        "tax_status": "taxable",
+        "taxes": [],
+        "total": "0.00",
+        "total_tax": "0.00"
+      }
+    ],
+    "shipping_tax": "0.00",
+    "shipping_total": "0.00",
+    "status": "processing",
+    "tax_lines": [
+      {
+        "compound": false,
+        "id": 1846,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 2,
+        "rate_percent": 10,
+        "shipping_tax_total": "0.00",
+        "tax_total": "4.36"
+      }
+    ],
+    "total": "48.00",
+    "total_tax": "4.36",
+    "transaction_id": "",
+    "version": "9.7.1"
+  },
+  {
+    "_links": {
+      "collection": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders"
+        }
+      ],
+      "self": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders/2210",
+          "targetHints": {
+            "allow": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          }
+        }
+      ]
+    },
+    "billing": {
+      "address_1": "",
+      "address_2": "",
+      "city": "",
+      "company": "",
+      "country": "",
+      "email": "crisgalan1995@gmail.com",
+      "first_name": "Cristina",
+      "last_name": "Galán",
+      "phone": "622245376",
+      "postcode": "",
+      "state": "B"
+    },
+    "cart_hash": "12f715c205a88ed0cc9f4427f8cd2c1b",
+    "cart_tax": "3.27",
+    "coupon_lines": [],
+    "created_via": "checkout",
+    "currency": "EUR",
+    "currency_symbol": "€",
+    "customer_id": 0,
+    "customer_ip_address": "79.156.125.224",
+    "customer_note": "Cualquier cosa no duden en contactarme!! El nombre que he puesto es el de mi pareja, el destinatario del ramo. El teléfono es el mio (Cristina).",
+    "customer_user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1",
+    "date_completed": null,
+    "date_completed_gmt": null,
+    "date_created": "2025-07-03T11:44:47",
+    "date_created_gmt": "2025-07-03T09:44:47",
+    "date_modified": "2025-07-03T11:44:49",
+    "date_modified_gmt": "2025-07-03T09:44:49",
+    "date_paid": "2025-07-03T11:44:49",
+    "date_paid_gmt": "2025-07-03T09:44:49",
+    "discount_tax": "0.00",
+    "discount_total": "0.00",
+    "fee_lines": [],
+    "id": 2210,
+    "is_editable": false,
+    "line_items": [
+      {
+        "id": 1840,
+        "image": {
+          "id": "37",
+          "src": "https://floradomicilio.com/wp-content/uploads/2023/03/agathe.jpg"
+        },
+        "meta_data": [
+          {
+            "display_key": "Configura tu ramo",
+            "display_value": "Básico",
+            "id": 14253,
+            "key": "Configura tu ramo",
+            "value": "Básico"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Dedicatoria (+1,00 €)",
+            "id": 14254,
+            "key": "Dedicatoria",
+            "value": "Dedicatoria (+1,00 €)"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Para mi Rey de Tormentas: Enhorabuena por la finalización de esta etapa, mi científico favorito🩵 Estoy muy orgullosa de ti, siempre, to infinity and beyond! Te amo muxu cariño, te mereces todo lo bueno, porque eres el mejor en todos los universos☺️ Tu reina de tormentas⛈️",
+            "id": 14255,
+            "key": "Dedicatoria",
+            "value": "Para mi Rey de Tormentas:\r\n\r\nEnhorabuena por la finalización de esta etapa, mi científico favorito🩵 \r\nEstoy muy orgullosa de ti, siempre, to infinity and beyond!\r\nTe amo muxu cariño, te mereces todo lo bueno, porque eres el mejor en todos los universos☺️\r\n\r\nTu reina de tormentas⛈️"
+          },
+          {
+            "display_key": "_ywapo_meta_data",
+            "display_value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Para mi Rey de Tormentas:\r\n\r\nEnhorabuena por la finalización de esta etapa, mi científico favorito🩵 \r\nEstoy muy orgullosa de ti, siempre, to infinity and beyond!\r\nTe amo muxu cariño, te mereces todo lo bueno, porque eres el mejor en todos los universos☺️\r\n\r\nTu reina de tormentas⛈️",
+                  "addon_id": "6",
+                  "addon_value": "Para mi Rey de Tormentas:\r\n\r\nEnhorabuena por la finalización de esta etapa, mi científico favorito🩵 \r\nEstoy muy orgullosa de ti, siempre, to infinity and beyond!\r\nTe amo muxu cariño, te mereces todo lo bueno, porque eres el mejor en todos los universos☺️\r\n\r\nTu reina de tormentas⛈️",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Para mi Rey de Tormentas:\r\n\r\nEnhorabuena por la finalización de esta etapa, mi científico favorito🩵 \r\nEstoy muy orgullosa de ti, siempre, to infinity and beyond!\r\nTe amo muxu cariño, te mereces todo lo bueno, porque eres el mejor en todos los universos☺️\r\n\r\nTu reina de tormentas⛈️",
+                  "option_id": "0"
+                }
+              }
+            ],
+            "id": 14256,
+            "key": "_ywapo_meta_data",
+            "value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Para mi Rey de Tormentas:\r\n\r\nEnhorabuena por la finalización de esta etapa, mi científico favorito🩵 \r\nEstoy muy orgullosa de ti, siempre, to infinity and beyond!\r\nTe amo muxu cariño, te mereces todo lo bueno, porque eres el mejor en todos los universos☺️\r\n\r\nTu reina de tormentas⛈️",
+                  "addon_id": "6",
+                  "addon_value": "Para mi Rey de Tormentas:\r\n\r\nEnhorabuena por la finalización de esta etapa, mi científico favorito🩵 \r\nEstoy muy orgullosa de ti, siempre, to infinity and beyond!\r\nTe amo muxu cariño, te mereces todo lo bueno, porque eres el mejor en todos los universos☺️\r\n\r\nTu reina de tormentas⛈️",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Para mi Rey de Tormentas:\r\n\r\nEnhorabuena por la finalización de esta etapa, mi científico favorito🩵 \r\nEstoy muy orgullosa de ti, siempre, to infinity and beyond!\r\nTe amo muxu cariño, te mereces todo lo bueno, porque eres el mejor en todos los universos☺️\r\n\r\nTu reina de tormentas⛈️",
+                  "option_id": "0"
+                }
+              }
+            ]
+          }
+        ],
+        "name": "Ramo de Flores Agathe",
+        "parent_name": null,
+        "price": 32.727273,
+        "product_id": 33,
+        "quantity": 1,
+        "sku": "Agathe",
+        "subtotal": "32.73",
+        "subtotal_tax": "3.27",
+        "tax_class": "tasa-reducida",
+        "taxes": [
+          {
+            "id": 2,
+            "subtotal": "3.272727",
+            "total": "3.272727"
+          }
+        ],
+        "total": "32.73",
+        "total_tax": "3.27",
+        "variation_id": 0
+      }
+    ],
+    "meta_data": [
+      {
+        "id": 50809,
+        "key": "_billing_cif",
+        "value": ""
+      },
+      {
+        "id": 50810,
+        "key": "_billing_bill",
+        "value": ""
+      },
+      {
+        "id": 50811,
+        "key": "is_vat_exempt",
+        "value": "no"
+      },
+      {
+        "id": 50812,
+        "key": "ywcdd_order_delivery_date",
+        "value": "2025-07-07"
+      },
+      {
+        "id": 50813,
+        "key": "ywcdd_order_shipping_date",
+        "value": "2025-07-07"
+      },
+      {
+        "id": 50814,
+        "key": "ywcdd_order_slot_from",
+        "value": ""
+      },
+      {
+        "id": 50815,
+        "key": "ywcdd_order_slot_to",
+        "value": ""
+      },
+      {
+        "id": 50816,
+        "key": "ywcdd_order_carrier_id",
+        "value": "545"
+      },
+      {
+        "id": 50817,
+        "key": "ywcdd_order_processing_method",
+        "value": "1817"
+      },
+      {
+        "id": 50818,
+        "key": "ywcdd_order_carrier",
+        "value": "local"
+      },
+      {
+        "id": 50819,
+        "key": "_wc_cancel_key",
+        "value": "1b5a37646875184ba37df82884089316"
+      },
+      {
+        "id": 50820,
+        "key": "_wc_order_attribution_source_type",
+        "value": "typein"
+      },
+      {
+        "id": 50821,
+        "key": "_wc_order_attribution_referrer",
+        "value": "https://floradomicilio.com/"
+      },
+      {
+        "id": 50822,
+        "key": "_wc_order_attribution_utm_source",
+        "value": "(direct)"
+      },
+      {
+        "id": 50823,
+        "key": "_wc_order_attribution_session_entry",
+        "value": "https://floradomicilio.com/"
+      },
+      {
+        "id": 50824,
+        "key": "_wc_order_attribution_session_start_time",
+        "value": "2025-07-03 09:36:54"
+      },
+      {
+        "id": 50825,
+        "key": "_wc_order_attribution_session_pages",
+        "value": "3"
+      },
+      {
+        "id": 50826,
+        "key": "_wc_order_attribution_session_count",
+        "value": "1"
+      },
+      {
+        "id": 50827,
+        "key": "_wc_order_attribution_user_agent",
+        "value": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+      },
+      {
+        "id": 50828,
+        "key": "_wc_order_attribution_device_type",
+        "value": "Mobile"
+      },
+      {
+        "id": 50829,
+        "key": "_ppcp_paypal_order_id",
+        "value": "0FJ56557P4938601T"
+      },
+      {
+        "id": 50830,
+        "key": "_ppcp_paypal_intent",
+        "value": "CAPTURE"
+      },
+      {
+        "id": 50831,
+        "key": "_ppcp_paypal_payment_mode",
+        "value": "live"
+      },
+      {
+        "id": 50832,
+        "key": "_ppcp_paypal_payment_source",
+        "value": "paypal"
+      },
+      {
+        "id": 50833,
+        "key": "_ppcp_paypal_payer_email",
+        "value": "crisgalan1995@gmail.com"
+      },
+      {
+        "id": 50837,
+        "key": "_ppcp_paypal_fees",
+        "value": {
+          "gross_amount": {
+            "currency_code": "EUR",
+            "value": "41.95"
+          },
+          "net_amount": {
+            "currency_code": "EUR",
+            "value": "40.38"
+          },
+          "paypal_fee": {
+            "currency_code": "EUR",
+            "value": "1.57"
+          }
+        }
+      },
+      {
+        "id": 50838,
+        "key": "PayPal Transaction Fee",
+        "value": "1.57"
+      }
+    ],
+    "needs_payment": false,
+    "needs_processing": true,
+    "number": "2210",
+    "order_key": "wc_order_QpvADbx6t8hPO",
+    "parent_id": 0,
+    "payment_method": "ppcp-gateway",
+    "payment_method_title": "PayPal",
+    "payment_url": "https://floradomicilio.com/finalizar-compra/order-pay/2210?pay_for_order=true&key=wc_order_QpvADbx6t8hPO",
+    "prices_include_tax": true,
+    "refunds": [],
+    "shipping": {
+      "address_1": "Avinguda Francesc Macià, 5 1º 5ª",
+      "address_2": "",
+      "city": "Viladecans",
+      "company": "",
+      "country": "ES",
+      "first_name": "Marc",
+      "last_name": "Celemín",
+      "phone": "622245376",
+      "postcode": "08840",
+      "state": "B"
+    },
+    "shipping_lines": [
+      {
+        "id": 1841,
+        "instance_id": "3",
+        "meta_data": [
+          {
+            "display_key": "Artículos",
+            "display_value": "Ramo de Flores Agathe × 1",
+            "id": 14262,
+            "key": "Artículos",
+            "value": "Ramo de Flores Agathe × 1"
+          }
+        ],
+        "method_id": "flat_rate",
+        "method_title": "Envío a domicilio",
+        "tax_status": "taxable",
+        "taxes": [
+          {
+            "id": 1,
+            "subtotal": "",
+            "total": "1.0332"
+          }
+        ],
+        "total": "4.92",
+        "total_tax": "1.03"
+      }
+    ],
+    "shipping_tax": "1.03",
+    "shipping_total": "4.92",
+    "status": "processing",
+    "tax_lines": [
+      {
+        "compound": false,
+        "id": 1842,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 2,
+        "rate_percent": 10,
+        "shipping_tax_total": "0.00",
+        "tax_total": "3.27"
+      },
+      {
+        "compound": false,
+        "id": 1843,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 1,
+        "rate_percent": 21,
+        "shipping_tax_total": "1.03",
+        "tax_total": "0.00"
+      }
+    ],
+    "total": "41.95",
+    "total_tax": "4.30",
+    "transaction_id": "57G4440840043915Y",
+    "version": "9.7.1"
+  },
+  {
+    "_links": {
+      "collection": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders"
+        }
+      ],
+      "self": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders/2209",
+          "targetHints": {
+            "allow": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          }
+        }
+      ]
+    },
+    "billing": {
+      "address_1": "Carretera de Barcelona, 40, 2o3a",
+      "address_2": "",
+      "city": "Viladecans",
+      "company": "",
+      "country": "",
+      "email": "rubenvazquezmartinez72@gmail.com",
+      "first_name": "Ruben",
+      "last_name": "Vazquez Martinez",
+      "phone": "633740995",
+      "postcode": "08840",
+      "state": "B"
+    },
+    "cart_hash": "286bbc66c8b8a38443ce498945f62190",
+    "cart_tax": "3.18",
+    "coupon_lines": [],
+    "created_via": "checkout",
+    "currency": "EUR",
+    "currency_symbol": "€",
+    "customer_id": 0,
+    "customer_ip_address": "79.156.233.203",
+    "customer_note": "",
+    "customer_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "date_completed": null,
+    "date_completed_gmt": null,
+    "date_created": "2025-06-30T12:25:26",
+    "date_created_gmt": "2025-06-30T10:25:26",
+    "date_modified": "2025-06-30T12:26:26",
+    "date_modified_gmt": "2025-06-30T10:26:26",
+    "date_paid": "2025-06-30T12:26:26",
+    "date_paid_gmt": "2025-06-30T10:26:26",
+    "discount_tax": "0.00",
+    "discount_total": "0.00",
+    "fee_lines": [],
+    "id": 2209,
+    "is_editable": false,
+    "line_items": [
+      {
+        "id": 1837,
+        "image": {
+          "id": "1289",
+          "src": "https://floradomicilio.com/wp-content/uploads/2024/06/ramo_flores_claveles-scaled.jpg"
+        },
+        "meta_data": [
+          {
+            "display_key": "Configura tu ramo",
+            "display_value": "Básico",
+            "id": 14230,
+            "key": "Configura tu ramo",
+            "value": "Básico"
+          },
+          {
+            "display_key": "_ywapo_meta_data",
+            "display_value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              }
+            ],
+            "id": 14231,
+            "key": "_ywapo_meta_data",
+            "value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              }
+            ]
+          }
+        ],
+        "name": "Ramo de Rosas Rojas y Claveles Marsella",
+        "parent_name": null,
+        "price": 31.818182,
+        "product_id": 1287,
+        "quantity": 1,
+        "sku": "Martina-1-1",
+        "subtotal": "31.82",
+        "subtotal_tax": "3.18",
+        "tax_class": "tasa-reducida",
+        "taxes": [
+          {
+            "id": 2,
+            "subtotal": "3.181818",
+            "total": "3.181818"
+          }
+        ],
+        "total": "31.82",
+        "total_tax": "3.18",
+        "variation_id": 0
+      }
+    ],
+    "meta_data": [
+      {
+        "id": 50722,
+        "key": "_billing_cif",
+        "value": "53319708G"
+      },
+      {
+        "id": 50723,
+        "key": "_billing_bill",
+        "value": ""
+      },
+      {
+        "id": 50724,
+        "key": "is_vat_exempt",
+        "value": "no"
+      },
+      {
+        "id": 50725,
+        "key": "ywcdd_order_delivery_date",
+        "value": "2025-06-30"
+      },
+      {
+        "id": 50726,
+        "key": "ywcdd_order_shipping_date",
+        "value": "2025-06-30"
+      },
+      {
+        "id": 50727,
+        "key": "ywcdd_order_slot_from",
+        "value": ""
+      },
+      {
+        "id": 50728,
+        "key": "ywcdd_order_slot_to",
+        "value": ""
+      },
+      {
+        "id": 50729,
+        "key": "ywcdd_order_carrier_id",
+        "value": "545"
+      },
+      {
+        "id": 50730,
+        "key": "ywcdd_order_processing_method",
+        "value": "1817"
+      },
+      {
+        "id": 50731,
+        "key": "ywcdd_order_carrier",
+        "value": "local"
+      },
+      {
+        "id": 50732,
+        "key": "_wc_cancel_key",
+        "value": "7fcc5fc8f8d19d83618545d25b10a1c6"
+      },
+      {
+        "id": 50733,
+        "key": "billing_cif",
+        "value": "53319708G"
+      },
+      {
+        "id": 50734,
+        "key": "_wc_order_attribution_source_type",
+        "value": "referral"
+      },
+      {
+        "id": 50735,
+        "key": "_wc_order_attribution_referrer",
+        "value": "https://floristeriaraquel.com/"
+      },
+      {
+        "id": 50736,
+        "key": "_wc_order_attribution_utm_source",
+        "value": "floristeriaraquel.com"
+      },
+      {
+        "id": 50737,
+        "key": "_wc_order_attribution_utm_medium",
+        "value": "referral"
+      },
+      {
+        "id": 50738,
+        "key": "_wc_order_attribution_utm_content",
+        "value": "/"
+      },
+      {
+        "id": 50739,
+        "key": "_wc_order_attribution_session_entry",
+        "value": "https://floradomicilio.com/"
+      },
+      {
+        "id": 50740,
+        "key": "_wc_order_attribution_session_start_time",
+        "value": "2025-06-30 10:18:21"
+      },
+      {
+        "id": 50741,
+        "key": "_wc_order_attribution_session_pages",
+        "value": "5"
+      },
+      {
+        "id": 50742,
+        "key": "_wc_order_attribution_session_count",
+        "value": "1"
+      },
+      {
+        "id": 50743,
+        "key": "_wc_order_attribution_user_agent",
+        "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+      },
+      {
+        "id": 50744,
+        "key": "_wc_order_attribution_device_type",
+        "value": "Desktop"
+      }
+    ],
+    "needs_payment": false,
+    "needs_processing": true,
+    "number": "2209",
+    "order_key": "wc_order_5ES2tyNZQfAw4",
+    "parent_id": 0,
+    "payment_method": "redsys",
+    "payment_method_title": "Pagar con Tarjeta",
+    "payment_url": "https://floradomicilio.com/finalizar-compra/order-pay/2209?pay_for_order=true&key=wc_order_5ES2tyNZQfAw4",
+    "prices_include_tax": true,
+    "refunds": [],
+    "shipping": {
+      "address_1": "Carretera de Barcelona, 40, 2o3a",
+      "address_2": "",
+      "city": "Viladecans",
+      "company": "",
+      "country": "ES",
+      "first_name": "Ruben",
+      "last_name": "Vazquez Martinez",
+      "phone": "633740995",
+      "postcode": "08840",
+      "state": "B"
+    },
+    "shipping_lines": [
+      {
+        "id": 1838,
+        "instance_id": "1",
+        "meta_data": [
+          {
+            "display_key": "Artículos",
+            "display_value": "Ramo de Rosas Rojas y Claveles Marsella × 1",
+            "id": 14237,
+            "key": "Artículos",
+            "value": "Ramo de Rosas Rojas y Claveles Marsella × 1"
+          }
+        ],
+        "method_id": "free_shipping",
+        "method_title": "Recogida en tienda",
+        "tax_status": "taxable",
+        "taxes": [],
+        "total": "0.00",
+        "total_tax": "0.00"
+      }
+    ],
+    "shipping_tax": "0.00",
+    "shipping_total": "0.00",
+    "status": "processing",
+    "tax_lines": [
+      {
+        "compound": false,
+        "id": 1839,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 2,
+        "rate_percent": 10,
+        "shipping_tax_total": "0.00",
+        "tax_total": "3.18"
+      }
+    ],
+    "total": "35.00",
+    "total_tax": "3.18",
+    "transaction_id": "",
+    "version": "9.7.1"
+  },
+  {
+    "_links": {
+      "collection": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders"
+        }
+      ],
+      "self": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders/2195",
+          "targetHints": {
+            "allow": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          }
+        }
+      ]
+    },
+    "billing": {
+      "address_1": "Carrer Joaquim Folguera 18B",
+      "address_2": "",
+      "city": "Gavá",
+      "company": "",
+      "country": "",
+      "email": "bgmcbrie2000@gmail.com",
+      "first_name": "brayan",
+      "last_name": "gomez",
+      "phone": "613170191",
+      "postcode": "08850",
+      "state": "B"
+    },
+    "cart_hash": "517cb450c03c69d417a5f02c686acbf0",
+    "cart_tax": "3.64",
+    "coupon_lines": [],
+    "created_via": "checkout",
+    "currency": "EUR",
+    "currency_symbol": "€",
+    "customer_id": 0,
+    "customer_ip_address": "79.116.241.17",
+    "customer_note": "",
+    "customer_user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36",
+    "date_completed": null,
+    "date_completed_gmt": null,
+    "date_created": "2025-06-27T15:09:21",
+    "date_created_gmt": "2025-06-27T13:09:21",
+    "date_modified": "2025-06-27T15:11:03",
+    "date_modified_gmt": "2025-06-27T13:11:03",
+    "date_paid": "2025-06-27T15:11:03",
+    "date_paid_gmt": "2025-06-27T13:11:03",
+    "discount_tax": "0.00",
+    "discount_total": "0.00",
+    "fee_lines": [],
+    "id": 2195,
+    "is_editable": false,
+    "line_items": [
+      {
+        "id": 1830,
+        "image": {
+          "id": "37",
+          "src": "https://floradomicilio.com/wp-content/uploads/2023/03/agathe.jpg"
+        },
+        "meta_data": [
+          {
+            "display_key": "Configura tu ramo",
+            "display_value": "Básico",
+            "id": 14175,
+            "key": "Configura tu ramo",
+            "value": "Básico"
+          },
+          {
+            "display_key": "Complementos",
+            "display_value": "Pétalos rosas (+5,00 €)",
+            "id": 14176,
+            "key": "Complementos",
+            "value": "Pétalos rosas (+5,00 €)"
+          },
+          {
+            "display_key": "_ywapo_meta_data",
+            "display_value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              },
+              {
+                "40-0": {
+                  "0": "Pétalos rosas",
+                  "addon_id": "40",
+                  "addon_value": "Pétalos rosas",
+                  "display_label": "Complementos",
+                  "display_value": "Pétalos rosas (+5,00 €)",
+                  "option_id": "0"
+                }
+              }
+            ],
+            "id": 14177,
+            "key": "_ywapo_meta_data",
+            "value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              },
+              {
+                "40-0": {
+                  "0": "Pétalos rosas",
+                  "addon_id": "40",
+                  "addon_value": "Pétalos rosas",
+                  "display_label": "Complementos",
+                  "display_value": "Pétalos rosas (+5,00 €)",
+                  "option_id": "0"
+                }
+              }
+            ]
+          }
+        ],
+        "name": "Ramo de Flores Agathe",
+        "parent_name": null,
+        "price": 36.363636,
+        "product_id": 33,
+        "quantity": 1,
+        "sku": "Agathe",
+        "subtotal": "36.36",
+        "subtotal_tax": "3.64",
+        "tax_class": "tasa-reducida",
+        "taxes": [
+          {
+            "id": 2,
+            "subtotal": "3.636364",
+            "total": "3.636364"
+          }
+        ],
+        "total": "36.36",
+        "total_tax": "3.64",
+        "variation_id": 0
+      }
+    ],
+    "meta_data": [
+      {
+        "id": 50369,
+        "key": "_billing_cif",
+        "value": "G771313"
+      },
+      {
+        "id": 50370,
+        "key": "_billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 50371,
+        "key": "is_vat_exempt",
+        "value": "no"
+      },
+      {
+        "id": 50372,
+        "key": "ywcdd_order_delivery_date",
+        "value": "2025-06-28"
+      },
+      {
+        "id": 50373,
+        "key": "ywcdd_order_shipping_date",
+        "value": "2025-06-28"
+      },
+      {
+        "id": 50374,
+        "key": "ywcdd_order_slot_from",
+        "value": ""
+      },
+      {
+        "id": 50375,
+        "key": "ywcdd_order_slot_to",
+        "value": ""
+      },
+      {
+        "id": 50376,
+        "key": "ywcdd_order_carrier_id",
+        "value": "545"
+      },
+      {
+        "id": 50377,
+        "key": "ywcdd_order_processing_method",
+        "value": "1817"
+      },
+      {
+        "id": 50378,
+        "key": "ywcdd_order_carrier",
+        "value": "local"
+      },
+      {
+        "id": 50379,
+        "key": "_wc_cancel_key",
+        "value": "b2fd191506e18e52c86ef79435f2e6e7"
+      },
+      {
+        "id": 50380,
+        "key": "billing_cif",
+        "value": "G771313"
+      },
+      {
+        "id": 50381,
+        "key": "billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 50382,
+        "key": "_wc_order_attribution_source_type",
+        "value": "typein"
+      },
+      {
+        "id": 50383,
+        "key": "_wc_order_attribution_referrer",
+        "value": "https://floristeriaraquel.com/"
+      },
+      {
+        "id": 50384,
+        "key": "_wc_order_attribution_utm_source",
+        "value": "(direct)"
+      },
+      {
+        "id": 50385,
+        "key": "_wc_order_attribution_session_entry",
+        "value": "https://floradomicilio.com/"
+      },
+      {
+        "id": 50386,
+        "key": "_wc_order_attribution_session_start_time",
+        "value": "2025-06-27 13:08:25"
+      },
+      {
+        "id": 50387,
+        "key": "_wc_order_attribution_session_pages",
+        "value": "11"
+      },
+      {
+        "id": 50388,
+        "key": "_wc_order_attribution_session_count",
+        "value": "1"
+      },
+      {
+        "id": 50389,
+        "key": "_wc_order_attribution_user_agent",
+        "value": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36"
+      },
+      {
+        "id": 50390,
+        "key": "_wc_order_attribution_device_type",
+        "value": "Mobile"
+      }
+    ],
+    "needs_payment": false,
+    "needs_processing": true,
+    "number": "2195",
+    "order_key": "wc_order_wzxQjYtkTUttZ",
+    "parent_id": 0,
+    "payment_method": "redsys",
+    "payment_method_title": "Pagar con Tarjeta",
+    "payment_url": "https://floradomicilio.com/finalizar-compra/order-pay/2195?pay_for_order=true&key=wc_order_wzxQjYtkTUttZ",
+    "prices_include_tax": true,
+    "refunds": [],
+    "shipping": {
+      "address_1": "Carrer Joaquim Folguera 18B",
+      "address_2": "",
+      "city": "Gavà",
+      "company": "",
+      "country": "ES",
+      "first_name": "brayan",
+      "last_name": "gomez",
+      "phone": "613170191",
+      "postcode": "08850",
+      "state": "B"
+    },
+    "shipping_lines": [
+      {
+        "id": 1831,
+        "instance_id": "1",
+        "meta_data": [
+          {
+            "display_key": "Artículos",
+            "display_value": "Ramo de Flores Agathe × 1",
+            "id": 14183,
+            "key": "Artículos",
+            "value": "Ramo de Flores Agathe × 1"
+          }
+        ],
+        "method_id": "free_shipping",
+        "method_title": "Recogida en tienda",
+        "tax_status": "taxable",
+        "taxes": [],
+        "total": "0.00",
+        "total_tax": "0.00"
+      }
+    ],
+    "shipping_tax": "0.00",
+    "shipping_total": "0.00",
+    "status": "processing",
+    "tax_lines": [
+      {
+        "compound": false,
+        "id": 1832,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 2,
+        "rate_percent": 10,
+        "shipping_tax_total": "0.00",
+        "tax_total": "3.64"
+      }
+    ],
+    "total": "40.00",
+    "total_tax": "3.64",
+    "transaction_id": "",
+    "version": "9.7.1"
+  },
+  {
+    "_links": {
+      "collection": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders"
+        }
+      ],
+      "self": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders/2194",
+          "targetHints": {
+            "allow": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          }
+        }
+      ]
+    },
+    "billing": {
+      "address_1": "",
+      "address_2": "",
+      "city": "",
+      "company": "",
+      "country": "",
+      "email": "lorenamartinez@hotmail.com",
+      "first_name": "Diego",
+      "last_name": "Gonzalez",
+      "phone": "620378032",
+      "postcode": "",
+      "state": "B"
+    },
+    "cart_hash": "1e2128acaffbddc020e41941f856a686",
+    "cart_tax": "5.55",
+    "coupon_lines": [],
+    "created_via": "checkout",
+    "currency": "EUR",
+    "currency_symbol": "€",
+    "customer_id": 0,
+    "customer_ip_address": "90.160.50.66",
+    "customer_note": "",
+    "customer_user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
+    "date_completed": null,
+    "date_completed_gmt": null,
+    "date_created": "2025-06-27T10:05:39",
+    "date_created_gmt": "2025-06-27T08:05:39",
+    "date_modified": "2025-06-27T10:09:38",
+    "date_modified_gmt": "2025-06-27T08:09:38",
+    "date_paid": "2025-06-27T10:09:38",
+    "date_paid_gmt": "2025-06-27T08:09:38",
+    "discount_tax": "0.00",
+    "discount_total": "0.00",
+    "fee_lines": [],
+    "id": 2194,
+    "is_editable": false,
+    "line_items": [
+      {
+        "id": 1826,
+        "image": {
+          "id": "1289",
+          "src": "https://floradomicilio.com/wp-content/uploads/2024/06/ramo_flores_claveles-scaled.jpg"
+        },
+        "meta_data": [
+          {
+            "display_key": "Configura tu ramo",
+            "display_value": "Premium",
+            "id": 14144,
+            "key": "Configura tu ramo",
+            "value": "Premium"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Dedicatoria (+1,00 €)",
+            "id": 14145,
+            "key": "Dedicatoria",
+            "value": "Dedicatoria (+1,00 €)"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Feliz cumpleaños mi amor chiquito te quiero mucho mi loquis 🎂🎈🎉🥳😘",
+            "id": 14146,
+            "key": "Dedicatoria",
+            "value": "Feliz cumpleaños mi amor chiquito te quiero mucho mi loquis 🎂🎈🎉🥳😘"
+          },
+          {
+            "display_key": "_ywapo_meta_data",
+            "display_value": [
+              {
+                "1-2": {
+                  "0": "Premium",
+                  "addon_id": "1",
+                  "addon_value": "Premium",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Premium",
+                  "option_id": "2"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Feliz cumpleaños mi amor chiquito te quiero mucho mi loquis 🎂🎈🎉🥳😘",
+                  "addon_id": "6",
+                  "addon_value": "Feliz cumpleaños mi amor chiquito te quiero mucho mi loquis 🎂🎈🎉🥳😘",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Feliz cumpleaños mi amor chiquito te quiero mucho mi loquis 🎂🎈🎉🥳😘",
+                  "option_id": "0"
+                }
+              }
+            ],
+            "id": 14147,
+            "key": "_ywapo_meta_data",
+            "value": [
+              {
+                "1-2": {
+                  "0": "Premium",
+                  "addon_id": "1",
+                  "addon_value": "Premium",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Premium",
+                  "option_id": "2"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Feliz cumpleaños mi amor chiquito te quiero mucho mi loquis 🎂🎈🎉🥳😘",
+                  "addon_id": "6",
+                  "addon_value": "Feliz cumpleaños mi amor chiquito te quiero mucho mi loquis 🎂🎈🎉🥳😘",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Feliz cumpleaños mi amor chiquito te quiero mucho mi loquis 🎂🎈🎉🥳😘",
+                  "option_id": "0"
+                }
+              }
+            ]
+          }
+        ],
+        "name": "Ramo de Rosas Rojas y Claveles Marsella",
+        "parent_name": null,
+        "price": 55.454545,
+        "product_id": 1287,
+        "quantity": 1,
+        "sku": "Martina-1-1",
+        "subtotal": "55.45",
+        "subtotal_tax": "5.55",
+        "tax_class": "tasa-reducida",
+        "taxes": [
+          {
+            "id": 2,
+            "subtotal": "5.545455",
+            "total": "5.545455"
+          }
+        ],
+        "total": "55.45",
+        "total_tax": "5.55",
+        "variation_id": 0
+      }
+    ],
+    "meta_data": [
+      {
+        "id": 50306,
+        "key": "_billing_cif",
+        "value": ""
+      },
+      {
+        "id": 50307,
+        "key": "_billing_bill",
+        "value": ""
+      },
+      {
+        "id": 50308,
+        "key": "is_vat_exempt",
+        "value": "no"
+      },
+      {
+        "id": 50309,
+        "key": "ywcdd_order_delivery_date",
+        "value": "2025-06-27"
+      },
+      {
+        "id": 50310,
+        "key": "ywcdd_order_shipping_date",
+        "value": "2025-06-27"
+      },
+      {
+        "id": 50311,
+        "key": "ywcdd_order_slot_from",
+        "value": ""
+      },
+      {
+        "id": 50312,
+        "key": "ywcdd_order_slot_to",
+        "value": ""
+      },
+      {
+        "id": 50313,
+        "key": "ywcdd_order_carrier_id",
+        "value": "545"
+      },
+      {
+        "id": 50314,
+        "key": "ywcdd_order_processing_method",
+        "value": "1817"
+      },
+      {
+        "id": 50315,
+        "key": "ywcdd_order_carrier",
+        "value": "local"
+      },
+      {
+        "id": 50316,
+        "key": "_wc_cancel_key",
+        "value": "8302f55992222a80073af8140095f3ec"
+      },
+      {
+        "id": 50317,
+        "key": "_wc_order_attribution_source_type",
+        "value": "organic"
+      },
+      {
+        "id": 50318,
+        "key": "_wc_order_attribution_referrer",
+        "value": "https://www.google.com/"
+      },
+      {
+        "id": 50319,
+        "key": "_wc_order_attribution_utm_source",
+        "value": "google"
+      },
+      {
+        "id": 50320,
+        "key": "_wc_order_attribution_utm_medium",
+        "value": "organic"
+      },
+      {
+        "id": 50321,
+        "key": "_wc_order_attribution_session_entry",
+        "value": "https://floradomicilio.com/"
+      },
+      {
+        "id": 50322,
+        "key": "_wc_order_attribution_session_start_time",
+        "value": "2025-06-27 07:25:57"
+      },
+      {
+        "id": 50323,
+        "key": "_wc_order_attribution_session_pages",
+        "value": "34"
+      },
+      {
+        "id": 50324,
+        "key": "_wc_order_attribution_session_count",
+        "value": "1"
+      },
+      {
+        "id": 50325,
+        "key": "_wc_order_attribution_user_agent",
+        "value": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36"
+      },
+      {
+        "id": 50326,
+        "key": "_wc_order_attribution_device_type",
+        "value": "Mobile"
+      }
+    ],
+    "needs_payment": false,
+    "needs_processing": true,
+    "number": "2194",
+    "order_key": "wc_order_Ys6X132PxJMHA",
+    "parent_id": 0,
+    "payment_method": "redsys",
+    "payment_method_title": "Pagar con Tarjeta",
+    "payment_url": "https://floradomicilio.com/finalizar-compra/order-pay/2194?pay_for_order=true&key=wc_order_Ys6X132PxJMHA",
+    "prices_include_tax": true,
+    "refunds": [],
+    "shipping": {
+      "address_1": "Avenida del progres 17 ontime es una empresa",
+      "address_2": "",
+      "city": "Viladecans",
+      "company": "",
+      "country": "ES",
+      "first_name": "Lorena",
+      "last_name": "Martinez",
+      "phone": "671066268",
+      "postcode": "08840",
+      "state": "B"
+    },
+    "shipping_lines": [
+      {
+        "id": 1827,
+        "instance_id": "3",
+        "meta_data": [
+          {
+            "display_key": "Artículos",
+            "display_value": "Ramo de Rosas Rojas y Claveles Marsella × 1",
+            "id": 14153,
+            "key": "Artículos",
+            "value": "Ramo de Rosas Rojas y Claveles Marsella × 1"
+          }
+        ],
+        "method_id": "flat_rate",
+        "method_title": "Envío a domicilio",
+        "tax_status": "taxable",
+        "taxes": [
+          {
+            "id": 1,
+            "subtotal": "",
+            "total": "1.0332"
+          }
+        ],
+        "total": "4.92",
+        "total_tax": "1.03"
+      }
+    ],
+    "shipping_tax": "1.03",
+    "shipping_total": "4.92",
+    "status": "processing",
+    "tax_lines": [
+      {
+        "compound": false,
+        "id": 1828,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 2,
+        "rate_percent": 10,
+        "shipping_tax_total": "0.00",
+        "tax_total": "5.55"
+      },
+      {
+        "compound": false,
+        "id": 1829,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 1,
+        "rate_percent": 21,
+        "shipping_tax_total": "1.03",
+        "tax_total": "0.00"
+      }
+    ],
+    "total": "66.95",
+    "total_tax": "6.58",
+    "transaction_id": "",
+    "version": "9.7.1"
+  },
+  {
+    "_links": {
+      "collection": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders"
+        }
+      ],
+      "self": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders/2190",
+          "targetHints": {
+            "allow": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          }
+        }
+      ]
+    },
+    "billing": {
+      "address_1": "",
+      "address_2": "",
+      "city": "",
+      "company": "",
+      "country": "",
+      "email": "adriantaboada@hotmail.com",
+      "first_name": "Adrian",
+      "last_name": "Taboada",
+      "phone": "661109288",
+      "postcode": "",
+      "state": "B"
+    },
+    "cart_hash": "6872ede19a1f4a13b09679641218d950",
+    "cart_tax": "4.45",
+    "coupon_lines": [],
+    "created_via": "checkout",
+    "currency": "EUR",
+    "currency_symbol": "€",
+    "customer_id": 0,
+    "customer_ip_address": "201.217.220.94",
+    "customer_note": "Entregar por favor el Viernes 20 Junio entre las 14:15 y 16:15.\n\nSi necesitan Contacto conmigo solo whatsuup o mail.",
+    "customer_user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1",
+    "date_completed": null,
+    "date_completed_gmt": null,
+    "date_created": "2025-06-19T23:20:42",
+    "date_created_gmt": "2025-06-19T21:20:42",
+    "date_modified": "2025-06-19T23:21:52",
+    "date_modified_gmt": "2025-06-19T21:21:52",
+    "date_paid": "2025-06-19T23:21:52",
+    "date_paid_gmt": "2025-06-19T21:21:52",
+    "discount_tax": "0.00",
+    "discount_total": "0.00",
+    "fee_lines": [],
+    "id": 2190,
+    "is_editable": false,
+    "line_items": [
+      {
+        "id": 1822,
+        "image": {
+          "id": "1152",
+          "src": "https://floradomicilio.com/wp-content/uploads/2024/02/12-rosas_3-scaled.jpg"
+        },
+        "meta_data": [
+          {
+            "display_key": "Configura tu ramo",
+            "display_value": "Medio",
+            "id": 14113,
+            "key": "Configura tu ramo",
+            "value": "Medio"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Dedicatoria (+1,00 €)",
+            "id": 14114,
+            "key": "Dedicatoria",
+            "value": "Dedicatoria (+1,00 €)"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Gracias cariño, gracias por ser esposa,mujer,amiga,asesora confidente, novia ,compañera,pero por encima de todo Cristal,gracias por hacerme sentir tan feliz y tan afortunado día a día a tu lado y por hacerme papá!!!!!!! Creo que no existe nadie en este mundo que tenga unos valores tan buenos como los que tú tienes . Eres una mujer increíble,un ser de luz, y sin duda serás una gran mamá. Que afortunado soy de tenerte en mi vida a ti y a una familia como la tuya. Love you all.",
+            "id": 14115,
+            "key": "Dedicatoria",
+            "value": "Gracias cariño, gracias por ser esposa,mujer,amiga,asesora confidente, novia ,compañera,pero por encima de  todo Cristal,gracias  por hacerme sentir tan feliz y tan afortunado día a día a tu lado y por hacerme papá!!!!!!!\r\n\r\nCreo que no existe nadie en este mundo que tenga unos valores tan buenos como los que tú tienes .\r\n\r\nEres una mujer increíble,un ser de luz, y sin duda serás una gran mamá.\r\n\r\nQue afortunado soy de tenerte en mi vida a ti y a una familia como la tuya.\r\n\r\nLove you all."
+          },
+          {
+            "display_key": "_ywapo_meta_data",
+            "display_value": [
+              {
+                "1-1": {
+                  "0": "Medio",
+                  "addon_id": "1",
+                  "addon_value": "Medio",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Medio",
+                  "option_id": "1"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Gracias cariño, gracias por ser esposa,mujer,amiga,asesora confidente, novia ,compañera,pero por encima de  todo Cristal,gracias  por hacerme sentir tan feliz y tan afortunado día a día a tu lado y por hacerme papá!!!!!!!\r\n\r\nCreo que no existe nadie en este mundo que tenga unos valores tan buenos como los que tú tienes .\r\n\r\nEres una mujer increíble,un ser de luz, y sin duda serás una gran mamá.\r\n\r\nQue afortunado soy de tenerte en mi vida a ti y a una familia como la tuya.\r\n\r\nLove you all.\r\n",
+                  "addon_id": "6",
+                  "addon_value": "Gracias cariño, gracias por ser esposa,mujer,amiga,asesora confidente, novia ,compañera,pero por encima de  todo Cristal,gracias  por hacerme sentir tan feliz y tan afortunado día a día a tu lado y por hacerme papá!!!!!!!\r\n\r\nCreo que no existe nadie en este mundo que tenga unos valores tan buenos como los que tú tienes .\r\n\r\nEres una mujer increíble,un ser de luz, y sin duda serás una gran mamá.\r\n\r\nQue afortunado soy de tenerte en mi vida a ti y a una familia como la tuya.\r\n\r\nLove you all.",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Gracias cariño, gracias por ser esposa,mujer,amiga,asesora confidente, novia ,compañera,pero por encima de  todo Cristal,gracias  por hacerme sentir tan feliz y tan afortunado día a día a tu lado y por hacerme papá!!!!!!!\r\n\r\nCreo que no existe nadie en este mundo que tenga unos valores tan buenos como los que tú tienes .\r\n\r\nEres una mujer increíble,un ser de luz, y sin duda serás una gran mamá.\r\n\r\nQue afortunado soy de tenerte en mi vida a ti y a una familia como la tuya.\r\n\r\nLove you all.",
+                  "option_id": "0"
+                }
+              }
+            ],
+            "id": 14116,
+            "key": "_ywapo_meta_data",
+            "value": [
+              {
+                "1-1": {
+                  "0": "Medio",
+                  "addon_id": "1",
+                  "addon_value": "Medio",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Medio",
+                  "option_id": "1"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Gracias cariño, gracias por ser esposa,mujer,amiga,asesora confidente, novia ,compañera,pero por encima de  todo Cristal,gracias  por hacerme sentir tan feliz y tan afortunado día a día a tu lado y por hacerme papá!!!!!!!\r\n\r\nCreo que no existe nadie en este mundo que tenga unos valores tan buenos como los que tú tienes .\r\n\r\nEres una mujer increíble,un ser de luz, y sin duda serás una gran mamá.\r\n\r\nQue afortunado soy de tenerte en mi vida a ti y a una familia como la tuya.\r\n\r\nLove you all.\r\n",
+                  "addon_id": "6",
+                  "addon_value": "Gracias cariño, gracias por ser esposa,mujer,amiga,asesora confidente, novia ,compañera,pero por encima de  todo Cristal,gracias  por hacerme sentir tan feliz y tan afortunado día a día a tu lado y por hacerme papá!!!!!!!\r\n\r\nCreo que no existe nadie en este mundo que tenga unos valores tan buenos como los que tú tienes .\r\n\r\nEres una mujer increíble,un ser de luz, y sin duda serás una gran mamá.\r\n\r\nQue afortunado soy de tenerte en mi vida a ti y a una familia como la tuya.\r\n\r\nLove you all.",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Gracias cariño, gracias por ser esposa,mujer,amiga,asesora confidente, novia ,compañera,pero por encima de  todo Cristal,gracias  por hacerme sentir tan feliz y tan afortunado día a día a tu lado y por hacerme papá!!!!!!!\r\n\r\nCreo que no existe nadie en este mundo que tenga unos valores tan buenos como los que tú tienes .\r\n\r\nEres una mujer increíble,un ser de luz, y sin duda serás una gran mamá.\r\n\r\nQue afortunado soy de tenerte en mi vida a ti y a una familia como la tuya.\r\n\r\nLove you all.",
+                  "option_id": "0"
+                }
+              }
+            ]
+          }
+        ],
+        "name": "Ramo de Rosas Rojas Martina",
+        "parent_name": null,
+        "price": 44.545455,
+        "product_id": 779,
+        "quantity": 1,
+        "sku": "Martina-1",
+        "subtotal": "44.55",
+        "subtotal_tax": "4.45",
+        "tax_class": "tasa-reducida",
+        "taxes": [
+          {
+            "id": 2,
+            "subtotal": "4.454545",
+            "total": "4.454545"
+          }
+        ],
+        "total": "44.55",
+        "total_tax": "4.45",
+        "variation_id": 0
+      }
+    ],
+    "meta_data": [
+      {
+        "id": 50239,
+        "key": "_billing_cif",
+        "value": ""
+      },
+      {
+        "id": 50240,
+        "key": "_billing_bill",
+        "value": ""
+      },
+      {
+        "id": 50241,
+        "key": "is_vat_exempt",
+        "value": "no"
+      },
+      {
+        "id": 50242,
+        "key": "ywcdd_order_delivery_date",
+        "value": "2025-06-20"
+      },
+      {
+        "id": 50243,
+        "key": "ywcdd_order_shipping_date",
+        "value": "2025-06-20"
+      },
+      {
+        "id": 50244,
+        "key": "ywcdd_order_slot_from",
+        "value": ""
+      },
+      {
+        "id": 50245,
+        "key": "ywcdd_order_slot_to",
+        "value": ""
+      },
+      {
+        "id": 50246,
+        "key": "ywcdd_order_carrier_id",
+        "value": "545"
+      },
+      {
+        "id": 50247,
+        "key": "ywcdd_order_processing_method",
+        "value": "1817"
+      },
+      {
+        "id": 50248,
+        "key": "ywcdd_order_carrier",
+        "value": "local"
+      },
+      {
+        "id": 50249,
+        "key": "_wc_cancel_key",
+        "value": "b013300775f3db44bef6690629bfd3fe"
+      },
+      {
+        "id": 50250,
+        "key": "_wc_order_attribution_source_type",
+        "value": "referral"
+      },
+      {
+        "id": 50251,
+        "key": "_wc_order_attribution_referrer",
+        "value": "https://floristeriaraquel.com/"
+      },
+      {
+        "id": 50252,
+        "key": "_wc_order_attribution_utm_source",
+        "value": "floristeriaraquel.com"
+      },
+      {
+        "id": 50253,
+        "key": "_wc_order_attribution_utm_medium",
+        "value": "referral"
+      },
+      {
+        "id": 50254,
+        "key": "_wc_order_attribution_utm_content",
+        "value": "/"
+      },
+      {
+        "id": 50255,
+        "key": "_wc_order_attribution_session_entry",
+        "value": "https://floradomicilio.com/"
+      },
+      {
+        "id": 50256,
+        "key": "_wc_order_attribution_session_start_time",
+        "value": "2025-06-19 20:41:27"
+      },
+      {
+        "id": 50257,
+        "key": "_wc_order_attribution_session_pages",
+        "value": "10"
+      },
+      {
+        "id": 50258,
+        "key": "_wc_order_attribution_session_count",
+        "value": "1"
+      },
+      {
+        "id": 50259,
+        "key": "_wc_order_attribution_user_agent",
+        "value": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1"
+      },
+      {
+        "id": 50260,
+        "key": "_wc_order_attribution_device_type",
+        "value": "Mobile"
+      }
+    ],
+    "needs_payment": false,
+    "needs_processing": true,
+    "number": "2190",
+    "order_key": "wc_order_Ycth7iGV0f5a4",
+    "parent_id": 0,
+    "payment_method": "redsys",
+    "payment_method_title": "Pagar con Tarjeta",
+    "payment_url": "https://floradomicilio.com/finalizar-compra/order-pay/2190?pay_for_order=true&key=wc_order_Ycth7iGV0f5a4",
+    "prices_include_tax": true,
+    "refunds": [],
+    "shipping": {
+      "address_1": "Salvador Baroné 75 -1",
+      "address_2": "",
+      "city": "Viladecans",
+      "company": "",
+      "country": "ES",
+      "first_name": "Cristal",
+      "last_name": "Santisteban Serrano",
+      "phone": "699722301",
+      "postcode": "08840",
+      "state": "B"
+    },
+    "shipping_lines": [
+      {
+        "id": 1823,
+        "instance_id": "3",
+        "meta_data": [
+          {
+            "display_key": "Artículos",
+            "display_value": "Ramo de Rosas Rojas Martina × 1",
+            "id": 14122,
+            "key": "Artículos",
+            "value": "Ramo de Rosas Rojas Martina × 1"
+          }
+        ],
+        "method_id": "flat_rate",
+        "method_title": "Envío a domicilio",
+        "tax_status": "taxable",
+        "taxes": [
+          {
+            "id": 1,
+            "subtotal": "",
+            "total": "1.0332"
+          }
+        ],
+        "total": "4.92",
+        "total_tax": "1.03"
+      }
+    ],
+    "shipping_tax": "1.03",
+    "shipping_total": "4.92",
+    "status": "processing",
+    "tax_lines": [
+      {
+        "compound": false,
+        "id": 1824,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 2,
+        "rate_percent": 10,
+        "shipping_tax_total": "0.00",
+        "tax_total": "4.45"
+      },
+      {
+        "compound": false,
+        "id": 1825,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 1,
+        "rate_percent": 21,
+        "shipping_tax_total": "1.03",
+        "tax_total": "0.00"
+      }
+    ],
+    "total": "54.95",
+    "total_tax": "5.48",
+    "transaction_id": "",
+    "version": "9.7.1"
+  },
+  {
+    "_links": {
+      "collection": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders"
+        }
+      ],
+      "self": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders/2189",
+          "targetHints": {
+            "allow": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          }
+        }
+      ]
+    },
+    "billing": {
+      "address_1": "",
+      "address_2": "",
+      "city": "",
+      "company": "",
+      "country": "",
+      "email": "mariamartosca509@gmail.com",
+      "first_name": "María",
+      "last_name": "Martos",
+      "phone": "624723200",
+      "postcode": "",
+      "state": "B"
+    },
+    "cart_hash": "f97262f1759f34800c92488b908fdc06",
+    "cart_tax": "3.27",
+    "coupon_lines": [],
+    "created_via": "checkout",
+    "currency": "EUR",
+    "currency_symbol": "€",
+    "customer_id": 0,
+    "customer_ip_address": "2a0c:5a86:7304:d000:ad25:91e8:294f:1de3",
+    "customer_note": "Que el pedido llegue el día 19-06-2025 sobre la 13- 15 sino antes de las 10:30",
+    "customer_user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
+    "date_completed": null,
+    "date_completed_gmt": null,
+    "date_created": "2025-06-18T22:06:54",
+    "date_created_gmt": "2025-06-18T20:06:54",
+    "date_modified": "2025-06-18T22:08:50",
+    "date_modified_gmt": "2025-06-18T20:08:50",
+    "date_paid": "2025-06-18T22:08:50",
+    "date_paid_gmt": "2025-06-18T20:08:50",
+    "discount_tax": "0.00",
+    "discount_total": "0.00",
+    "fee_lines": [],
+    "id": 2189,
+    "is_editable": false,
+    "line_items": [
+      {
+        "id": 1818,
+        "image": {
+          "id": "1289",
+          "src": "https://floradomicilio.com/wp-content/uploads/2024/06/ramo_flores_claveles-scaled.jpg"
+        },
+        "meta_data": [
+          {
+            "display_key": "Configura tu ramo",
+            "display_value": "Básico",
+            "id": 14082,
+            "key": "Configura tu ramo",
+            "value": "Básico"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Dedicatoria (+1,00 €)",
+            "id": 14083,
+            "key": "Dedicatoria",
+            "value": "Dedicatoria (+1,00 €)"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Para la mejor suegra que puedo tener. Muchas felicidades a disfrutar mucho de tu día. De parte de: María",
+            "id": 14084,
+            "key": "Dedicatoria",
+            "value": "Para la mejor suegra que puedo tener. \r\n\r\nMuchas felicidades a disfrutar mucho de tu día. \r\n\r\nDe parte de: María"
+          },
+          {
+            "display_key": "_ywapo_meta_data",
+            "display_value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Para la mejor suegra que puedo tener. \r\n\r\nMuchas felicidades a disfrutar mucho de tu día. \r\n\r\nDe parte de: María ",
+                  "addon_id": "6",
+                  "addon_value": "Para la mejor suegra que puedo tener. \r\n\r\nMuchas felicidades a disfrutar mucho de tu día. \r\n\r\nDe parte de: María",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Para la mejor suegra que puedo tener. \r\n\r\nMuchas felicidades a disfrutar mucho de tu día. \r\n\r\nDe parte de: María",
+                  "option_id": "0"
+                }
+              }
+            ],
+            "id": 14085,
+            "key": "_ywapo_meta_data",
+            "value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Para la mejor suegra que puedo tener. \r\n\r\nMuchas felicidades a disfrutar mucho de tu día. \r\n\r\nDe parte de: María ",
+                  "addon_id": "6",
+                  "addon_value": "Para la mejor suegra que puedo tener. \r\n\r\nMuchas felicidades a disfrutar mucho de tu día. \r\n\r\nDe parte de: María",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Para la mejor suegra que puedo tener. \r\n\r\nMuchas felicidades a disfrutar mucho de tu día. \r\n\r\nDe parte de: María",
+                  "option_id": "0"
+                }
+              }
+            ]
+          }
+        ],
+        "name": "Ramo de Rosas Rojas y Claveles Marsella",
+        "parent_name": null,
+        "price": 32.727273,
+        "product_id": 1287,
+        "quantity": 1,
+        "sku": "Martina-1-1",
+        "subtotal": "32.73",
+        "subtotal_tax": "3.27",
+        "tax_class": "tasa-reducida",
+        "taxes": [
+          {
+            "id": 2,
+            "subtotal": "3.272727",
+            "total": "3.272727"
+          }
+        ],
+        "total": "32.73",
+        "total_tax": "3.27",
+        "variation_id": 0
+      }
+    ],
+    "meta_data": [
+      {
+        "id": 50177,
+        "key": "_billing_cif",
+        "value": ""
+      },
+      {
+        "id": 50178,
+        "key": "_billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 50179,
+        "key": "is_vat_exempt",
+        "value": "no"
+      },
+      {
+        "id": 50180,
+        "key": "ywcdd_order_delivery_date",
+        "value": "2025-06-19"
+      },
+      {
+        "id": 50181,
+        "key": "ywcdd_order_shipping_date",
+        "value": "2025-06-19"
+      },
+      {
+        "id": 50182,
+        "key": "ywcdd_order_slot_from",
+        "value": ""
+      },
+      {
+        "id": 50183,
+        "key": "ywcdd_order_slot_to",
+        "value": ""
+      },
+      {
+        "id": 50184,
+        "key": "ywcdd_order_carrier_id",
+        "value": "545"
+      },
+      {
+        "id": 50185,
+        "key": "ywcdd_order_processing_method",
+        "value": "1817"
+      },
+      {
+        "id": 50186,
+        "key": "ywcdd_order_carrier",
+        "value": "local"
+      },
+      {
+        "id": 50187,
+        "key": "_wc_cancel_key",
+        "value": "749a991738878552e8dc41564395979f"
+      },
+      {
+        "id": 50188,
+        "key": "billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 50189,
+        "key": "_wc_order_attribution_source_type",
+        "value": "referral"
+      },
+      {
+        "id": 50190,
+        "key": "_wc_order_attribution_referrer",
+        "value": "https://floristeriaraquel.com/"
+      },
+      {
+        "id": 50191,
+        "key": "_wc_order_attribution_utm_source",
+        "value": "floristeriaraquel.com"
+      },
+      {
+        "id": 50192,
+        "key": "_wc_order_attribution_utm_medium",
+        "value": "referral"
+      },
+      {
+        "id": 50193,
+        "key": "_wc_order_attribution_utm_content",
+        "value": "/"
+      },
+      {
+        "id": 50194,
+        "key": "_wc_order_attribution_session_entry",
+        "value": "https://floradomicilio.com/"
+      },
+      {
+        "id": 50195,
+        "key": "_wc_order_attribution_session_start_time",
+        "value": "2025-06-18 20:00:47"
+      },
+      {
+        "id": 50196,
+        "key": "_wc_order_attribution_session_pages",
+        "value": "5"
+      },
+      {
+        "id": 50197,
+        "key": "_wc_order_attribution_session_count",
+        "value": "1"
+      },
+      {
+        "id": 50198,
+        "key": "_wc_order_attribution_user_agent",
+        "value": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36"
+      },
+      {
+        "id": 50199,
+        "key": "_wc_order_attribution_device_type",
+        "value": "Mobile"
+      }
+    ],
+    "needs_payment": false,
+    "needs_processing": true,
+    "number": "2189",
+    "order_key": "wc_order_3qo6QolxAOmWF",
+    "parent_id": 0,
+    "payment_method": "redsys",
+    "payment_method_title": "Pagar con Tarjeta",
+    "payment_url": "https://floradomicilio.com/finalizar-compra/order-pay/2189?pay_for_order=true&key=wc_order_3qo6QolxAOmWF",
+    "prices_include_tax": true,
+    "refunds": [],
+    "shipping": {
+      "address_1": "Paseo de la Marina 8, 1-2",
+      "address_2": "",
+      "city": "Viladecans",
+      "company": "",
+      "country": "ES",
+      "first_name": "Julia",
+      "last_name": "Leon",
+      "phone": "636101612",
+      "postcode": "08840",
+      "state": "B"
+    },
+    "shipping_lines": [
+      {
+        "id": 1819,
+        "instance_id": "3",
+        "meta_data": [
+          {
+            "display_key": "Artículos",
+            "display_value": "Ramo de Rosas Rojas y Claveles Marsella × 1",
+            "id": 14091,
+            "key": "Artículos",
+            "value": "Ramo de Rosas Rojas y Claveles Marsella × 1"
+          }
+        ],
+        "method_id": "flat_rate",
+        "method_title": "Envío a domicilio",
+        "tax_status": "taxable",
+        "taxes": [
+          {
+            "id": 1,
+            "subtotal": "",
+            "total": "1.0332"
+          }
+        ],
+        "total": "4.92",
+        "total_tax": "1.03"
+      }
+    ],
+    "shipping_tax": "1.03",
+    "shipping_total": "4.92",
+    "status": "processing",
+    "tax_lines": [
+      {
+        "compound": false,
+        "id": 1820,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 2,
+        "rate_percent": 10,
+        "shipping_tax_total": "0.00",
+        "tax_total": "3.27"
+      },
+      {
+        "compound": false,
+        "id": 1821,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 1,
+        "rate_percent": 21,
+        "shipping_tax_total": "1.03",
+        "tax_total": "0.00"
+      }
+    ],
+    "total": "41.95",
+    "total_tax": "4.30",
+    "transaction_id": "",
+    "version": "9.7.1"
+  },
+  {
+    "_links": {
+      "collection": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders"
+        }
+      ],
+      "self": [
+        {
+          "href": "https://floradomicilio.com/wp-json/wc/v3/orders/2188",
+          "targetHints": {
+            "allow": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          }
+        }
+      ]
+    },
+    "billing": {
+      "address_1": "Santa Clara 2",
+      "address_2": "",
+      "city": "Aguilar de CAmpoo",
+      "company": "",
+      "country": "",
+      "email": "javiermanjon@gmail.com",
+      "first_name": "Javier",
+      "last_name": "Manjon",
+      "phone": "653174544",
+      "postcode": "34800",
+      "state": "P"
+    },
+    "cart_hash": "7805affb0b06fb21bc74ce6e3cc2bcdc",
+    "cart_tax": "4.18",
+    "coupon_lines": [],
+    "created_via": "checkout",
+    "currency": "EUR",
+    "currency_symbol": "€",
+    "customer_id": 0,
+    "customer_ip_address": "212.222.1.114",
+    "customer_note": "Hola equipo\n\nDou recogerá este regalo el jueves a partir de las 9.30 aprox. Es su cumplean9os!\n\nGracias!\nJavier\n",
+    "customer_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0",
+    "date_completed": null,
+    "date_completed_gmt": null,
+    "date_created": "2025-06-17T14:05:47",
+    "date_created_gmt": "2025-06-17T12:05:47",
+    "date_modified": "2025-06-17T14:07:56",
+    "date_modified_gmt": "2025-06-17T12:07:56",
+    "date_paid": "2025-06-17T14:07:56",
+    "date_paid_gmt": "2025-06-17T12:07:56",
+    "discount_tax": "0.00",
+    "discount_total": "0.00",
+    "fee_lines": [],
+    "id": 2188,
+    "is_editable": false,
+    "line_items": [
+      {
+        "id": 1815,
+        "image": {
+          "id": "1098",
+          "src": "https://floradomicilio.com/wp-content/uploads/2024/02/2.png"
+        },
+        "meta_data": [
+          {
+            "display_key": "Configura tu ramo",
+            "display_value": "Básico",
+            "id": 14056,
+            "key": "Configura tu ramo",
+            "value": "Básico"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Dedicatoria (+1,00 €)",
+            "id": 14057,
+            "key": "Dedicatoria",
+            "value": "Dedicatoria (+1,00 €)"
+          },
+          {
+            "display_key": "Dedicatoria",
+            "display_value": "Felices 26, Dou! Recuerda que eres maravilloso, y desde hoy con 26, incluso un poquito mas. Siempre, siempre te querremos. Muchas felicidades, bonito Javi",
+            "id": 14058,
+            "key": "Dedicatoria",
+            "value": "Felices 26, Dou! \r\n\r\nRecuerda que eres maravilloso, y desde hoy con 26, incluso un poquito mas.\r\nSiempre, siempre te querremos.\r\n\r\nMuchas felicidades, bonito\r\nJavi"
+          },
+          {
+            "display_key": "Complementos",
+            "display_value": "Oso peluche (+10,00 €)",
+            "id": 14059,
+            "key": "Complementos",
+            "value": "Oso peluche  (+10,00 €)"
+          },
+          {
+            "display_key": "_ywapo_meta_data",
+            "display_value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Felices 26, Dou! \r\n\r\nRecuerda que eres maravilloso, y desde hoy con 26, incluso un poquito mas.\r\nSiempre, siempre te querremos.\r\n\r\nMuchas felicidades, bonito\r\nJavi",
+                  "addon_id": "6",
+                  "addon_value": "Felices 26, Dou! \r\n\r\nRecuerda que eres maravilloso, y desde hoy con 26, incluso un poquito mas.\r\nSiempre, siempre te querremos.\r\n\r\nMuchas felicidades, bonito\r\nJavi",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Felices 26, Dou! \r\n\r\nRecuerda que eres maravilloso, y desde hoy con 26, incluso un poquito mas.\r\nSiempre, siempre te querremos.\r\n\r\nMuchas felicidades, bonito\r\nJavi",
+                  "option_id": "0"
+                }
+              },
+              {
+                "40-1": {
+                  "0": "Oso peluche ",
+                  "addon_id": "40",
+                  "addon_value": "Oso peluche ",
+                  "display_label": "Complementos",
+                  "display_value": "Oso peluche  (+10,00 €)",
+                  "option_id": "1"
+                }
+              }
+            ],
+            "id": 14060,
+            "key": "_ywapo_meta_data",
+            "value": [
+              {
+                "1-0": {
+                  "0": "Básico",
+                  "addon_id": "1",
+                  "addon_value": "Básico",
+                  "display_label": "Configura tu ramo",
+                  "display_value": "Básico",
+                  "option_id": "0"
+                }
+              },
+              {
+                "5-0": {
+                  "0": "Dedicatoria",
+                  "addon_id": "5",
+                  "addon_value": "Dedicatoria",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Dedicatoria (+1,00 €)",
+                  "option_id": "0"
+                }
+              },
+              {
+                "6-0": {
+                  "0": "Felices 26, Dou! \r\n\r\nRecuerda que eres maravilloso, y desde hoy con 26, incluso un poquito mas.\r\nSiempre, siempre te querremos.\r\n\r\nMuchas felicidades, bonito\r\nJavi",
+                  "addon_id": "6",
+                  "addon_value": "Felices 26, Dou! \r\n\r\nRecuerda que eres maravilloso, y desde hoy con 26, incluso un poquito mas.\r\nSiempre, siempre te querremos.\r\n\r\nMuchas felicidades, bonito\r\nJavi",
+                  "display_label": "Dedicatoria",
+                  "display_value": "Felices 26, Dou! \r\n\r\nRecuerda que eres maravilloso, y desde hoy con 26, incluso un poquito mas.\r\nSiempre, siempre te querremos.\r\n\r\nMuchas felicidades, bonito\r\nJavi",
+                  "option_id": "0"
+                }
+              },
+              {
+                "40-1": {
+                  "0": "Oso peluche ",
+                  "addon_id": "40",
+                  "addon_value": "Oso peluche ",
+                  "display_label": "Complementos",
+                  "display_value": "Oso peluche  (+10,00 €)",
+                  "option_id": "1"
+                }
+              }
+            ]
+          }
+        ],
+        "name": "Ramo Rosas Blancas Valeria",
+        "parent_name": null,
+        "price": 41.818182,
+        "product_id": 781,
+        "quantity": 1,
+        "sku": "Martina-2",
+        "subtotal": "41.82",
+        "subtotal_tax": "4.18",
+        "tax_class": "tasa-reducida",
+        "taxes": [
+          {
+            "id": 2,
+            "subtotal": "4.181818",
+            "total": "4.181818"
+          }
+        ],
+        "total": "41.82",
+        "total_tax": "4.18",
+        "variation_id": 0
+      }
+    ],
+    "meta_data": [
+      {
+        "id": 50115,
+        "key": "_billing_cif",
+        "value": ""
+      },
+      {
+        "id": 50116,
+        "key": "_billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 50117,
+        "key": "is_vat_exempt",
+        "value": "no"
+      },
+      {
+        "id": 50118,
+        "key": "ywcdd_order_delivery_date",
+        "value": "2025-06-18"
+      },
+      {
+        "id": 50119,
+        "key": "ywcdd_order_shipping_date",
+        "value": "2025-06-18"
+      },
+      {
+        "id": 50120,
+        "key": "ywcdd_order_slot_from",
+        "value": ""
+      },
+      {
+        "id": 50121,
+        "key": "ywcdd_order_slot_to",
+        "value": ""
+      },
+      {
+        "id": 50122,
+        "key": "ywcdd_order_carrier_id",
+        "value": "545"
+      },
+      {
+        "id": 50123,
+        "key": "ywcdd_order_processing_method",
+        "value": "1817"
+      },
+      {
+        "id": 50124,
+        "key": "ywcdd_order_carrier",
+        "value": "local"
+      },
+      {
+        "id": 50125,
+        "key": "_wc_cancel_key",
+        "value": "f7adac4ceb20d014249241467858bcd8"
+      },
+      {
+        "id": 50126,
+        "key": "billing_bill",
+        "value": "1"
+      },
+      {
+        "id": 50127,
+        "key": "_wc_order_attribution_source_type",
+        "value": "organic"
+      },
+      {
+        "id": 50128,
+        "key": "_wc_order_attribution_referrer",
+        "value": "https://www.google.com/"
+      },
+      {
+        "id": 50129,
+        "key": "_wc_order_attribution_utm_source",
+        "value": "google"
+      },
+      {
+        "id": 50130,
+        "key": "_wc_order_attribution_utm_medium",
+        "value": "organic"
+      },
+      {
+        "id": 50131,
+        "key": "_wc_order_attribution_session_entry",
+        "value": "https://floradomicilio.com/"
+      },
+      {
+        "id": 50132,
+        "key": "_wc_order_attribution_session_start_time",
+        "value": "2025-06-17 10:56:52"
+      },
+      {
+        "id": 50133,
+        "key": "_wc_order_attribution_session_pages",
+        "value": "10"
+      },
+      {
+        "id": 50134,
+        "key": "_wc_order_attribution_session_count",
+        "value": "2"
+      },
+      {
+        "id": 50135,
+        "key": "_wc_order_attribution_user_agent",
+        "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0"
+      },
+      {
+        "id": 50136,
+        "key": "_wc_order_attribution_device_type",
+        "value": "Desktop"
+      }
+    ],
+    "needs_payment": false,
+    "needs_processing": true,
+    "number": "2188",
+    "order_key": "wc_order_whO8Kz34JRDkK",
+    "parent_id": 0,
+    "payment_method": "redsys",
+    "payment_method_title": "Pagar con Tarjeta",
+    "payment_url": "https://floradomicilio.com/finalizar-compra/order-pay/2188?pay_for_order=true&key=wc_order_whO8Kz34JRDkK",
+    "prices_include_tax": true,
+    "refunds": [],
+    "shipping": {
+      "address_1": "Carrer del Pintor Fortuny, 72",
+      "address_2": "",
+      "city": "Viladecans",
+      "company": "",
+      "country": "ES",
+      "first_name": "Dou",
+      "last_name": "Dominguez",
+      "phone": "685703067",
+      "postcode": "08840",
+      "state": "B"
+    },
+    "shipping_lines": [
+      {
+        "id": 1816,
+        "instance_id": "1",
+        "meta_data": [
+          {
+            "display_key": "Artículos",
+            "display_value": "Ramo Rosas Blancas Valeria × 1",
+            "id": 14066,
+            "key": "Artículos",
+            "value": "Ramo Rosas Blancas Valeria × 1"
+          }
+        ],
+        "method_id": "free_shipping",
+        "method_title": "Recogida en tienda",
+        "tax_status": "taxable",
+        "taxes": [],
+        "total": "0.00",
+        "total_tax": "0.00"
+      }
+    ],
+    "shipping_tax": "0.00",
+    "shipping_total": "0.00",
+    "status": "processing",
+    "tax_lines": [
+      {
+        "compound": false,
+        "id": 1817,
+        "label": "Impuesto",
+        "meta_data": [],
+        "rate_code": "IMPUESTO-1",
+        "rate_id": 2,
+        "rate_percent": 10,
+        "shipping_tax_total": "0.00",
+        "tax_total": "4.18"
+      }
+    ],
+    "total": "46.00",
+    "total_tax": "4.18",
+    "transaction_id": "",
+    "version": "9.7.1"
+  }
+]

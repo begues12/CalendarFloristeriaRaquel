@@ -1,10 +1,10 @@
 # Floristería Raquel - Sistema de Gestión
 
-Sistema integral de gestión para floristería con calendario, control de horarios, gestión de documentos y sistema de privilegios granular.
+Sistema integral de gestión para floristería con calendario, control de horarios, gestión de documentos, sistema de privilegios granular **e integración completa con WooCommerce**.
 
 ## ✅ Estado del Proyecto
 
-**PROYECTO COMPLETAMENTE REORGANIZADO Y FUNCIONAL**
+**PROYECTO COMPLETAMENTE REORGANIZADO Y FUNCIONAL CON INTEGRACIÓN WOOCOMMERCE**
 
 - ✅ Estructura modular implementada
 - ✅ Sistema de privilegios granular funcionando
@@ -12,6 +12,69 @@ Sistema integral de gestión para floristería con calendario, control de horari
 - ✅ Scripts de gestión disponibles
 - ✅ Base de datos inicializada
 - ✅ Todos los comandos `flask db` disponibles
+- ✅ **Sistema de notas de calendario implementado**
+- ✅ **Integración completa con WooCommerce**
+- ✅ **Webhook automático para pedidos**
+- ✅ **Sincronización manual de pedidos**
+- ✅ **API REST para gestión de notas**
+
+## 🛒 Nueva Funcionalidad: Integración WooCommerce
+
+### Características Principales
+- **Webhook Automático**: Los pedidos de WooCommerce se añaden automáticamente al calendario
+- **Sincronización Manual**: Importar pedidos de un rango de fechas
+- **Notas de Calendario**: Sistema completo de notas con colores y prioridades
+- **API REST**: Endpoints para gestión programática de notas
+- **Dashboard de Configuración**: Interface web para configurar WooCommerce
+
+### Tipos de Eventos Soportados
+- Pedidos pendientes (amarillo)
+- Pedidos procesando (azul)
+- Pedidos completados (verde)
+- Pedidos cancelados (rojo)
+- Y más estados de WooCommerce
+
+### URLs Importantes
+- **Calendario Principal**: `http://localhost:5000/`
+- **Configuración WooCommerce**: `http://localhost:5000/woocommerce/config`
+- **Webhook URL**: `http://localhost:5000/webhook/woocommerce`
+- **API de Notas**: `http://localhost:5000/api/notes/`
+
+## 🚀 Inicio Rápido con WooCommerce
+
+### 1. Ejecutar la Aplicación
+```bash
+python run.py
+# O usando app.py: python app.py
+```
+La aplicación estará en: http://localhost:5000
+
+### 2. Configurar WooCommerce
+1. **Ir a configuración**: http://localhost:5000/woocommerce/config
+2. **Copiar URL del webhook**: `http://localhost:5000/webhook/woocommerce`
+3. **Configurar en WooCommerce**:
+   - Webhooks → Nuevo webhook
+   - URL: La URL copiada
+   - Eventos: `order.created`, `order.updated`, `order.status_changed`
+   - Formato: JSON
+
+### 3. Probar la Integración
+**En la página de configuración WooCommerce**:
+- Clic en **"Probar Webhook"**: Crea un pedido de prueba
+- Clic en **"Sincronizar Ahora"**: Importa pedidos simulados
+
+### 4. Ver Resultados
+- **Calendario principal**: http://localhost:5000
+- Los pedidos aparecen como notas con icono 🛒
+- Colores por estado: 🟡 Pendiente, 🔵 Procesando, 🟢 Completado
+
+### 5. Verificar Sistema
+```bash
+python verify_system.py  # Verifica instalación
+python test_woocommerce_sync.py  # Prueba funcionalidades (requiere app ejecutándose)
+```
+
+📖 **Guía detallada**: [GUIA_DE_USO.md](GUIA_DE_USO.md)
 
 ## Estructura del Proyecto
 

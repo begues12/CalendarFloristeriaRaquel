@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-plug"></i> Configuración de WooCommerce</h4>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Información del Webhook -->
+                    <div class="alert alert-info" role="alert">
+                        <h5><i class="fas fa-info-circle"></i> Configuración del Webhook</h5>
+                        <p>Para que los pedidos de WooCommerce se añadan automáticamente al calendario, configure el siguiente webhook en su tienda:</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>URL del Webhook:</strong>
+                                <div class="input-group mt-2">
+                                    <input type="text" class="form-control" value="{{ request.host_url }}webhook/woocommerce" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ request.host_url }}webhook/woocommerce')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Eventos a suscribir:</strong>
+                                <ul class="mt-2 mb-0">
+                                    <li>order.created</li>
+                                    <li>order.updated</li>
+                                    <li>order.status_changed</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-vial"></i> Probar Webhook</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p>Pruebe la funcionalidad del webhook con datos de ejemplo:</p>
+                                    <button id="testWebhookBtn" class="btn btn-primary">
+                                        <i class="fas fa-play"></i> Probar Webhook
+                                    </button>
+                                    <div id="webhookTestResult" class="mt-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-sync"></i> Sincronización Manual</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p>Sincronizar pedidos manualmente por rango de fechas:</p>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label for="startDate" class="form-label">Desde:</label>
+                                            <input type="date" class="form-control" id="startDate" value="{{ (date.today() - timedelta(days=7)).strftime('%Y-%m-%d') }}">
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="endDate" class="form-label">Hasta:</label>
+                                            <input type="date" class="form-control" id="endDate" value="{{ date.today().strftime('%Y-%m-%d') }}">
+                                        </div>
+                                    </div>
+                                    <button id="manualSyncBtn" class="btn btn-success mt-2">
+                                        <i class="fas fa-download"></i> Sincronizar
+                                    </button>
+                                    <div id="syncResult" class="mt-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuración de Mapeo -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-cogs"></i> Configuración de Mapeo</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Estados de Pedido → Colores del Calendario</h6>
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <td>Pendiente (pending)</td>
+                                                <td><span class="badge" style="background-color: #ffc107;">🟡 Amarillo</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Procesando (processing)</td>
+                                                <td><span class="badge" style="background-color: #007bff;">🔵 Azul</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>En espera (on-hold)</td>
+                                                <td><span class="badge" style="background-color: #fd7e14;">🟠 Naranja</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Completado (completed)</td>
+                                                <td><span class="badge" style="background-color: #28a745;">🟢 Verde</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Cancelado (cancelled)</td>
+                                                <td><span class="badge" style="background-color: #dc3545;">🔴 Rojo</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Estados de Pedido → Prioridades</h6>
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <td>Procesando, En espera</td>
+                                                <td><span class="badge bg-warning">Alta</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Pendiente, Completado</td>
+                                                <td><span class="badge bg-secondary">Normal</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Cancelado, Reembolsado</td>
+                                                <td><span class="badge bg-light text-dark">Baja</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Últimos Pedidos Sincronizados -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-history"></i> Últimos Pedidos Sincronizados</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="recentOrders">
+                                <p class="text-muted">Cargando últimos pedidos...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para copiar al portapapeles
+    window.copyToClipboard = function(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            showNotification('URL copiada al portapapeles', 'success');
+        });
+    };
+
+    // Probar webhook
+    document.getElementById('testWebhookBtn').addEventListener('click', async function() {
+        const btn = this;
+        const resultDiv = document.getElementById('webhookTestResult');
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Probando...';
+        
+        try {
+            const response = await fetch('/api/woocommerce/test-webhook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> ${result.message}
+                        <br><small>Fecha: ${result.date} | Pedido: #${result.order_id} | Acción: ${result.action}</small>
+                    </div>
+                `;
+                loadRecentOrders(); // Recargar lista de pedidos
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Error: ${result.error || 'Error desconocido'}
+                        ${result.message ? '<br><small>' + result.message + '</small>' : ''}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Error de conexión: ${error.message}
+                </div>
+            `;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-play"></i> Probar Webhook';
+        }
+    });
+
+    // Sincronización manual
+    document.getElementById('manualSyncBtn').addEventListener('click', async function() {
+        const btn = this;
+        const resultDiv = document.getElementById('syncResult');
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        
+        if (!startDate || !endDate) {
+            resultDiv.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> Por favor, seleccione las fechas de inicio y fin.
+                </div>
+            `;
+            return;
+        }
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sincronizando...';
+        
+        try {
+            const response = await fetch('/api/woocommerce/manual-sync', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    start_date: startDate,
+                    end_date: endDate
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> ${result.message}
+                        ${result.details ? `
+                            <br><small>
+                                📦 ${result.details.synced_orders} nuevos pedidos • 
+                                🔄 ${result.details.updated_orders} actualizados • 
+                                ❌ ${result.details.errors} errores
+                            </small>
+                        ` : ''}
+                    </div>
+                `;
+                loadRecentOrders(); // Recargar lista de pedidos
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Error: ${result.error || 'Error desconocido'}
+                        ${result.message ? '<br><small>' + result.message + '</small>' : ''}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Error de conexión: ${error.message}
+                </div>
+            `;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-download"></i> Sincronizar';
+        }
+    });
+
+    // Cargar últimos pedidos al inicio
+    loadRecentOrders();
+
+    // Función para cargar últimos pedidos sincronizados
+    async function loadRecentOrders() {
+        const container = document.getElementById('recentOrders');
+        
+        try {
+            // Buscar notas de pedidos WooCommerce de los últimos 7 días
+            const today = new Date();
+            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            
+            let ordersHtml = '<p class="text-muted">No hay pedidos recientes sincronizados.</p>';
+            
+            // Aquí se podría hacer una llamada a la API para obtener las notas de pedidos
+            // Por ahora mostramos un mensaje informativo
+            ordersHtml = `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> 
+                    Los pedidos sincronizados aparecerán como notas en el calendario.
+                    <br>
+                    <a href="/calendar" class="btn btn-sm btn-primary mt-2">
+                        <i class="fas fa-calendar"></i> Ver Calendario
+                    </a>
+                </div>
+            `;
+            
+            container.innerHTML = ordersHtml;
+            
+        } catch (error) {
+            container.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Error cargando pedidos recientes: ${error.message}
+                </div>
+            `;
+        }
+    }
+
+    // Función para mostrar notificaciones
+    function showNotification(message, type = 'info') {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+});
+</script>
+
+<style>
+.badge {
+    font-size: 0.8rem;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.input-group .form-control {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}

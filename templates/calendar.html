@@ -1,0 +1,486 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="calendar-container">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+            <a href="{{ url_for('index', year=prev_year, month=prev_month) }}" class="btn btn-outline-primary btn-sm order-1 order-md-0">
+                <i class="fas fa-chevron-left"></i><span class="d-none d-sm-inline"> Anterior</span>
+            </a>
+            <h2 class="mb-0 order-0 order-md-1 w-md-auto text-center order-2">{{ month_name }} {{ year }}</h2>
+            <a href="{{ url_for('index', year=next_year, month=next_month) }}" class="btn btn-outline-primary btn-sm order-3">
+                <span class="d-none d-sm-inline">Siguiente </span><i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered calendar-table mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center">Lun</th>
+                            <th class="text-center">Mar</th>
+                            <th class="text-center">Mié</th>
+                            <th class="text-center">Jue</th>
+                            <th class="text-center">Vie</th>
+                            <th class="text-center">Sáb</th>
+                            <th class="text-center">Dom</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for week in calendar %}
+                        <tr>
+                            {% for day in week %}
+                            <td class="calendar-day p-0">
+                                {% if day > 0 %}
+                                    {% set date_str = "%04d-%02d-%02d"|format(year, month, day) %}
+                                    <div class="day-container position-relative p-2">
+                                        <div class="day-number mb-2 d-flex justify-content-between align-items-center">
+                                            <span class="badge {% if day == today.day and month == today.month and year == today.year %}bg-primary{% else %}bg-secondary{% endif %}">
+                                                {{ day }}
+                                            </span>
+                                            <button class="btn btn-sm btn-outline-success add-note-btn" 
+                                                    data-date="{{ date_str }}" 
+                                                    title="Añadir nota para el {{ day }} de {{ month_name }}"
+                                                    style="padding: 2px 6px; font-size: 0.7rem;">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        {% if photos_by_date[day] %}
+                                            <div class="status-counts mb-2">
+                                                {% set counts = status_counts_by_date[day] %}
+                                                {% if counts.pendiente > 0 %}
+                                                    <span class="status-count pendiente" title="{{ counts.pendiente }} pendiente(s)">
+                                                        {{ counts.pendiente }}
+                                                    </span>
+                                                {% endif %}
+                                                {% if counts.hecho > 0 %}
+                                                    <span class="status-count hecho" title="{{ counts.hecho }} hecho(s)">
+                                                        {{ counts.hecho }}
+                                                    </span>
+                                                {% endif %}
+                                                {% if counts.entregado > 0 %}
+                                                    <span class="status-count entregado" title="{{ counts.entregado }} entregado(s)">
+                                                        {{ counts.entregado }}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <div class="day-info text-center">
+                                            <a href="{{ url_for('view_day', date_str=date_str) }}" 
+                                               class="text-decoration-none"
+                                               title="Ver fotos del {{ day }} de {{ month_name }}">
+                                                <small class="text-muted">
+                                                    {% if photos_by_date[day] %}
+                                                        <i class="fas fa-images me-1"></i>{{ photos_by_date[day]|length }}
+                                                    {% else %}
+                                                        <i class="fas fa-images opacity-50"></i>
+                                                    {% endif %}
+                                                </small>
+                                            </a>
+                                        </div>
+                                        
+                                        <!-- Indicador de notas -->
+                                        <div class="notes-indicator" data-date="{{ date_str }}">
+                                            <!-- Se llenará vía JavaScript -->
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para añadir notas rápidas -->
+<div class="modal fade" id="quickNoteModal" tabindex="-1" aria-labelledby="quickNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quickNoteModalLabel">Añadir Nota al Calendario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="quickNoteForm">
+                    <input type="hidden" id="selectedDate" name="date_for">
+                    <div class="mb-3">
+                        <label for="noteTitle" class="form-label">Título de la nota *</label>
+                        <input type="text" class="form-control" id="noteTitle" name="title" required maxlength="200">
+                    </div>
+                    <div class="mb-3">
+                        <label for="noteContent" class="form-label">Contenido (opcional)</label>
+                        <textarea class="form-control" id="noteContent" name="content" rows="3" maxlength="1000"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="noteColor" class="form-label">Color</label>
+                            <select class="form-select" id="noteColor" name="color">
+                                <option value="#ffc107" selected>🟡 Amarillo</option>
+                                <option value="#28a745">🟢 Verde</option>
+                                <option value="#dc3545">🔴 Rojo</option>
+                                <option value="#007bff">🔵 Azul</option>
+                                <option value="#6f42c1">🟣 Morado</option>
+                                <option value="#fd7e14">🟠 Naranja</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="notePriority" class="form-label">Prioridad</label>
+                            <select class="form-select" id="notePriority" name="priority">
+                                <option value="low">🔽 Baja</option>
+                                <option value="normal" selected>➖ Normal</option>
+                                <option value="high">🔼 Alta</option>
+                                <option value="urgent">🔴 Urgente</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="isPrivate" name="is_private">
+                        <label class="form-check-label" for="isPrivate">
+                            Nota privada (solo visible para mí)
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="saveNoteBtn">
+                    <i class="fas fa-save"></i> Guardar Nota
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Estilos para el calendario */
+.calendar-table {
+    table-layout: fixed;
+}
+
+.calendar-day {
+    height: 120px;
+    vertical-align: top;
+    position: relative;
+}
+
+.day-container-link {
+    height: 100%;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    color: inherit !important;
+}
+
+.day-container-link:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    color: inherit !important;
+}
+
+.day-container-link:hover .badge {
+    transform: scale(1.1);
+}
+
+.day-container-link:hover .day-info i {
+    transform: scale(1.2);
+    color: #007bff !important;
+}
+
+.day-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.day-number {
+    text-align: center;
+}
+
+.day-number .badge {
+    transition: transform 0.2s ease;
+}
+
+.status-counts {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+/* Nuevos estilos para notas del calendario */
+.add-note-btn {
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.add-note-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.notes-indicator {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
+    text-align: center;
+}
+
+.note-badge {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin: 1px;
+}
+
+.priority-indicator {
+    font-size: 0.6rem;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin: 1px;
+    color: white;
+}
+
+.priority-low { background-color: #28a745; }
+.priority-normal { background-color: #ffc107; }
+.priority-high { background-color: #fd7e14; }
+.priority-urgent { background-color: #dc3545; }
+
+.day-container {
+    position: relative;
+}
+
+.status-count {
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    min-width: 18px;
+    text-align: center;
+}
+
+.status-count.pendiente {
+    background-color: #ffc107;
+    color: #856404;
+}
+
+.status-count.hecho {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-count.entregado {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.day-info {
+    margin-top: auto;
+}
+
+.day-info i {
+    transition: all 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .calendar-day {
+        height: 80px;
+    }
+    
+    .day-container-link {
+        min-height: 70px;
+        padding: 8px !important;
+    }
+    
+    .status-count {
+        font-size: 0.6rem;
+        padding: 1px 4px;
+        min-width: 16px;
+    }
+    
+    .day-number .badge {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .calendar-day {
+        height: 60px;
+    }
+    
+    .day-container-link {
+        min-height: 50px;
+        padding: 4px !important;
+    }
+    
+    .day-number {
+        margin-bottom: 4px !important;
+    }
+    
+    .status-counts {
+        margin-bottom: 4px !important;
+    }
+}
+</style>
+
+<script src="{{ url_for('static', filename='js/calendar-api.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar la API del calendario
+    const calendarAPI = new CalendarAPI();
+    
+    // Elementos del DOM
+    const quickNoteModal = new bootstrap.Modal(document.getElementById('quickNoteModal'));
+    const quickNoteForm = document.getElementById('quickNoteForm');
+    const saveNoteBtn = document.getElementById('saveNoteBtn');
+    const selectedDateInput = document.getElementById('selectedDate');
+    
+    // Manejar clics en botones "Añadir Nota"
+    document.querySelectorAll('.add-note-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const date = this.getAttribute('data-date');
+            selectedDateInput.value = date;
+            
+            // Limpiar formulario
+            quickNoteForm.reset();
+            selectedDateInput.value = date; // Restaurar después del reset
+            
+            // Actualizar título del modal
+            const modalTitle = document.getElementById('quickNoteModalLabel');
+            const dateObj = new Date(date + 'T00:00:00');
+            const dateStr = dateObj.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            modalTitle.textContent = `Añadir Nota - ${dateStr}`;
+            
+            quickNoteModal.show();
+        });
+    });
+    
+    // Manejar guardar nota
+    saveNoteBtn.addEventListener('click', async function() {
+        const formData = new FormData(quickNoteForm);
+        const noteData = {
+            title: formData.get('title').trim(),
+            content: formData.get('content').trim(),
+            color: formData.get('color'),
+            priority: formData.get('priority'),
+            is_private: formData.has('is_private')
+        };
+        
+        // Validar datos
+        if (!noteData.title) {
+            alert('El título de la nota es obligatorio');
+            return;
+        }
+        
+        try {
+            // Deshabilitar botón mientras se guarda
+            saveNoteBtn.disabled = true;
+            saveNoteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            
+            // Crear la nota
+            const result = await calendarAPI.addNote(selectedDateInput.value, noteData);
+            
+            if (result.success) {
+                // Mostrar mensaje de éxito
+                showNotification('Nota añadida correctamente', 'success');
+                
+                // Cerrar modal
+                quickNoteModal.hide();
+                
+                // Actualizar indicador visual
+                updateNoteIndicator(selectedDateInput.value);
+                
+                // Limpiar formulario
+                quickNoteForm.reset();
+            } else {
+                throw new Error(result.error || 'Error desconocido');
+            }
+            
+        } catch (error) {
+            console.error('Error al guardar nota:', error);
+            showNotification('Error al guardar la nota: ' + error.message, 'danger');
+        } finally {
+            // Restaurar botón
+            saveNoteBtn.disabled = false;
+            saveNoteBtn.innerHTML = '<i class="fas fa-save"></i> Guardar Nota';
+        }
+    });
+    
+    // Cargar indicadores de notas al cargar la página
+    loadNoteIndicators();
+    
+    // Función para mostrar notificaciones
+    function showNotification(message, type = 'info') {
+        // Crear elemento de notificación
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto-remove después de 5 segundos
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+    
+    // Función para actualizar indicador de notas de una fecha
+    async function updateNoteIndicator(dateStr) {
+        try {
+            const hasNotesResult = await calendarAPI.checkDateHasNotes(dateStr);
+            const indicator = document.querySelector(`[data-date="${dateStr}"] .notes-indicator`);
+            
+            if (indicator) {
+                if (hasNotesResult.has_notes) {
+                    indicator.innerHTML = `<small class="text-info"><i class="fas fa-sticky-note"></i> ${hasNotesResult.note_count}</small>`;
+                } else {
+                    indicator.innerHTML = '';
+                }
+            }
+        } catch (error) {
+            console.error('Error al actualizar indicador:', error);
+        }
+    }
+    
+    // Función para cargar todos los indicadores de notas
+    async function loadNoteIndicators() {
+        const indicators = document.querySelectorAll('.notes-indicator');
+        
+        for (const indicator of indicators) {
+            const dateStr = indicator.getAttribute('data-date');
+            if (dateStr) {
+                await updateNoteIndicator(dateStr);
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
